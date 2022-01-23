@@ -5,16 +5,9 @@ namespace ZSharp.Engine
     public class CollectionOperators
     {
         [OperatorOverload(",")]
-        public static Collection CreateCollection(Expression a, Expression b)
+        public static ObjectInfo CreateCollection(ObjectInfo a, ObjectInfo b)
         {
-            return new(a, b);
-        }
-
-        [OperatorOverload(",")]
-        public static Collection CreateCollection(Collection a, Expression b)
-        {
-            a.Items.Add(b);
-            return a;
+            return new(FileInfo.Combine(a.FileInfo, b.FileInfo), a.Expression as Collection ?? new(a, b));
         }
     }
 }
