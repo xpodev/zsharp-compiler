@@ -1,10 +1,11 @@
 ﻿namespace ZSharp.Core
 {
-    public interface IExpressionProcessor
+    public interface IExpressionProcessor<T>
+        where T : class
     {
         void PreProcess();
 
-        ObjectInfo Process(ObjectInfo expression);
+        Result<T, ObjectInfo> Process(Result<T, ObjectInfo> expression);
 
         void PostProcess();
     }

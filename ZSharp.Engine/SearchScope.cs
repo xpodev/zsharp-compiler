@@ -8,7 +8,7 @@ namespace ZSharp.Engine
     {
         private readonly Dictionary<string, INamedItem> _items = new();
 
-        public SearchScope(string name = null) : base(name)
+        public SearchScope(string name = "") : base(name)
         {
 
         }

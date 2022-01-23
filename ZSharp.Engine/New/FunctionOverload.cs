@@ -43,7 +43,8 @@ namespace ZSharp.Engine
                 candidates = Overloads.FindAll(
                     func => 
                         func.IsInstance && 
-                        func.DeclaringType.SRF == type.SRF &&
+                        func is MethodReference method &&
+                        method.DeclaringType.SRF == type.SRF &&
                         func.GetParameterTypes().Select(t => t.SRF).SequenceEqual(
                             types.Skip(1).Select(t => t.SRF)
                         )
@@ -54,7 +55,8 @@ namespace ZSharp.Engine
                 candidates = Overloads.FindAll(
                     func =>
                         func.IsInstance &&
-                        func.DeclaringType.SRF == type.SRF &&
+                        func is MethodReference method &&
+                        method.DeclaringType.SRF == type.SRF &&
                         func.IsCallableWith(rest)
                     );
 

@@ -7,7 +7,7 @@ namespace ZSharp.Engine
         , IBuildable
         , ICompilable
         , INamedItemsContainer<Namespace>
-        , INamedItemsContainer<Class>
+        //, INamedItemsContainer<Class>
         , INamedItemsContainer<FunctionOverload>
     {
         public Namespace DeclaringNamespace { get; private set; } = null;
@@ -37,30 +37,30 @@ namespace ZSharp.Engine
             Add(item as NamedItem);
         }
 
-        public void Add(Class cls)
-        {
-            if (cls.Namespace is not null) throw new System.InvalidOperationException();
-            cls.Namespace = this;
-            Add(cls as NamedItem);
-        }
+        //public void Add(Class cls)
+        //{
+        //    if (cls.Namespace is not null) throw new System.InvalidOperationException();
+        //    cls.Namespace = this;
+        //    Add(cls as NamedItem);
+        //}
 
-        public Expression Compile(GenericProcessor<IBuildable> proc, Context ctx)
+        public string Compile(GenericProcessor<IBuildable> proc, Context ctx)
         {
             foreach (NamedItem item in this)
             {
                 if (item is IBuildable builder) builder.Compile(proc, ctx);
             }
-            return this;
+            return null;
         }
 
-        public Expression Compile(GenericProcessor<ICompilable> proc, Context ctx)
+        public string Compile(GenericProcessor<ICompilable> proc, Context ctx)
         {
             foreach (NamedItem item in this)
             {
                 if (item is ICompilable builder) builder.Compile(proc, ctx);
             }
 
-            return this;
+            return null;
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using ZSharp.Core;
 
 namespace ZSharp.Engine
 {
@@ -25,8 +26,6 @@ namespace ZSharp.Engine
 
         public Type DeclaringType { get; set; }
 
-        IType IFunction.DeclaringType => DeclaringType;
-
         public FunctionType Type { get; private set; }
 
         private Core.Collection _body;
@@ -35,7 +34,9 @@ namespace ZSharp.Engine
 
         MethodInfo IFunction.SRF => SRF;
 
-        MethodReference IFunction.MC => MC;
+        Mono.Cecil.MethodReference IFunction.MC => MC;
+
+        public bool IsVirtual => HasModifier("virtual");
 
         public SRFFunctionBuilder(string name, FunctionType type)
             : base(name)
@@ -49,7 +50,7 @@ namespace ZSharp.Engine
             
         }
 
-        public Core.Expression Compile(GenericProcessor<IBuildable> proc, Context ctx)
+        public string Compile(GenericProcessor<IBuildable> proc, Context ctx)
         {
             // SRF method definition
             {
@@ -89,35 +90,36 @@ namespace ZSharp.Engine
             if (DeclaringType is null)
                 ctx.Scope.AddItem<FunctionOverload>(new(this));
 
-            return this;
+            return null;
         }
 
-        public Core.Expression Compile(GenericProcessor<ISRFCompilable> proc, Context ctx)
+        public string Compile(GenericProcessor<ISRFCompilable> proc, Context ctx)
         {
             if (HasModifier("__entrypoint")) ctx.Module.MC.EntryPoint = MC;
 
             ILGenerator srf = SRF.GetILGenerator();
             Mono.Cecil.Cil.ILProcessor mc = MC.Body.GetILProcessor();
-            var il = _body.Select(proc.Process)
+            var il = _body.Cast<Core.Expression>().Select(proc.Process)
                 .Cast<Cil.IILGenerator>().ToArray();
             foreach (Cil.IILGenerator ilGen in il)
             {
                 foreach (Cil.ILInstruction instruction in ilGen.GetIL())
                 {
-                    instruction.InsertInto(srf, mc);
+                    instruction.SRF.EmitTo(srf);
+                    instruction.MC.EmitTo(mc);
                 }
             }
 
-            return this;
+            return null;
         }
 
-        public Core.Expression Compile(GenericProcessor<IResolvable> proc, Context ctx)
+        public string Compile(GenericProcessor<IResolvable> proc, Context ctx)
         {
             {
                 //SRF.SetReturnType()
             }
 
-            return this;
+            return null;
         }
 
         #region Operators
@@ -136,7 +138,7 @@ namespace ZSharp.Engine
         {
             if (func._body is not null) throw new InvalidOperationException();
 
-            func._body = new Core.Collection(Cil.ILOpCodes.Return());
+            func._body = new Core.Collection(/*Cil.ILOpCodes.Return()*/);
             return func;
         }
 
@@ -205,6 +207,16 @@ namespace ZSharp.Engine
                 return DeclaringType.SRF
                     .GetMethod(Name, bindingFlags, null, SRF.CallingConvention, types, null);
             }
+        }
+
+        public Result<string, Expression> Invoke(params object[] args)
+        {
+            MethodInfo method = GetInvocableMethod();
+            return method is null
+                ? new($"Could not get invocable method for \'{Name}\'", null)
+                : method.Invoke(null, args) is Expression expr
+                    ? new(expr)
+                    : new($"\'{Name}\' did not return a compile time value", null);
         }
     }
 }

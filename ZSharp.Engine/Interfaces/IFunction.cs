@@ -2,7 +2,9 @@
 
 namespace ZSharp.Engine
 {
-    public interface IFunction : INamedItem
+    public interface IFunction 
+        : IInvocable
+        , IGeneric<IFunction>
     {
         public System.Reflection.MethodInfo SRF { get; }
 
@@ -14,9 +16,7 @@ namespace ZSharp.Engine
 
         public bool IsInstance { get; }
 
-        public IType DeclaringType { get; }
-
-        IFunction MakeGeneric(params IType[] types);
+        public bool IsVirtual { get; }
 
         bool IsCallableWith(params IType[] types);
 

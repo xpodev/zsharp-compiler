@@ -10,6 +10,8 @@ namespace ZSharp.Engine
 
         public NamedItem(string name)
         {
+            if (name is null)
+                throw new System.ArgumentNullException(nameof(name));
             Name = name;
         }
 

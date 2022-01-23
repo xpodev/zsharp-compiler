@@ -97,7 +97,7 @@ namespace ZSharp.Engine
         {
             if (decl.Items is not null) throw new System.InvalidOperationException();
 
-            decl.Items = new(items);
+            decl.Items = new(items.Cast<Expression>());
 
             return decl;
         }
@@ -108,13 +108,13 @@ namespace ZSharp.Engine
             return Initialize(decl, Collection.Empty);
         }
 
-        public Expression Compile(GenericProcessor<IObjectDescriptor> proc, Context ctx)
+        public Expression Compile(ObjectDesciptorProcessor proc, Context ctx)
         {
             Type type;
 
             if (MetaClass is not null)
             {
-                if (proc.Process(MetaClass) is not IType metaclass)
+                if ((Expression)proc.Process(MetaClass) is not IType metaclass)
                     throw new System.Exception($"{Name}'s metaclass expression evaluated to null.");
 
                 type = metaclass.SRF.GetConstructor(

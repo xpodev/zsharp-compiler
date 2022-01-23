@@ -44,7 +44,7 @@ namespace ZSharp.Engine
             _info = info;
         }
 
-        public Expression Compile(GenericProcessor<IBuildable> proc, Context ctx)
+        public string Compile(GenericProcessor<IBuildable> proc, Context ctx)
         {
             if (IsBuilt) throw new InvalidOperationException($"Type {Name} is already built");
 
@@ -109,10 +109,10 @@ namespace ZSharp.Engine
             //    if (item is IBuildable builder) builder.Compile(proc, ctx);
             //}
 
-            return this;
+            return null;
         }
 
-        public Expression Compile(GenericProcessor<IResolvable> proc, Context ctx)
+        public string Compile(GenericProcessor<IResolvable> proc, Context ctx)
         {
             IType @base;
             List<IType> interfaces = new();
@@ -120,7 +120,7 @@ namespace ZSharp.Engine
             if (_info.Base is null) @base = ctx.TypeSystem.Object;
             else if (_info.Base is not Collection bases)
             {
-                @base = proc.Process(_info.Base) as IType;
+                @base = (Expression)proc.Process(_info.Base) as IType;
                 if (@base.SRF.IsInterface)
                 {
                     interfaces.Add(@base);
@@ -170,16 +170,16 @@ namespace ZSharp.Engine
             //    if (item is IResolvable resolve) resolve.Compile(proc, ctx);
             //}
 
-            return this;
+            return null;
         }
 
-        public Expression Compile(GenericProcessor<IDependencyFinder> proc, Context ctx)
+        public string Compile(GenericProcessor<IDependencyFinder> proc, Context ctx)
         {
             DependencyFinder finder = proc as DependencyFinder;
             finder.FindDependencies(this, _info.Base);
             finder.FindDependencies(this, _info.MetaClass);
 
-            return this;
+            return null;
         }
 
         public INamedItem GetMember(string name) => null; // GetItem(name);

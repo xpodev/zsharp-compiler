@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using ZSharp.Core;
 using ZSharp.Engine.Cil;
@@ -6,10 +7,16 @@ using ZSharp.Engine.Cil;
 namespace ZSharp.Engine
 {
     public class IL 
-        : Collection
+        : Expression
         , IILGenerator
+        , IEnumerable<ILInstruction>
     {
-        public IL(params ILInstruction[] instructions) : base(instructions) { }
+        private readonly List<ILInstruction> _instructions = new();
+
+        public IL(params ILInstruction[] instructions)
+        {
+            _instructions = new(instructions);
+        }
 
         [KeywordOverload("IL")]
         public static IL CreateILContext()
@@ -23,20 +30,32 @@ namespace ZSharp.Engine
         {
             foreach (Expression expr in exprs)
             {
-                if (Context.CurrentContext.Evaluate(expr) is ILInstruction ilInst)
-                    il.Items.Add(ilInst);
+                if ((Expression)Context.CurrentContext.Evaluate(expr) is ILInstruction ilInst)
+                    il.Add(ilInst);
             }
             return il;
         }
 
+        public void Add(ILInstruction instruction) => _instructions.Add(instruction);
+
+        public IEnumerator<ILInstruction> GetEnumerator()
+        {
+            return ((IEnumerable<ILInstruction>)_instructions).GetEnumerator();
+        }
+
         public IEnumerable<ILInstruction> GetIL()
         {
-            return Items.Cast<ILInstruction>();
+            return _instructions;
         }
 
         public override string ToString()
         {
             return "IL";
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable)_instructions).GetEnumerator();
         }
     }
 }

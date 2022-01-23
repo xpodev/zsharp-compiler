@@ -20,7 +20,7 @@ namespace ZSharp.Engine
 
         public FunctionDescriptor(string name) : base(name) { }
 
-        public FunctionDescriptor(Pair info) : this(info.Left as Identifier)
+        public FunctionDescriptor(Pair info) : this((info.Left as Identifier)?.Name)
         {
             Type = info.Right;
         }
@@ -56,7 +56,7 @@ namespace ZSharp.Engine
             if (func.Body is not null)
                 throw new InvalidOperationException();
 
-            func.Body = new(body);
+            func.Body = new(body.Select(o => o.Expression));
 
             return func;
         }
@@ -75,7 +75,7 @@ namespace ZSharp.Engine
         }
 
         [SurroundingOperatorOverload("(", ")")]
-        public FunctionDescriptor SetParameters(Identifier item)
+        public FunctionDescriptor SetParameters(ObjectInfo item)
         {
             return SetParameters(new Collection(item));
         }
@@ -102,7 +102,7 @@ namespace ZSharp.Engine
             return func;
         }
 
-        public Expression Compile(GenericProcessor<IObjectDescriptor> proc, Context ctx)
+        public Expression Compile(ObjectDesciptorProcessor proc, Context ctx)
         {
             Function func = new(this);
 

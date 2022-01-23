@@ -72,7 +72,7 @@ namespace ZSharp.Engine.Cil
         [KeywordOverload("call")]
         public static ILInstruction CallFunction(Expression function)
         {
-            return CallFunction(Context.CurrentContext.Evaluate(function) as IFunction);
+            return CallFunction((Expression)Context.CurrentContext.Evaluate(function) as IFunction);
         }
 
         [KeywordOverload("ldc_i4")]

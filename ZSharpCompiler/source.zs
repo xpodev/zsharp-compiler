@@ -1,18 +1,7 @@
-﻿static func A: () -> B {
-	infoof(ZSharp.Engine.IType)
-	IL { ret }
-}
-
-static func C(x): i64 -> A {
+﻿static  __entrypoint func Main: () {
 	IL {
-		ldarg x
-		call GetType(i64)
+		ldstr "Hello, World!"
+		call System.Console.WriteLine(string)
+		ret
 	}
-	infoof(System.Object)
-	IL { ret }
-}
-
-static func B: () -> C()() {
-	infoof(ZSharp.Unit)
-	IL { ret }
 }

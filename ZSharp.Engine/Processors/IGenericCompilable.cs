@@ -1,10 +1,8 @@
-﻿using ZSharp.Core;
-
-namespace ZSharp.Engine
+﻿namespace ZSharp.Engine
 {
     public interface IGenericCompilable<T>
         where T : IGenericCompilable<T>
     {
-        ObjectInfo Compile(GenericProcessor<T> proc, Context ctx);
+        string Compile(GenericProcessor<T> proc, Context ctx);
     }
 }

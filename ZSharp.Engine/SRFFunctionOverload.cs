@@ -7,6 +7,7 @@ namespace ZSharp.Engine
 {
     public class SRFFunctionOverload
         : NamedItem
+        , IInvocable
         , IDependencyProvider<SRFObject>
         , IEnumerable<IFunction>
         , INamedItemsContainer<IFunction>
@@ -45,7 +46,8 @@ namespace ZSharp.Engine
                 candidates = Overloads.FindAll(
                     func =>
                         func.IsInstance &&
-                        func.DeclaringType.SRF == type.SRF &&
+                        func is MethodReference method &&
+                        method.DeclaringType.SRF == type.SRF &&
                         func.GetParameterTypes().Select(t => t.SRF).SequenceEqual(
                             types.Skip(1).Select(t => t.SRF)
                         )
@@ -56,7 +58,8 @@ namespace ZSharp.Engine
                 candidates = Overloads.FindAll(
                     func =>
                         func.IsInstance &&
-                        func.DeclaringType.SRF == type.SRF &&
+                        func is MethodReference method &&
+                        method.DeclaringType.SRF == type.SRF &&
                         func.IsCallableWith(rest)
                     );
 
@@ -115,6 +118,14 @@ namespace ZSharp.Engine
             //if (dependant is not Function) return System.Array.Empty<SRFObject>();
 
             return GetDependencies();
+        }
+
+        public Result<string, Expression> Invoke(params object[] args)
+        {
+            IFunction function = Get(args.Select(arg => arg.GetType()).ToArray());
+            if (function is null)
+                return new($"Could not find overload for function {Name} with arguments: {string.Join(", ", args.Select(arg => arg.GetType().Name))}", null);
+            return function.Invoke(args);
         }
     }
 }

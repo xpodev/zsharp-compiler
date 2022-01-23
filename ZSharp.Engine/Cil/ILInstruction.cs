@@ -1,7 +1,4 @@
-﻿using Mono.Cecil.Cil;
-using System.Reflection.Emit;
-
-namespace ZSharp.Engine.Cil
+﻿namespace ZSharp.Engine.Cil
 {
     public class ILInstruction 
         : Core.Expression
@@ -18,12 +15,6 @@ namespace ZSharp.Engine.Cil
         {
             OpCode = opCode;
             Operand = operand;
-        }
-
-        public void InsertInto(ILGenerator srf, ILProcessor mc)
-        {
-            SRF.EmitTo(srf);
-            MC.EmitTo(mc);
         }
     }
 }

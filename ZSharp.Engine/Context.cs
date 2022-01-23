@@ -8,27 +8,23 @@ using System.Reflection.Emit;
 
 namespace ZSharp.Engine
 {
-    public class Context : Core.ILanguageEngine
+    public class Context : Core.ILanguageEngine<string>
     {
         private interface IDocumentObject : IGenericCompilable<IDocumentObject> { }
+
+        public static Context CurrentContext { get; private set; }
+
+        public TypeSystem TypeSystem { get; private set; }
 
         public readonly SRFModule Module;
 
         private int _currentPass = 0;
 
-        private BaseProcessor _evaluator;
-
-        public static Context CurrentContext { get; private set; }
+        private readonly Evaluator _evaluator;
 
         public readonly ProjectScope Scope = new();
 
-        public readonly List<SRFFunctionBuilder> awaitingFunctions = new();
-
-        private readonly List<Core.IExpressionProcessor> _processors = new();
-
-        private Core.IExpressionProcessor _currentProcessor = null;
-
-        public TypeSystem TypeSystem { get; private set; }
+        private readonly List<Core.IExpressionProcessor<string>> _processors = new();
 
         public Context()
         {
@@ -39,6 +35,8 @@ namespace ZSharp.Engine
                 assembly.DefineDynamicModule("SRF"), 
                 ModuleDefinition.CreateModule("SRF", ModuleKind.Console)
                 );
+
+            _evaluator = new(this);
         }
 
         public void Setup()
@@ -46,10 +44,12 @@ namespace ZSharp.Engine
             TypeSystem = new(this);
 
             GenericProcessor<ISRFCompilable> srfProcess;
-            _processors.AddRange(new Core.IExpressionProcessor[]
+            _processors.AddRange(new Core.IExpressionProcessor<string>[]
             {
-                _evaluator = new GenericProcessor<IDocumentObject>(this),
-                new GenericProcessor<IObjectDescriptor>(this),
+                //new GenericProcessor<IDocumentObject>(this),
+                new DocumentProcessor(this),
+                //_evaluator,
+                new ObjectDesciptorProcessor(this),
                 new GenericProcessor<IBuildable>(this),
                 new DependencyFinder(this),
                 new GenericProcessor<ISRFResolvable>(this),
@@ -152,28 +152,34 @@ namespace ZSharp.Engine
                 {
                     if (!method.IsPublic) continue;
 
-                    Scope.GlobalScope.AddItem(new FunctionOverload(new FunctionReference(method)));
+                    Scope.GlobalScope.AddItem(new FunctionOverload(
+                        method.DeclaringType is null ? new FunctionReference(method) : new MethodReference(method)
+                        ));
                 }
             }
         }
 
         public void FinishCompilation(string path)
         {
+            Module.MC.Name = System.IO.Path.GetFileNameWithoutExtension(path);
             Module.MC.Write(path);
         }
 
-        public Core.IExpressionProcessor NextProcessor()
+        public Core.IExpressionProcessor<string> NextProcessor()
         {
             if (_currentPass >= _processors.Count) return null;
-            return _currentProcessor = _processors[_currentPass++];
+            return _processors[_currentPass++];
         }
 
-        public Core.Expression Evaluate(Core.Expression expr) =>
-            _evaluator.Process(expr);
+        public Core.Result<string, Core.ObjectInfo> Evaluate(Core.ObjectInfo @object) =>
+            _evaluator.Evaluate(@object);
+
+        public Core.Result<string, Core.Expression> Evaluate(Core.Expression expression) =>
+            _evaluator.Evaluate(expression);
 
         public void BeginDocument(Core.DocumentInfo document)
         {
-            Console.WriteLine($"Begin document: {document}");
+            //Console.WriteLine($"Begin document: {document}");
             //throw new NotImplementedException();
         }
 

@@ -11,13 +11,11 @@ namespace ZSharp.Compiler
     {
         public CLIOptions Options { get; set; }
 
-        public Core.ILanguageEngine Engine { get; private set; }
+        public Core.ILanguageEngine<string> Engine { get; private set; }
 
         public Compiler(CLIOptions options)
         {
             Options = options;
-
-            return;
 
             Assembly engineAssembly = Assembly.LoadFrom(Path.GetFullPath(Options.LanguageEngine));
             if (engineAssembly.GetCustomAttribute<Core.LanguageEngineAttribute>() is Core.LanguageEngineAttribute engine)
@@ -27,7 +25,7 @@ namespace ZSharp.Compiler
                     .EngineType
                     .GetConstructor(Type.EmptyTypes)
                     .Invoke(Array.Empty<object>())
-                    as Core.ILanguageEngine;
+                    as Core.ILanguageEngine<string>;
             }
 
             if (Engine is null) throw new Exception($"Language engine could not be initialized");
@@ -35,7 +33,7 @@ namespace ZSharp.Compiler
 
         public void Setup()
         {
-            return;
+            //Parser.ParserState.Reset(null);
 
             // temporary. remove this when the engine can dynamically load itself
             Engine.AddAssemblyReference(Engine.GetType().Assembly);
@@ -55,10 +53,9 @@ namespace ZSharp.Compiler
 
         public void Compile(IEnumerable<string> files)
         {
-            Core.IExpressionProcessor processor;
+            Core.IExpressionProcessor<string> processor;
 
-            List<(Core.DocumentInfo document, List<Core.ObjectInfo> objects)> source = new();
-            List<(Core.DocumentInfo document, List<Core.ObjectInfo> objects)> target = new();
+            List<(Core.DocumentInfo document, List<Core.Result<string, Core.ObjectInfo>> objects)> source = new(), target = new();
 
             foreach (string file in files)
             {
@@ -66,21 +63,35 @@ namespace ZSharp.Compiler
 
                 Core.DocumentInfo document = new(file);
                 Parser.ParserState.Reset(document);
-                source.Add(new(document, new(Parser.Expression.Single.Many().ParseOrThrow(content))));
+                source.Add(
+                    new(
+                        document, 
+                        new(
+                            Parser.Expression.Single
+                            .Many()
+                            .ParseOrThrow(content)
+                            .Select(o => new Core.Result<string, Core.ObjectInfo>(o))
+                            )
+                        )
+                    );
             }
 
             while (source.Count > 0 && (processor = Engine.NextProcessor()) is not null)
             {
                 processor.PreProcess();
 
-                foreach (var info in source)
+                foreach (var (document, objects) in source)
                 {
-                    Engine.BeginDocument(info.document);
+                    Engine.BeginDocument(document);
 
-                    foreach (var node in info.objects)
-                    {
-                        processor.Process(node);
-                    }
+                    target.Add(
+                        new(
+                            document, 
+                            new(
+                                objects.Select(processor.Process)
+                                )
+                            )
+                        );
 
                     Engine.EndDocument();
                 }
@@ -89,6 +100,14 @@ namespace ZSharp.Compiler
 
                 source.Clear();
                 Swap(ref source, ref target);
+            }
+
+            foreach ((Core.DocumentInfo _, List<Core.Result<string, Core.ObjectInfo>> results) item in source)
+            {
+                foreach (Core.Result<string, Core.ObjectInfo> result in item.results)
+                {
+                    LogError(result);
+                }
             }
         }
 
@@ -102,6 +121,16 @@ namespace ZSharp.Compiler
             T tmp = a;
             a = b;
             b = tmp;
+        }
+
+        private static void LogError(Core.Result<string, Core.ObjectInfo> result)
+        {
+            if (result.IsSuccess) return;
+
+            Console.WriteLine(
+                $"{Path.GetFullPath(result.Object.FileInfo.Document.Path)}" +
+                $"({result.Object.FileInfo.StartLine}, {result.Object.FileInfo.StartColumn}): " +
+                $"{result.Error}");
         }
     }
 }

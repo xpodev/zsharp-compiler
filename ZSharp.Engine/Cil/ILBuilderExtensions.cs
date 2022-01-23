@@ -90,7 +90,7 @@ namespace ZSharp.Engine.Cil
         public static ILBuilder Call(this ILBuilder il, IFunction func, IEnumerable<INamedItem> args)
         {
             il.LoadItems(args);
-            il.Emit(/*func.IsVirtual ? OpCodes.Callvirt :*/ OpCodes.Call, func);
+            il.Emit(func.IsVirtual ? OpCodes.Callvirt : OpCodes.Call, func);
             return il;
         }
 
@@ -100,7 +100,7 @@ namespace ZSharp.Engine.Cil
         public static ILBuilder CallOptimized(this ILBuilder il, IFunction func, IEnumerable<INamedItem> args)
         {
             il.LoadItemsOptimized(args);
-            il.Emit(/*func.IsVirtual ? OpCodes.Callvirt :*/ OpCodes.Call, func);
+            il.Emit(func.IsVirtual ? OpCodes.Callvirt : OpCodes.Call, func);
             return il;
         }
 

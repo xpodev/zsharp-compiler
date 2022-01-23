@@ -204,10 +204,10 @@ namespace ZSharp.Parser
         public static void AddSurroundingOperator(string left, string right, int precedence,
             bool isPrefix, bool allowMultiple = false)
         {
-            string name = left + "operator" + right;
-            name = isPrefix ? "operator" + name : name + "operator";
+            string name = left + '_' + right;
+            name = isPrefix ? name + '_' : '_' + name;
             Parser<char, Func<ObjectInfo, ObjectInfo>> parser =
-                Try(Return<ObjectInfo>(new(GetInfo(string.Empty), Collection.Empty))
+                Try(Rec(() => Return<ObjectInfo>(new(GetInfo(string.Empty), Collection.Empty)))
                 .Between(Syntax.String(left), Syntax.String(right)))
                 .Or(
                     Rec(() => allowMultiple ? Many : Single)

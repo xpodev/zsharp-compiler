@@ -19,7 +19,7 @@ namespace ZSharp.Engine
             string left, string right,
             int precedence, bool isPrefix, 
             bool allowMultiple = false)
-            : base($"{left}operator{right}")
+            : base($"{left}_{right}")
         {
             Left = left;
             Right = right;

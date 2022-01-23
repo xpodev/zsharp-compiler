@@ -36,5 +36,25 @@ namespace ZSharp.Core
                 Math.Max(a.EndColumn, b.EndColumn)
                 );
         }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is FileInfo fileInfo) return Equals(ref fileInfo);
+            return base.Equals(obj);
+        }
+
+        public bool Equals(ref FileInfo other) =>
+            Document == other.Document &&
+            StartLine == other.StartLine &&
+            EndLine == other.EndLine &&
+            StartColumn == other.StartColumn &&
+            EndColumn == other.EndColumn;
+
+        public override int GetHashCode() =>
+            Document.GetHashCode() ^
+            StartLine.GetHashCode() ^
+            EndLine.GetHashCode() ^
+            StartColumn.GetHashCode() ^
+            EndColumn.GetHashCode();
     }
 }

@@ -52,7 +52,7 @@ namespace ZSharp.Engine
         {
             foreach (Expression item in items)
             {
-                if (Context.CurrentContext.Evaluate(item) is INamedItem named)
+                if ((Expression)Context.CurrentContext.Evaluate(item) is INamedItem named)
                 {
                     ns._ns.Add(named);
                 }

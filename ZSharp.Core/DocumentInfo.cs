@@ -17,5 +17,15 @@
         {
             return Path;
         }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is DocumentInfo document) return Equals(document);
+            return base.Equals(obj);
+        }
+
+        public bool Equals(DocumentInfo other) => Path == other.Path;
+
+        public override int GetHashCode() => Path.GetHashCode();
     }
 }

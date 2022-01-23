@@ -6,7 +6,7 @@
 
         public string Operator { get; set; }
 
-        public OperatorName(string @operator) : base(string.Concat(KeywordName, @operator))
+        public OperatorName(string @operator) : base(string.Concat('_', @operator))
         {
             Operator = @operator;
         }

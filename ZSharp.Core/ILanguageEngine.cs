@@ -1,6 +1,6 @@
 ﻿namespace ZSharp.Core
 {
-    public interface ILanguageEngine
+    public interface ILanguageEngine<T> where T : class
     {
         void AddAssemblyReference(string path);
 
@@ -14,6 +14,6 @@
 
         void FinishCompilation(string path);
 
-        IExpressionProcessor NextProcessor();
+        IExpressionProcessor<T> NextProcessor();
     }
 }

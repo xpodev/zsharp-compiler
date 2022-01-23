@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using ZSharp.Core;
 
 namespace ZSharp.Engine
 {
@@ -13,7 +14,7 @@ namespace ZSharp.Engine
 
         public MethodInfo SRF { get; }
 
-        public MethodReference MC { get; }
+        public Mono.Cecil.MethodReference MC { get; }
 
         public IEnumerable<IParameter> Parameters => _parameters;
 
@@ -21,7 +22,7 @@ namespace ZSharp.Engine
 
         public bool IsInstance => !IsStatic;
 
-        public IType DeclaringType { get; }
+        public bool IsVirtual => SRF.IsVirtual;
 
         public FunctionReference(MethodInfo method)
             : this(method, Resolve(method))
@@ -29,12 +30,11 @@ namespace ZSharp.Engine
 
         }
 
-        public FunctionReference(MethodInfo srf, MethodReference mc)
+        public FunctionReference(MethodInfo srf, Mono.Cecil.MethodReference mc)
             : base(srf.Name)
         {
             SRF = srf;
             MC = mc;
-            DeclaringType = new TypeReference(srf.DeclaringType);
 
             ParameterInfo[] srfParameters = SRF.GetParameters();
             _parameters = new ParameterReference[srfParameters.Length];
@@ -67,6 +67,9 @@ namespace ZSharp.Engine
             if (types is null) return this;
             if (types.Length == 0) return this;
 
+            if (!SRF.IsGenericMethod) 
+                throw new System.Exception($"{Name}({string.Join(", ", (IEnumerable<object>)_parameters)}) is not a generic method");
+
             System.Type[] srfTypes = new System.Type[types.Length];
 
             GenericInstanceMethod mc = new(MC);
@@ -82,7 +85,17 @@ namespace ZSharp.Engine
         public IEnumerable<IType> GetParameterTypes() =>
             SRF.GetParameters().Select(p => new TypeReference(p.ParameterType));
 
-        private static MethodReference Resolve(MethodInfo method) =>
+        public Result<string, Expression> Invoke(params object[] args)
+        {
+            if (!IsStatic)
+                return new($"Could not invoke non-static method {Name}", null);
+            return 
+                SRF.Invoke(null, args) is Expression result 
+                ? new(result)
+                : new($"{Name}({string.Join(", ", (IEnumerable<object>)args)}) did not return a valid compile time value", null);
+        }
+
+        protected static Mono.Cecil.MethodReference Resolve(MethodInfo method) =>
             Context.CurrentContext.Module.MC.ImportReference(method);
     }
 }
