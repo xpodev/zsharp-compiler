@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 
-[assembly: ZSharp.Engine.LanguageEngine(typeof(ZSharp.Engine.Context))]
+[assembly: ZSharp.Core.LanguageEngine(typeof(ZSharp.Engine.Context))]
 
 namespace ZSharp.Engine
 {
