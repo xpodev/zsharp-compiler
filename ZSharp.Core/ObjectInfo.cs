@@ -11,5 +11,7 @@
             FileInfo = fileInfo;
             Expression = expression;
         }
+
+        public static implicit operator Expression(ObjectInfo objectInfo) => objectInfo.Expression;
     }
 }
