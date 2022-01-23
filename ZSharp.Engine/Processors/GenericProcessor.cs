@@ -7,7 +7,7 @@ namespace ZSharp.Engine
     {
         public GenericProcessor(Context ctx) : base(ctx) { }
 
-        public override Expression Process(Expression expr)
+        public override ObjectInfo Process(ObjectInfo expr)
         {
             if (expr is T compilable) return compilable.Compile(this, Context);
 

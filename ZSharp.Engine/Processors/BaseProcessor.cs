@@ -48,7 +48,7 @@ namespace ZSharp.Engine
 
         public virtual void PreProcess() { OnPreProcess?.Invoke(); }
 
-        public Core.ObjectInfo Process(Core.ObjectInfo @object)
+        public virtual Core.ObjectInfo Process(Core.ObjectInfo @object)
         {
             Process(@object.Expression);
             return @object;
