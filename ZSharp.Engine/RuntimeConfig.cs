@@ -20,6 +20,9 @@ namespace ZSharp.Engine
 
             [JsonProperty("framework")]
             public Framework Framework { get; set; }
+
+            [JsonProperty("includedFrameworks")]
+            public Framework[] IncludeFrameworks { get; set; }
         }
 
         public readonly RuntimeOptions runtimeOptions = new();

@@ -174,19 +174,27 @@ namespace ZSharp.Engine
             }
         }
 
+        private void CopyDependenciesRecursive(AssemblyDefinition assembly, string dir)
+        {
+            foreach (AssemblyNameReference reference in assembly.MainModule.AssemblyReferences)
+            {
+                var dependency = Module.MC.AssemblyResolver.Resolve(reference);
+                string referencePath = Path.GetFullPath(Path.GetFileName(dependency.MainModule.FileName), dir);
+                if (!File.Exists(referencePath))
+                    File.Copy(dependency.MainModule.FileName, referencePath);
+
+                CopyDependenciesRecursive(dependency, dir);
+            }
+        }
+
         public void FinishCompilation(string path)
         {
             string dir = Path.GetDirectoryName(Path.GetFullPath(path));
             Module.MC.Assembly.Name.Name = Module.MC.Name = Path.GetFileNameWithoutExtension(path);
+            
             Module.MC.Write(path);
 
-            foreach (AssemblyNameReference reference in Module.MC.AssemblyReferences)
-            {
-                var assembly = Module.MC.AssemblyResolver.Resolve(reference);
-                string referencePath = Path.GetFullPath(Path.GetFileName(assembly.MainModule.FileName), dir);
-                if (!File.Exists(referencePath))
-                    File.Copy(assembly.MainModule.FileName, referencePath);
-            }
+            CopyDependenciesRecursive(Module.MC.Assembly, dir);
 
             //using (StreamWriter configFile = File.CreateText(Module.MC.Name + ".runtimeconfig.json"))
             //{
@@ -199,8 +207,24 @@ namespace ZSharp.Engine
             // we're gonna cheat a bit with this one. we need to generate App.runtimeconfig.json
             // to be able to run out application with 'dotnet app.runtimeconfig.json'
             string configFile = Path.GetFullPath(Module.MC.Name + ".runtimeconfig.json", dir);
-            if (!File.Exists(configFile))
-                File.Copy(Path.GetFullPath("ZSharpCompiler.runtimeconfig.json", _exePath), configFile);
+            if (true)
+            {
+                var json = Newtonsoft.Json.JsonSerializer.Create(new()
+                {
+                    NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore
+                });
+                using TextReader sourceConfig = File.OpenText(Path.GetFullPath("ZSharpCompiler.runtimeconfig.json", _exePath));
+                RuntimeConfig cfg = (RuntimeConfig)json.Deserialize(sourceConfig, typeof(RuntimeConfig));
+
+                if ((cfg.runtimeOptions.IncludeFrameworks?.Length ?? 0) > 0)
+                {
+                    cfg.runtimeOptions.Framework = cfg.runtimeOptions.IncludeFrameworks[0];
+                    cfg.runtimeOptions.IncludeFrameworks = null;
+                }
+
+                using TextWriter targetConfig = File.CreateText(configFile);
+                json.Serialize(targetConfig, cfg);
+            }
         }
 
         public Core.IExpressionProcessor<string> NextProcessor()
