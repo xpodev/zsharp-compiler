@@ -19,6 +19,8 @@ namespace ZSharp.Engine
 
         public readonly SRFModule Module;
 
+        private static readonly string _exePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
         private int _currentPass = 0;
 
         private readonly Evaluator _evaluator;
@@ -185,6 +187,20 @@ namespace ZSharp.Engine
                 if (!File.Exists(referencePath))
                     File.Copy(assembly.MainModule.FileName, referencePath);
             }
+
+            //using (StreamWriter configFile = File.CreateText(Module.MC.Name + ".runtimeconfig.json"))
+            //{
+            //    //Module.MC
+            //    RuntimeConfig config = new();
+            //    //config.runtimeOptions.TargetFramework = 
+            //    Newtonsoft.Json.JsonSerializer.CreateDefault().Serialize(configFile, config);
+            //}
+
+            // we're gonna cheat a bit with this one. we need to generate App.runtimeconfig.json
+            // to be able to run out application with 'dotnet app.runtimeconfig.json'
+            string configFile = Path.GetFullPath(Module.MC.Name + ".runtimeconfig.json", dir);
+            if (!File.Exists(configFile))
+                File.Copy(Path.GetFullPath("ZSharpCompiler.runtimeconfig.json", _exePath), configFile);
         }
 
         public Core.IExpressionProcessor<string> NextProcessor()
