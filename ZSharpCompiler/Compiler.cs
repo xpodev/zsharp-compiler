@@ -9,6 +9,8 @@ namespace ZSharp.Compiler
 {
     internal class Compiler
     {
+        private static readonly string _exePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
         public CLIOptions Options { get; set; }
 
         public Core.ILanguageEngine<string> Engine { get; private set; }
@@ -17,7 +19,7 @@ namespace ZSharp.Compiler
         {
             Options = options;
 
-            Assembly engineAssembly = Assembly.LoadFrom(Path.GetFullPath(Options.LanguageEngine));
+            Assembly engineAssembly = Assembly.LoadFrom(Path.GetFullPath(Options.LanguageEngine, _exePath));
             if (engineAssembly.GetCustomAttribute<Core.LanguageEngineAttribute>() is Core.LanguageEngineAttribute engine)
             {
                 Engine =
@@ -38,12 +40,20 @@ namespace ZSharp.Compiler
             // temporary. remove this when the engine can dynamically load itself
             Engine.AddAssemblyReference(Engine.GetType().Assembly);
 
+            //string compilerRoot = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            //foreach (string path in Directory.EnumerateFiles(Path.GetFullPath(Options.SDKPath, compilerRoot), "*.dll"))
+            //{
+            //    Engine.AddAssemblyReference(path);
+            //}
+
             foreach (string path in Options.References)
             {
-                Engine.AddAssemblyReference(Path.GetFullPath(path));
+                // todo: if dll is not found, search in CWD
+                string assemblyPath = Path.IsPathRooted(path) ? path : Path.GetFullPath(path, _exePath);
+                Engine.AddAssemblyReference(assemblyPath);
             }
 
-            Engine.AddAssemblyReference(typeof(Type).Assembly);
+            //Engine.AddAssemblyReference(typeof(Type).Assembly);
 
             Engine.Setup();
         }
