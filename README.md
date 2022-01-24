@@ -41,3 +41,5 @@ If you want to build for a specific target runtime, add one of the following opt
 | Data type             | :x:                |                                        |
 | Better error messages | :x:                |                                        |
 | Type inference        | :construction:     |                                        |
+| Typeclass             | :x:                |                                        |
+| Templates             | :x:                |                                        |
