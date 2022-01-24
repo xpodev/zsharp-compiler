@@ -43,3 +43,4 @@ If you want to build for a specific target runtime, add one of the following opt
 | Type inference        | :construction:     |                                        |
 | Typeclass             | :x:                |                                        |
 | Templates             | :x:                |                                        |
+| Union types           | :x:                |                                        |
