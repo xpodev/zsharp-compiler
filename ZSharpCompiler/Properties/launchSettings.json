@@ -2,7 +2,7 @@
   "profiles": {
     "ZSharpCompiler": {
       "commandName": "Project",
-      "commandLineArgs": ". -t Console -o source.exe -r \"./SDK/System.Console.dll\""
+      "commandLineArgs": ". -t Console -o source.exe -r \"./SDK/System.Console.dll;./SDK/System.Runtime.dll\""
     }
   }
 }

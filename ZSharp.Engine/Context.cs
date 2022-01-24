@@ -146,6 +146,18 @@ namespace ZSharp.Engine
                     .AddItem(new GenericTypeOverload(new TypeReference(type)), name);
             }
 
+            foreach (TypeInfo type in assembly.GetForwardedTypes())
+            {
+                if (!type.IsVisible || type.IsNested) continue;
+
+                string name = type.Name;
+                if (type.IsGenericTypeDefinition)
+                    name = name[..name.IndexOf('`')];
+
+                Scope.GetOrCreateNamespace(type.Namespace)
+                    .AddItem(new GenericTypeOverload(new TypeReference(type)), name);
+            }
+
             foreach (Module module in assembly.Modules)
             {
                 foreach (MethodInfo method in module.GetMethods())
