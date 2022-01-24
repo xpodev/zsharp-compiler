@@ -1,6 +1,7 @@
 ﻿using Mono.Cecil;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using System.Reflection.Emit;
 
@@ -174,7 +175,16 @@ namespace ZSharp.Engine
         public void FinishCompilation(string path)
         {
             Module.MC.Name = System.IO.Path.GetFileNameWithoutExtension(path);
+            string dir = Path.GetDirectoryName(Path.GetFullPath(path));
             Module.MC.Write(path);
+
+            foreach (AssemblyNameReference reference in Module.MC.AssemblyReferences)
+            {
+                var assembly = Module.MC.AssemblyResolver.Resolve(reference);
+                string referencePath = Path.GetFullPath(Path.GetFileName(assembly.MainModule.FileName), dir);
+                if (!File.Exists(referencePath))
+                    File.Copy(assembly.MainModule.FileName, referencePath);
+            }
         }
 
         public Core.IExpressionProcessor<string> NextProcessor()
