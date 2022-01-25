@@ -29,18 +29,19 @@ If you want to build for a specific target runtime, add one of the following opt
 
 🚧 - Planned
 
-| Feature               |                    |                  Notes                 |
-|-----------------------|:------------------:|:--------------------------------------:|
-| Basic language syntax | :heavy_check_mark: |                                        |
-| Code generation       | :heavy_check_mark: |                                        |
-| Debugging with PDB    |   :construction:   | Will only be available on Windows      |
-| Static reflection     | :heavy_check_mark: |                                        |
-| Inline IL code        | :white_check_mark: | Not all instructions implemented yet   |
-| Types                 | :x:                | Classes, interfaces, enums and structs |
-| Lambda/Currying       | :x:                |                                        |
-| Data type             | :x:                |                                        |
-| Better error messages | :x:                |                                        |
-| Type inference        | :construction:     |                                        |
-| Typeclass             | :x:                |                                        |
-| Templates             | :x:                |                                        |
-| Union types           | :x:                |                                        |
+| Feature                |                    |                  Notes                 |
+|------------------------|:------------------:|:--------------------------------------:|
+| Basic language syntax  | :heavy_check_mark: |                                        |
+| Code generation        | :heavy_check_mark: |                                        |
+| Debugging with PDB     |   :construction:   | Will only be available on Windows      |
+| Static reflection      | :heavy_check_mark: |                                        |
+| Inline IL code         | :white_check_mark: | Not all instructions implemented yet   |
+| Types                  | :x:                | Classes, interfaces, enums and structs |
+| Lambda/Currying        | :x:                |                                        |
+| Data type              | :x:                |                                        |
+| Better error messages  | :x:                |                                        |
+| Type inference         | :construction:     |                                        |
+| Typeclass              | :x:                |                                        |
+| Templates              | :x:                |                                        |
+| Union types            | :x:                |                                        |
+| Framework independency | :x:                |                                        |
