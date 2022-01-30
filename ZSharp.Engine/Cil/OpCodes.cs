@@ -397,7 +397,7 @@ namespace ZSharp.Engine.Cil
         public static readonly OpCode Cpblk = new(MSIL.OpCodes.Cpblk, MCIL.OpCodes.Cpblk);
 
         /// <summary>
-        /// Copies the value type located at the address of an object (type &, or native int) to the address of the destination object (type &, or native int).
+        /// Copies the value type located at the address of an object (type &amp;, or native int) to the address of the destination object (type &amp;, or native int).
         /// </summary>
         public static readonly OpCode Cpobj = new(MSIL.OpCodes.Cpobj, MCIL.OpCodes.Cpobj);
 
@@ -567,7 +567,7 @@ namespace ZSharp.Engine.Cil
         public static readonly OpCode Ldelem = new(MSIL.OpCodes.Ldelem, MCIL.OpCodes.Ldelem_Any);
 
         /// <summary>
-        /// Loads the address of the array element at a specified array index onto the top of the evaluation stack as type & (managed pointer).
+        /// Loads the address of the array element at a specified array index onto the top of the evaluation stack as type &amp; (managed pointer).
         /// </summary>
         public static readonly OpCode Ldelema = new(MSIL.OpCodes.Ldelema, MCIL.OpCodes.Ldelema);
 
@@ -857,7 +857,7 @@ namespace ZSharp.Engine.Cil
         public static readonly OpCode Refanytype = new(MSIL.OpCodes.Refanytype, MCIL.OpCodes.Refanytype);
 
         /// <summary>
-        /// Retrieves the address (type &) embedded in a typed reference.
+        /// Retrieves the address (type &amp;) embedded in a typed reference.
         /// </summary>
         public static readonly OpCode Refanyval = new(MSIL.OpCodes.Refanyval, MCIL.OpCodes.Refanyval);
 
