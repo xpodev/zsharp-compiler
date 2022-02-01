@@ -3,6 +3,8 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFrameworks>net5.0;net6.0</TargetFrameworks>
+    <RootNamespace>ZSharp.Compiler</RootNamespace>
+	  <LangVersion>10</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
