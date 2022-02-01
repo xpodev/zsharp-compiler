@@ -7,9 +7,12 @@ namespace ZSharp.Engine
     {
         public string Operator { get; }
 
-        public OperatorOverloadAttribute(string @operator)
+        public bool IsPrefix { get; }
+
+        public OperatorOverloadAttribute(string @operator, bool isPrefix = true)
         {
             Operator = @operator;
+            IsPrefix = isPrefix;
         }
     }
 }

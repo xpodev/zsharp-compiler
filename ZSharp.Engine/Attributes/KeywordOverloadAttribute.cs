@@ -7,9 +7,12 @@ namespace ZSharp.Engine
     {
         public string Keyword { get; }
 
-        public KeywordOverloadAttribute(string keyword)
+        public bool IsPrefix { get; }
+
+        public KeywordOverloadAttribute(string keyword, bool isPrefix = true)
         {
             Keyword = keyword;
+            IsPrefix = isPrefix;
         }
     }
 }
