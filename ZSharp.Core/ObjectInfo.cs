@@ -14,6 +14,10 @@
 
         public static implicit operator Expression(ObjectInfo objectInfo) => objectInfo.Expression;
 
+        public T Cast<T>() where T : Expression => (T)Expression;
+
+        public ObjectInfo With(Expression e) => new(FileInfo, e);
+
         public override bool Equals(object obj)
         {
             if (obj is FileInfo fileInfo) return Equals(fileInfo);
