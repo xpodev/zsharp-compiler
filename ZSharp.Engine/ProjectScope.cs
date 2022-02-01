@@ -35,9 +35,11 @@ namespace ZSharp.Engine
         public SearchScope EnterScope()
         {
             SearchScope scope = new();
-            _scopes.Push(scope);
+            InsertScope(scope);
             return scope;
         }
+
+        public void InsertScope(SearchScope scope) => _scopes.Push(scope);
 
         public void ExitScope()
         {
