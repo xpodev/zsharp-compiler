@@ -78,17 +78,17 @@ namespace ZSharp.Engine.Cil
         [KeywordOverload("ldc_i4")]
         public static ILInstruction LoadInt32(Literal literal)
         {
-            if (literal.Value is not long value)
+            if (literal.Value is not int value)
                 throw new System.Exception("LDC_I4 can only be used with integers");
-            return LoadInt32((int)value);
+            return LoadInt32(value);
         }
 
         [KeywordOverload("ldarg")]
         public static ILInstruction LoadArgument(Literal literal)
         {
-            if (literal.Value is not long value)
+            if (literal.Value is not short value)
                 throw new System.Exception("LDARG must be used with an int");
-            return LoadArgument((short)value);
+            return LoadArgument(value);
         }
 
         [KeywordOverload("ldarg0")]

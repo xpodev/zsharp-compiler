@@ -13,7 +13,7 @@ namespace ZSharp.Parser
         private static readonly Parser<char, char> Digit = Non0Digit.Or(Char('0'));
 
         private static readonly Parser<char, string> IntegralNumber =
-            Map((c, cs) => string.Concat(c, cs), Non0Digit, Digit.ManyString());
+            Map((c, cs) => string.Concat(c, cs), Non0Digit, Digit.ManyString()).Or(String("0"));
 
         private static readonly Parser<char, string> RealNumber =
             OneOf(
