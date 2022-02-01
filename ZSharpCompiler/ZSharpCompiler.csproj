@@ -15,6 +15,10 @@
     <ProjectReference Include="..\ZSharp.Parser\ZSharp.Parser.csproj" />
   </ItemGroup>
 
+    <ItemGroup>
+	    <Compile Include="../GlobalUsings.cs" />
+    </ItemGroup>
+
   <ItemGroup>
     <None Update="runexe.bat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
