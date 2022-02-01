@@ -1,28 +1,22 @@
-﻿
-namespace ZSharp.Core
+﻿namespace ZSharp.Core
 {
     public class Keyword : Expression
     {
-        public const string KeywordValue = "keyword";
+        public string Name { get; set; }
 
-        public string KeywordName { get; set; }
-
-        public Expression SubExpression { get; set; }
-
-        public Keyword(string keyword, Expression subExpression)
+        public Keyword(string name)
         {
-            KeywordName = keyword;
-            SubExpression = subExpression;
+            Name = name;
         }
 
-        public Keyword(Expression subExpression) : this(KeywordValue, subExpression)
+        public bool Equals(Keyword obj)
         {
-
+            return Name == obj.Name;
         }
 
         public override string ToString()
         {
-            return string.Concat(KeywordName, ' ', SubExpression);
+            return Name;
         }
     }
 }

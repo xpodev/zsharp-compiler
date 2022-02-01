@@ -69,7 +69,6 @@ namespace ZSharp.Parser
             Parser<char, T> parser,
             OperatorFixity fixity,
             int precedence,
-            bool isKeyword,
             Associativity associativity = Associativity.None
             )
         {
@@ -82,7 +81,7 @@ namespace ZSharp.Parser
                                 operand.FileInfo,
                                 new UnaryExpression(
                                     operand,
-                                    isKeyword ? new KeywordName(name) : new OperatorName(name),
+                                    name + '_',
                                     true
                                     )
                                 )
@@ -97,7 +96,7 @@ namespace ZSharp.Parser
                                 new BinaryExpression(
                                     left, 
                                     right,
-                                    isKeyword ? new KeywordName(name) : new OperatorName(name)
+                                    '_' + name + '_'
                                     )
                                 )
                             )
@@ -109,7 +108,7 @@ namespace ZSharp.Parser
                                     operand.FileInfo,
                                     new UnaryExpression(
                                         operand,                                    
-                                        isKeyword ? new KeywordName(name) : new OperatorName(name), 
+                                        '_' + name, 
                                         false
                                         )
                                     )
@@ -125,80 +124,33 @@ namespace ZSharp.Parser
             if (!kw.ToLower().All(c => 'a' <= c && c <= 'z')) parser = String(kw).Before(Syntax.Whitespaces);
             else parser = Identifier.Parser.Assert(s => s == kw);
             _isExpressionParserBuilt = _isTermParserBuilt = false;
-            _terms.Insert(0, Try(parser).Select<ObjectInfo>(s => new(GetInfo(s), new KeywordName(s))));
+            _terms.Insert(0, Try(parser).Select<ObjectInfo>(s => new(GetInfo(s), new Keyword(s))));
         }
 
         public static void AddKeywordOperator(string kw, int precedence, OperatorFixity fixity)
         {
             AddOperator(
                 kw,
-                Try(Identifier.Parser.Assert(s => s == kw).Select<ObjectInfo>(s => new(GetInfo(s), new KeywordName(s))).Before(Syntax.Whitespaces)),
+                Try(Identifier.Parser.Assert(s => s == kw).Before(Syntax.Whitespaces)),
                 fixity,
                 precedence,
-                true,
                 Associativity.Left
                 );
         }
 
-        public static void AddBinaryOperator(string op, int precedence, Core.Associativity associativity,
-            bool isKeyword = false)
+        public static void AddBinaryOperator(string op, int precedence, Associativity associativity)
         {
-            OperatorTableRow<char, ObjectInfo> row =
-                Operator.Binary(
-                    (BinaryOperatorType)associativity,
-                    Try(String(op).Before(Syntax.Whitespaces).ThenReturn<Func<ObjectInfo, ObjectInfo, ObjectInfo>>(
-                        (left, right) => new(
-                            FileInfo.Combine(left.FileInfo, right.FileInfo),
-                            new BinaryExpression(
-                                left,
-                                right,
-                                isKeyword ? new KeywordName(op) : new OperatorName(op)
-                                )
-                            )
-                        )
-                    )
-                 );
-            AddOperator(row, precedence);
+            AddOperator(op, Syntax.String(op), OperatorFixity.Infix, precedence, associativity);
         }
 
-        public static void AddPrefixOperator(string op, int precedence, bool isKeyword = false)
+        public static void AddPrefixOperator(string op, int precedence)
         {
-            OperatorTableRow<char, ObjectInfo> row =
-                Operator.PrefixChainable(
-                    Try(
-                        Syntax.String(op).Select<Func<ObjectInfo, ObjectInfo>>(
-                            @operator => operand => new(
-                                FileInfo.Combine(@operator, operand.FileInfo), 
-                                new UnaryExpression(
-                                    operand, 
-                                    isKeyword ? new KeywordName(op) : new OperatorName(op),
-                                    true
-                                )
-                            )
-                        )
-                    )
-                 );
-            AddOperator(row, precedence);
+            AddOperator(op, Syntax.String(op), OperatorFixity.Prefix, precedence);
         }
 
-        public static void AddPostfixOperator(string op, int precedence, bool isKeyword = false)
+        public static void AddPostfixOperator(string op, int precedence)
         {
-            OperatorTableRow<char, ObjectInfo> row =
-                Operator.PostfixChainable(
-                    Try(
-                        Syntax.String(op).Select<Func<ObjectInfo, ObjectInfo>>(
-                            @operator => operand => new(
-                                FileInfo.Combine(@operator, operand.FileInfo),
-                                new UnaryExpression(
-                                    operand,
-                                    isKeyword ? new KeywordName(op) : new OperatorName(op),
-                                    false
-                                )
-                            )
-                        )
-                    )
-                 );
-            AddOperator(row, precedence);
+            AddOperator(op, Syntax.String(op), OperatorFixity.Postfix, precedence);
         }
 
         public static void AddSurroundingOperator(string left, string right, int precedence,
@@ -223,9 +175,8 @@ namespace ZSharp.Parser
                     })
                 );
 
-            OperatorTableRow<char, ObjectInfo> row = isPrefix
-                ? Operator.PrefixChainable(parser)
-                : Operator.PostfixChainable(parser);
+            OperatorTableRow<char, ObjectInfo> row =
+                isPrefix ? Operator.PrefixChainable(parser) : Operator.PostfixChainable(parser);
             AddOperator(row, precedence);
         }
 

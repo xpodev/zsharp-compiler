@@ -6,9 +6,9 @@
 
         public ObjectInfo Right { get; set; }
 
-        public FunctionName Operator { get; set; }
+        public string Operator { get; set; }
 
-        public BinaryExpression(ObjectInfo left, ObjectInfo right, FunctionName @operator)
+        public BinaryExpression(ObjectInfo left, ObjectInfo right, string @operator)
         {
             Left = left;
             Right = right;
