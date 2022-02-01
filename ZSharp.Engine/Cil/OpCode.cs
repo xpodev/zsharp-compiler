@@ -5,14 +5,14 @@ namespace ZSharp.Engine.Cil
 {
     public struct OpCode
     {
-        public MSIL.OpCode SRF { get; }
+        public MSIL.OpCode MSIL { get; }
 
-        public MCIL.OpCode MC { get; }
+        public MCIL.OpCode MCIL { get; }
 
         public OpCode(MSIL.OpCode srf, MCIL.OpCode mc)
         {
-            SRF = srf;
-            MC = mc;
+            MSIL = srf;
+            MCIL = mc;
         }
     }
 }

@@ -13,7 +13,7 @@ namespace ZSharp.Compiler
 
         public CLIOptions Options { get; set; }
 
-        public Core.ILanguageEngine<string> Engine { get; private set; }
+        public Core.ILanguageEngine Engine { get; private set; }
 
         public Compiler(CLIOptions options)
         {
@@ -27,7 +27,7 @@ namespace ZSharp.Compiler
                     .EngineType
                     .GetConstructor(Type.EmptyTypes)
                     .Invoke(Array.Empty<object>())
-                    as Core.ILanguageEngine<string>;
+                    as Core.ILanguageEngine;
             }
 
             if (Engine is null) throw new Exception($"Language engine could not be initialized");
@@ -35,16 +35,8 @@ namespace ZSharp.Compiler
 
         public void Setup()
         {
-            //Parser.ParserState.Reset(null);
-
             // temporary. remove this when the engine can dynamically load itself
             Engine.AddAssemblyReference(Engine.GetType().Assembly);
-
-            //string compilerRoot = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            //foreach (string path in Directory.EnumerateFiles(Path.GetFullPath(Options.SDKPath, compilerRoot), "*.dll"))
-            //{
-            //    Engine.AddAssemblyReference(path);
-            //}
 
             foreach (string path in Options.References)
             {
@@ -52,8 +44,6 @@ namespace ZSharp.Compiler
                 string assemblyPath = Path.IsPathRooted(path) ? path : Path.GetFullPath(path, _exePath);
                 Engine.AddAssemblyReference(assemblyPath);
             }
-
-            //Engine.AddAssemblyReference(typeof(Type).Assembly);
 
             Engine.Setup();
         }
@@ -63,9 +53,11 @@ namespace ZSharp.Compiler
 
         public void Compile(IEnumerable<string> files)
         {
-            Core.IExpressionProcessor<string> processor;
+            Core.IExpressionProcessor processor;
 
-            List<(Core.DocumentInfo document, List<Core.Result<string, Core.ObjectInfo>> objects)> source = new(), target = new();
+            List<Core.BuildResult<ErrorType, Core.ObjectInfo>> source = new(), target = new();
+
+            List<Document> documents = new();
 
             foreach (string file in files)
             {
@@ -73,52 +65,37 @@ namespace ZSharp.Compiler
 
                 Core.DocumentInfo document = new(file);
                 Parser.ParserState.Reset(document);
-                source.Add(
+                documents.Add(
                     new(
-                        document, 
+                        document,
                         new(
                             Parser.Expression.Single
                             .Many()
                             .ParseOrThrow(content)
-                            .Select(o => new Core.Result<string, Core.ObjectInfo>(o))
+                            .Select(o => new Core.BuildResult<ErrorType, Core.ObjectInfo>(o))
                             )
                         )
                     );
             }
 
-            while (source.Count > 0 && (processor = Engine.NextProcessor()) is not null)
+            // todo: replace with for-loop
+            while ((processor = Engine.NextProcessor()) is not null)
             {
                 processor.PreProcess();
 
-                foreach (var (document, objects) in source)
+                foreach (var info in documents)
                 {
-                    Engine.BeginDocument(document);
+                    Engine.BeginDocument(info.DocumentInfo);
 
-                    target.Add(
-                        new(
-                            document, 
-                            new(
-                                objects.Select(processor.Process)
-                                )
-                            )
-                        );
+                    info.Objects = processor.Process(info.Objects);
 
                     Engine.EndDocument();
                 }
 
                 processor.PostProcess();
-
-                source.Clear();
-                Swap(ref source, ref target);
             }
 
-            foreach ((Core.DocumentInfo _, List<Core.Result<string, Core.ObjectInfo>> results) item in source)
-            {
-                foreach (Core.Result<string, Core.ObjectInfo> result in item.results)
-                {
-                    LogError(result);
-                }
-            }
+            documents.ForEach(document => document.Objects.ForEach(LogErrors));
         }
 
         public void FinishCompilcation()
@@ -126,21 +103,17 @@ namespace ZSharp.Compiler
             Engine.FinishCompilation(Options.OutputPath);
         }
 
-        private static void Swap<T>(ref T a, ref T b)
+        private static void LogErrors(Core.BuildResult<ErrorType, Core.ObjectInfo> result)
         {
-            T tmp = a;
-            a = b;
-            b = tmp;
-        }
+            Core.ObjectInfo value = result.Value;
 
-        private static void LogError(Core.Result<string, Core.ObjectInfo> result)
-        {
-            if (result.IsSuccess) return;
-
-            Console.WriteLine(
-                $"{Path.GetFullPath(result.Object.FileInfo.Document.Path)}" +
-                $"({result.Object.FileInfo.StartLine}, {result.Object.FileInfo.StartColumn}): " +
-                $"{result.Error}");
+            result.Errors.ForEach(error => 
+                Console.WriteLine(
+                    $"{Path.GetFullPath(value.FileInfo.Document.Path)}" +
+                    //$"({value.FileInfo.StartLine}, {value.FileInfo.StartColumn}): " +
+                    $"{error}"
+                    )
+                );
         }
     }
 }

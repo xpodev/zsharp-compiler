@@ -12,9 +12,9 @@ namespace ZSharp.Engine
     {
         private readonly IParameter[] _parameters;
 
-        public MethodInfo SRF { get; }
+        public MethodInfo? SRF { get; }
 
-        public Mono.Cecil.MethodReference MC { get; }
+        public Mono.Cecil.MethodReference? MC { get; }
 
         public IEnumerable<IParameter> Parameters => _parameters;
 
@@ -42,9 +42,9 @@ namespace ZSharp.Engine
             {
                 _parameters[i] = new ParameterReference(
                     this, 
-                    new TypeReference(srfParameters[i].ParameterType),
+                    new TypeReference(srfParameters[i].ParameterType, null),
                     i,
-                    srfParameters[i].Name
+                    srfParameters[i].Name ?? "arg" + i
                     );
             }
         }
@@ -62,7 +62,7 @@ namespace ZSharp.Engine
             return true;
         }
 
-        public IFunction MakeGeneric(params IType[] types)
+        public IFunction? MakeGeneric(params IType[] types)
         {
             if (types is null) return this;
             if (types.Length == 0) return this;
@@ -82,17 +82,22 @@ namespace ZSharp.Engine
             return new FunctionReference(SRF.MakeGenericMethod(srfTypes), mc);
         }
 
-        public IEnumerable<IType> GetParameterTypes() =>
-            SRF.GetParameters().Select(p => new TypeReference(p.ParameterType));
+        public IEnumerable<IType>? GetParameterTypes() =>
+            SRF?.GetParameters()?.Select(p => new TypeReference(p.ParameterType));
 
-        public Result<string, Expression> Invoke(params object[] args)
+        public BuildResult<ErrorType, Expression?> Invoke(params Expression[] args)
         {
-            if (!IsStatic)
-                return new($"Could not invoke non-static method {Name}", null);
+            BuildResult<ErrorType, Expression?> result = new(null);
+
+            if (SRF is null) return result.Error($"function {Name} is not callable (something is really messed up)");
+
             return 
-                SRF.Invoke(null, args) is Expression result 
-                ? new(result)
-                : new($"{Name}({string.Join(", ", (IEnumerable<object>)args)}) did not return a valid compile time value", null);
+                IsStatic
+                ? 
+                SRF.Invoke(null, args.ToArray()) is Expression expr
+                ? result.Return<Expression?>(expr)
+                : result.Error($"{Name}({string.Join(", ", (IEnumerable<object>)args)}) did not return a valid compile time value")
+                : result.Error($"Could not invoke non-static method {Name}");
         }
 
         protected static Mono.Cecil.MethodReference Resolve(MethodInfo method) =>

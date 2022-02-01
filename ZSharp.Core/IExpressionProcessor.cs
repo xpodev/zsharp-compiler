@@ -1,11 +1,12 @@
-﻿namespace ZSharp.Core
+﻿using System.Collections.Generic;
+
+namespace ZSharp.Core
 {
-    public interface IExpressionProcessor<T>
-        where T : class
+    public interface IExpressionProcessor
     {
         void PreProcess();
 
-        Result<T, ObjectInfo> Process(Result<T, ObjectInfo> expression);
+        List<BuildResult<ErrorType, ObjectInfo>> Process(List<BuildResult<ErrorType, ObjectInfo>> expression);
 
         void PostProcess();
     }

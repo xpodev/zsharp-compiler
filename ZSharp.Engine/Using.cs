@@ -16,5 +16,15 @@ namespace ZSharp.Engine
             //    }
             //}
         }
+
+        [KeywordOverload("using")]
+        public static void Use(Identifier id)
+        {
+            SearchScope currentScope = Context.CurrentContext.Scope.CurrentScope;
+            foreach (var item in Context.CurrentContext.Scope.GetItem<Namespace>(id.Name))
+            {
+                currentScope.AddItem(item);
+            }
+        }
     }
 }

@@ -4,6 +4,6 @@ namespace ZSharp.Engine
 {
     public interface IObjectDescriptor
     {
-        Expression Compile(ObjectDesciptorProcessor proc, Context ctx);
+        BuildResult<ErrorType, Expression?> Compile(ObjectDesciptorProcessor proc, Context ctx);
     }
 }

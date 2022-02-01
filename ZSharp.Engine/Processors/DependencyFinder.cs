@@ -6,12 +6,16 @@ using ZSharp.Core;
 
 namespace ZSharp.Engine
 {
-    internal class DependencyFinder : GenericProcessor<IDependencyFinder>
+    public class DependencyFinder 
+        : BaseProcessor
+        , IExpressionProcessor
     {
         private readonly GenericProcessor<ISRFResolvable> _resolver;
         private readonly GenericProcessor<ISRFCompilable> _compiler;
 
-        public DependencyGraph<SRFObject> DependencyGraph { get; } = new();
+        private readonly Dictionary<SRFObject, ObjectInfo> _objects = new();
+
+        internal DependencyGraph<SRFObject> DependencyGraph { get; } = new();
 
         public DependencyFinder(Context ctx) : base(ctx)
         {
@@ -19,10 +23,43 @@ namespace ZSharp.Engine
             _compiler = new(ctx);
         }
 
+        public override List<BuildResult<ErrorType, ObjectInfo>> Process(List<BuildResult<ErrorType, ObjectInfo>> input)
+        {
+            input = base.Process(input);
+
+            IEnumerable<IEnumerable<SRFObject>> buildOrder = DependencyGraph.GetDependencyOrder();
+
+            Dictionary<SRFObject, BuildResult<ErrorType, ObjectInfo>> map = new();
+            foreach (BuildResult<ErrorType, ObjectInfo> item in 
+                buildOrder.SelectMany(
+                    items =>
+                    items
+                    .Select(item => _objects[item])
+                    .Select(_resolver.Process)
+                    .Select(_compiler.Process)
+                    )
+                )
+            {
+                if (item.Value.Expression is SRFObject srf) map.Add(srf, item);
+            }
+
+            return input                
+                .Select(
+                    result => 
+                    result.Value.Expression is SRFObject srf 
+                    ? BuildResultUtils.CombineErrors(result, map[srf]) 
+                    : result)
+                .ToList();
+        }
+
+        public override BuildResult<ErrorType, ObjectInfo> Process(ObjectInfo @object)
+        {
+            if (@object.Expression is SRFObject srf) _objects.Add(srf, @object);
+            return base.Process(@object);
+        }
+
         public override void PostProcess()
         {
-            base.PostProcess();
-
 #if DEBUG
 
             using StreamWriter graphFile = File.CreateText("./deps.graph");
@@ -36,15 +73,6 @@ namespace ZSharp.Engine
             }
 
 #endif
-
-            IEnumerable<IEnumerable<SRFObject>> buildOrder = DependencyGraph.GetDependencyOrder();
-
-            int level = 0;
-            foreach (IEnumerable<SRFObject> items in buildOrder)
-            {
-                _ = items.Select(_resolver.Process).Select(Bind(_compiler.Process));
-                level++;
-            }
         }
 
         public void FindDependencies(SRFObject dependant, Expression expr)
@@ -71,7 +99,7 @@ namespace ZSharp.Engine
                     break;
                 case UnaryExpression unary:
                     {
-                        if (Context.Scope.GetItem<SRFObject>(unary.Operator.Name) is SRFObject op)
+                        if (Context.Scope.GetItem<SRFObject>(unary.Operator) is SRFObject op)
                             DependencyGraph.AddDependency(dependant, op);
                         FindDependencies(dependant, unary.Operand);
                         break;
@@ -85,7 +113,7 @@ namespace ZSharp.Engine
 
                 case BinaryExpression binary:
                     {
-                        if (Context.Scope.GetItem<SRFObject>(binary.Operator.Name) is SRFObject op)
+                        if (Context.Scope.GetItem<SRFObject>(binary.Operator) is SRFObject op)
                             DependencyGraph.AddDependency(dependant, op);
                         FindDependencies(dependant, binary.Left);
                         FindDependencies(dependant, binary.Right);
@@ -105,6 +133,13 @@ namespace ZSharp.Engine
             }
             //Expression tmp = base.Process(@object);
             //if (tmp != @object) FindDependencies(dependant, tmp);
+        }
+
+        public override BuildResult<Error, Expression?> Process(Expression expr)
+        {
+            if (expr is IDependencyFinder finder) return finder.Compile(this, Context);
+
+            return new(expr);
         }
     }
 }

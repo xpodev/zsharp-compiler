@@ -8,16 +8,16 @@ namespace ZSharp.Engine
         : NamedItem
         , IObjectDescriptor
     {
-        public Expression MetaClass { get; private set; }
+        public ObjectInfo? MetaClass { get; private set; }
 
-        public Expression Base { get; private set; }
+        public ObjectInfo? Base { get; private set; }
 
-        public List<Expression> Items { get; private set; }
+        public Collection? Items { get; private set; }
 
         public ClassDeclaration(
             string name,
-            Expression meta = null,
-            Expression @base = null
+            ObjectInfo? meta = null,
+            ObjectInfo? @base = null
             )
             : base(name)
         {
@@ -64,7 +64,7 @@ namespace ZSharp.Engine
         //}
 
         [OperatorOverload(":")]
-        public static ClassDeclaration DefineBases(ClassDeclaration @class, Expression @base)
+        public static ClassDeclaration DefineBases(ClassDeclaration @class, ObjectInfo @base)
         {
             if (@class.Base is not null)
                 throw new System.InvalidOperationException();
@@ -75,7 +75,7 @@ namespace ZSharp.Engine
         }
 
         [SurroundingOperatorOverload("(", ")")]
-        public static ClassDeclaration SetMetaClass(ClassDeclaration @class, Expression meta)
+        public static ClassDeclaration SetMetaClass(ClassDeclaration @class, ObjectInfo meta)
         {
             if (@class.MetaClass is not null)
                 throw new System.InvalidOperationException();
@@ -97,7 +97,7 @@ namespace ZSharp.Engine
         {
             if (decl.Items is not null) throw new System.InvalidOperationException();
 
-            decl.Items = new(items.Cast<Expression>());
+            decl.Items = items;
 
             return decl;
         }
@@ -108,21 +108,29 @@ namespace ZSharp.Engine
             return Initialize(decl, Collection.Empty);
         }
 
-        public Expression Compile(ObjectDesciptorProcessor proc, Context ctx)
+        public BuildResult<ErrorType, Expression?> Compile(ObjectDesciptorProcessor proc, Context ctx)
         {
-            Type type;
+            Type? type = null;
+
+            BuildResult<ErrorType, Expression?> result = new(null);
 
             if (MetaClass is not null)
             {
-                if ((Expression)proc.Process(MetaClass) is not IType metaclass)
-                    throw new System.Exception($"{Name}'s metaclass expression evaluated to null.");
+                if (proc.Process(MetaClass).Value is not IType metaclass)
+                    result.Error(new($"{Name}'s metaclass expression evaluated to null.", MetaClass));
+                else
+                {
+                    // todo: decide on a signature for the metaclass constructor
+                    type = metaclass.SRF.GetConstructor(
+                        new[]
+                        {
+                            typeof(ClassDeclaration)
+                        }
+                        )?.Invoke(new object[] { this }) as Type;
 
-                type = metaclass.SRF.GetConstructor(
-                    new[]
-                    {
-                        typeof(ClassDeclaration)
-                    }
-                    ).Invoke(new object[] { this }) as Type;
+                    if (type is null)
+                        result.Error(new($"Could not find a suitable constructor in metaclass {metaclass.Name}", MetaClass));
+                }
             }
             else
                 type = new Type(this);
@@ -132,7 +140,7 @@ namespace ZSharp.Engine
             //    if (proc.Process(item) is INamedItem named) type.AddItem(named);
             //}
 
-            return type;
+            return result.Return<Expression?>(type);
         }
     }
 }

@@ -33,8 +33,8 @@ namespace ZSharp.Engine.Cil
             Mono.Cecil.Cil.ILProcessor mc = Function.MC.Body.GetILProcessor();
             foreach (ILInstruction il in _instructions)
             {
-                il.SRF.EmitTo(srf);
-                il.MC.EmitTo(mc);
+                il.MSIL.EmitTo(srf);
+                il.MCIL.EmitTo(mc);
             }
         }
     }

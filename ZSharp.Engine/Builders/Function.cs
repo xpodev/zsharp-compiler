@@ -34,7 +34,7 @@ namespace ZSharp.Engine
 
         public List<Expression> Body { get; }
 
-        public FunctionType Type { get; private set; }
+        public FunctionTypeDescriptor Type { get; private set; }
 
         //public LambdaFunction InnerFunction { get; private set; }
 
@@ -56,7 +56,7 @@ namespace ZSharp.Engine
             Body = new(_info.Body);
         }
 
-        public Function(string name, FunctionType type, FunctionDescriptor info)
+        public Function(string name, FunctionTypeDescriptor type, FunctionDescriptor info)
             : base(name)
         {
             Type = type;
@@ -98,7 +98,7 @@ namespace ZSharp.Engine
             return new FunctionReference(SRF.MakeGenericMethod(srfTypes), mc);
         }
 
-        public string Compile(GenericProcessor<IBuildable> proc, Context ctx)
+        public BuildResult<ErrorType, Expression?> Compile(GenericProcessor<IBuildable> proc, Context ctx)
         {
             // SRF method definition
             {
@@ -126,7 +126,7 @@ namespace ZSharp.Engine
 
                 if (IsStatic) mcAttributes |= Mono.Cecil.MethodAttributes.Static;
 
-                MC = new(Name, mcAttributes, ctx.TypeSystem.Void.MC);
+                MC = new(Name, mcAttributes, ctx.TypeSystem!.Void.MC);
 
                 //if (Type.Input is not null && Type.Input.SRF != ctx.TypeSystem.Unit.SRF)
                 //{
@@ -140,45 +140,16 @@ namespace ZSharp.Engine
             if (DeclaringType is null)
                 ctx.Scope.AddItem<SRFFunctionOverload>(new(this));
 
-            return null;
+            return new(this);
         }
 
-        public string Compile(GenericProcessor<ISRFResolvable> proc, Context ctx)
+        public BuildResult<ErrorType, Expression?> Compile(GenericProcessor<ISRFResolvable> proc, Context ctx)
         {
-            IType type = Type is not null ? Type : (Expression)ctx.Evaluate(_info.Type) as IType;
+            BuildResult<ErrorType, Expression?> typeResult = proc.Process(Type ?? _info.Type);
+            if (typeResult.HasErrors) return typeResult.Return<Expression?>(this);
 
-            if (type is null)
-                throw new Exception($"{Name}'s type expression evaluated to null");
-
-            if (type is not FunctionType fType)
-                fType = Type ??= new(type, ctx.TypeSystem.Void);
-
-            //LambdaFunction innerFunction;
-            //FunctionType _fType = fType;
-            //List<string> parameterNames = new(_info.ParameterNames);
-            //while ((_fType = _fType.Output as FunctionType) is not null)
-            //{
-            //    innerFunction = new($"{Name}::InnerFunction", DeclaringType, _fType.Output);
-            //    if (_fType.Input is Collection tuple)
-            //    {
-            //        IEnumerable<IType> tupleType = tuple.Select(proc.Process).Cast<IType>();
-            //        innerFunction.Parameters.AddRange(
-            //            tupleType.Zip(parameterNames).Select(
-            //                (param, i) => new Parameter(param.Second, param.First, i, innerFunction)
-            //                )
-            //            );
-            //        parameterNames.RemoveRange(0, tuple.Count);
-            //    }
-            //    else
-            //    {
-            //        innerFunction.AddParameter(parameterNames[0], _fType.Input);
-            //        parameterNames.RemoveAt(0);
-            //    }
-            //    innerFunction.Build(new IL()
-            //    {
-            //        Cil.ILOpCodes.Return()
-            //    }, ctx);
-            //}
+            if (typeResult.Value is not FunctionType fType)
+                fType = new((typeResult.Value as IType)!, ctx.TypeSystem!.Unit);
 
             {
                 List<IType> parameterTypes = new();
@@ -186,7 +157,7 @@ namespace ZSharp.Engine
                     parameterTypes.AddRange(tuple.Select(o => o.Expression).Cast<IType>());
                 else if (fType.Input is GenericTypeOverload generic)
                     parameterTypes.Add(generic.NonGenericType);
-                else if (fType.Input != ctx.TypeSystem.Unit)
+                else if (fType.Input != ctx.TypeSystem!.Unit)
                     parameterTypes.Add(fType.Input);
 
                 SRF.SetParameters(parameterTypes.Select(t => t.SRF).ToArray());
@@ -205,29 +176,13 @@ namespace ZSharp.Engine
                 MC.ReturnType = fType.Output.MC;
             }
 
-            //if (types.Where(t => t != ctx.TypeSystem.Unit).Count() != _parameterNames.Count)
-            //    throw new Exception($"{Name} parameter names & types count mismatch (expected {types.Count}, got {_parameterNames.Count})");
-
-            //foreach (IParameter parameter in Parameters)
-            //{
-            //    ParameterBuilder srf = SRF.DefineParameter(
-            //        parameter.Position + 1,
-            //        System.Reflection.ParameterAttributes.None,
-            //        parameter.Name
-            //        );
-            //    ParameterDefinition mc = new(
-            //        parameter.Name,
-            //        Mono.Cecil.ParameterAttributes.None,
-            //        parameter.Type.MC
-            //        );
-            //    MC.Parameters.Add(mc);
-            //}
-
-            return null;
+            return typeResult.Return<Expression?>(this);
         }
 
-        public string Compile(GenericProcessor<ISRFCompilable> proc, Context ctx)
+        public BuildResult<ErrorType, Expression?> Compile(GenericProcessor<ISRFCompilable> proc, Context ctx)
         {
+            BuildResult<ErrorType, Expression?> result = new(this);
+
             if (_info?.HasModifier("__entrypoint") ?? false) ctx.Module.MC.EntryPoint = MC;
 
             SearchScope scope = ctx.Scope.EnterScope();
@@ -239,29 +194,32 @@ namespace ZSharp.Engine
 
             ILGenerator srf = SRF.GetILGenerator();
             Mono.Cecil.Cil.ILProcessor mc = MC.Body.GetILProcessor();
-            var il = _info.Body.Select(ctx.Evaluate).Select(res => (Expression)res)
-                .ToArray();
-            foreach (Cil.IILGenerator ilGen in il)
+            var il = BuildResultUtils.CombineResults(_info.Body.Select(ctx.Evaluate));
+            if (!il.HasErrors)
             {
-                foreach (Cil.ILInstruction instruction in ilGen.GetIL())
+                foreach (Cil.IILGenerator ilGen in il.Value)
                 {
-                    instruction.SRF.EmitTo(srf);
-                    instruction.MC.EmitTo(mc);
+                    foreach (Cil.ILInstruction instruction in ilGen.GetIL())
+                    {
+                        instruction.MSIL.EmitTo(srf);
+                        instruction.MCIL.EmitTo(mc);
+                    }
                 }
             }
+            else result = result.Return<Expression?>(null);
 
             ctx.Scope.ExitScope();
 
-            return null;
+            return BuildResultUtils.CombineErrors(result, il);
         }
 
-        public string Compile(GenericProcessor<IResolvable> proc, Context ctx)
+        public BuildResult<ErrorType, Expression?> Compile(GenericProcessor<IResolvable> proc, Context ctx)
         {
             {
                 //SRF.SetReturnType()
             }
 
-            return null;
+            return new(this);
         }
 
         [SurroundingOperatorOverload("(", ")")]
@@ -271,14 +229,16 @@ namespace ZSharp.Engine
             return GetInvocableMethod().Invoke(null, new object[] { obj });
         }
 
-        public Result<string, Expression> Invoke(params object[] args)
+        public BuildResult<ErrorType, Expression?> Invoke(params Expression[] args)
         {
+            BuildResult<ErrorType, Expression?> result = new(null);
+
             MethodInfo method = GetInvocableMethod();
             return method is null
-                ? new($"Could not get invocable method for \'{Name}\'", null)
+                ? result.Error($"Could not get invocable method for \'{Name}\'")
                 : method.Invoke(null, args) is Expression expr 
-                    ? new(expr) 
-                    : new($"\'{Name}\' did not return a compile time value", null);
+                ? result.Return<Expression?>(expr) 
+                : result.Error($"\'{Name}\' did not return a compile time value");
         }
 
         public MethodInfo GetInvocableMethod()
@@ -300,12 +260,11 @@ namespace ZSharp.Engine
             }
         }
 
-        public string Compile(GenericProcessor<IDependencyFinder> proc, Context ctx)
+        public BuildResult<ErrorType, Expression?> Compile(DependencyFinder finder, Context ctx)
         {
-            DependencyFinder finder = proc as DependencyFinder;
             finder.FindDependencies(this, _info.Type);
 
-            return null;
+            return new(this);
         }
     }
 }

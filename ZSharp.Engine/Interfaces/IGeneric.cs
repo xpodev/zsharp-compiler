@@ -3,6 +3,6 @@
     public interface IGeneric<T>
         where T : IGeneric<T>
     {
-        public T MakeGeneric(params IType[] types);
+        public T? MakeGeneric(params IType[] types);
     }
 }

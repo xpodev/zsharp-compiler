@@ -120,12 +120,14 @@ namespace ZSharp.Engine
             return GetDependencies();
         }
 
-        public Result<string, Expression> Invoke(params object[] args)
+        public BuildResult<ErrorType, Expression?> Invoke(params Expression[] args)
         {
-            IFunction function = Get(args.Select(arg => arg.GetType()).ToArray());
-            if (function is null)
-                return new($"Could not find overload for function {Name} with arguments: {string.Join(", ", args.Select(arg => arg.GetType().Name))}", null);
-            return function.Invoke(args);
+            BuildResult<ErrorType, Expression?> result = new(null);
+
+            IFunction? function = Get(args.Select(arg => arg.GetType()).ToArray());
+            return function is null
+                ? result.Error($"Could not find overload for function {Name} with arguments: {string.Join(", ", args.Select(arg => arg.GetType().Name))}")
+                : function.Invoke(args);
         }
     }
 }

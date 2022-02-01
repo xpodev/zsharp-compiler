@@ -7,7 +7,7 @@ using ZSharp.Core;
 
 namespace ZSharp.Engine
 {
-    public class Type 
+    public class Type
         //: SearchScope
         : SRFObject
         , IType
@@ -39,12 +39,12 @@ namespace ZSharp.Engine
 
         public bool IsAbstract { get; set; }
 
-        public Type(ClassDeclaration info) : base(info.Name) 
+        public Type(ClassDeclaration info) : base(info.Name)
         {
             _info = info;
         }
 
-        public string Compile(GenericProcessor<IBuildable> proc, Context ctx)
+        public BuildResult<ErrorType, Expression> Compile(GenericProcessor<IBuildable> proc, Context ctx)
         {
             if (IsBuilt) throw new InvalidOperationException($"Type {Name} is already built");
 
@@ -112,27 +112,33 @@ namespace ZSharp.Engine
             return null;
         }
 
-        public string Compile(GenericProcessor<IResolvable> proc, Context ctx)
+        public BuildResult<ErrorType, Expression?> Compile(GenericProcessor<IResolvable> proc, Context ctx)
         {
-            IType @base;
+            BuildResult<ErrorType, Expression?> result = new(this);
+
+            IType? @base;
             List<IType> interfaces = new();
 
-            if (_info.Base is null) @base = ctx.TypeSystem.Object;
-            else if (_info.Base is not Collection bases)
+            if (_info.Base is null) @base = ctx.TypeSystem!.Object;
+            else if (_info.Base?.Expression is not Collection bases)
             {
-                @base = (Expression)proc.Process(_info.Base) as IType;
-                if (@base.SRF.IsInterface)
+                @base = proc.Process(_info.Base!.Expression).Value as IType;
+
+                if (@base is null)
+                    result.Error($"{Name}'s base class expression evaluated to null");
+                else if (@base.SRF.IsInterface)
                 {
                     interfaces.Add(@base);
-                    @base = ctx.TypeSystem.Object;
+                    @base = ctx.TypeSystem!.Object;
                 }
             }
             else
             {
-                List<IType> types = new(bases.Select(Context.CurrentContext.Evaluate).Cast<IType>());
+                BuildResult<ErrorType, ObjectInfo[]> basesResult = BuildResultUtils.CombineResults(bases.Select(ctx.Evaluate));
+                List<IType> types = new(basesResult.Value.Cast<IType>());
 
                 if (types.Count == 0)
-                    @base = ctx.TypeSystem.Object;
+                    @base = ctx.TypeSystem!.Object;
                 else
                 {
                     if (!types[0].SRF.IsInterface)
@@ -142,7 +148,7 @@ namespace ZSharp.Engine
                     }
                     else
                     {
-                        @base = ctx.TypeSystem.Object;
+                        @base = ctx.TypeSystem!.Object;
                     }
                     interfaces.AddRange(types);
                 }
@@ -170,16 +176,15 @@ namespace ZSharp.Engine
             //    if (item is IResolvable resolve) resolve.Compile(proc, ctx);
             //}
 
-            return null;
+            return new(this);
         }
 
-        public string Compile(GenericProcessor<IDependencyFinder> proc, Context ctx)
+        public BuildResult<ErrorType, Expression?> Compile(DependencyFinder finder, Context ctx)
         {
-            DependencyFinder finder = proc as DependencyFinder;
             finder.FindDependencies(this, _info.Base);
             finder.FindDependencies(this, _info.MetaClass);
 
-            return null;
+            return new(this);
         }
 
         public INamedItem GetMember(string name) => null; // GetItem(name);

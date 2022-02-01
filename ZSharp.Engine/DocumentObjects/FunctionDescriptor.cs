@@ -20,7 +20,7 @@ namespace ZSharp.Engine
 
         public FunctionDescriptor(string name) : base(name) { }
 
-        public FunctionDescriptor(Pair info) : this((info.Left as Identifier)?.Name)
+        public FunctionDescriptor(Pair info) : this((info.Left as Identifier)?.Name ?? throw new Exception())
         {
             Type = info.Right;
         }
@@ -36,6 +36,9 @@ namespace ZSharp.Engine
 
         [KeywordOverload("func")]
         public static FunctionDescriptor CreateFunction(Identifier id) => new(id.Name);
+
+        [KeywordOverload("func")]
+        public static FunctionDescriptor CreateFunction(Literal id) => new(id.Value is string s ? s : throw new ArgumentException());
 
         [KeywordOverload("func")]
         public static FunctionDescriptor CreateFunction(string id) => new(id);
@@ -75,9 +78,10 @@ namespace ZSharp.Engine
         }
 
         [SurroundingOperatorOverload("(", ")")]
-        public FunctionDescriptor SetParameters(ObjectInfo item)
+        public static FunctionDescriptor SetParameters(FunctionDescriptor func, Identifier item)
         {
-            return SetParameters(new Collection(item));
+            func.ParameterNames = new() { item.Name };
+            return func;
         }
 
         [SurroundingOperatorOverload("(", ")")]
@@ -102,14 +106,15 @@ namespace ZSharp.Engine
             return func;
         }
 
-        public Expression Compile(ObjectDesciptorProcessor proc, Context ctx)
+        public BuildResult<ErrorType, Expression?> Compile(ObjectDesciptorProcessor proc, Context ctx)
         {
             Function func = new(this);
+            BuildResult<ErrorType, Expression?> result = new(func);
 
             ParameterNames ??= new();
-            Type ??= ctx.TypeSystem.Unit as Expression;
+            Type ??= (ctx.TypeSystem!.Unit as Expression)!;
 
-            return func;
+            return result;
         }
     }
 }

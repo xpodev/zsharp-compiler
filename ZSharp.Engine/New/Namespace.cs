@@ -44,7 +44,7 @@ namespace ZSharp.Engine
         //    Add(cls as NamedItem);
         //}
 
-        public string Compile(GenericProcessor<IBuildable> proc, Context ctx)
+        public BuildResult<ErrorType, Expression> Compile(GenericProcessor<IBuildable> proc, Context ctx)
         {
             foreach (NamedItem item in this)
             {
@@ -53,7 +53,7 @@ namespace ZSharp.Engine
             return null;
         }
 
-        public string Compile(GenericProcessor<ICompilable> proc, Context ctx)
+        public BuildResult<ErrorType, Expression> Compile(GenericProcessor<ICompilable> proc, Context ctx)
         {
             foreach (NamedItem item in this)
             {

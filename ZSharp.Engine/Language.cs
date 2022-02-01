@@ -16,13 +16,14 @@ using ZSharp.Engine;
 
 [assembly: CustomKeywordLiteral("void")]
 [assembly: CustomKeywordLiteral("string")]
-[assembly: CustomKeywordLiteral("int")]
+[assembly: CustomKeywordLiteral("i32")]
 [assembly: CustomKeywordLiteral("i64")]
 
 [assembly: CustomKeyword("namespace", 10, OperatorFixity.Prefix)]
 [assembly: CustomKeyword("class", 10, OperatorFixity.Prefix)]
 [assembly: CustomKeyword("func", 10, OperatorFixity.Prefix)]
 [assembly: CustomKeyword("static", 57, OperatorFixity.Prefix)]
+[assembly: CustomKeyword("using", 30, OperatorFixity.Prefix)]
 
 [assembly: CustomKeyword("__entrypoint", 56, OperatorFixity.Prefix)]
 

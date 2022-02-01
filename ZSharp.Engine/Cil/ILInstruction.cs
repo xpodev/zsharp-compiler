@@ -3,9 +3,9 @@
     public class ILInstruction 
         : Core.Expression
     {
-        internal MSILInstruction SRF => new(OpCode.SRF, Operand);
+        internal MSILInstruction MSIL => new(OpCode.MSIL, Operand);
 
-        internal MCILInstruction MC => new(OpCode.MC, Operand);
+        internal MCILInstruction MCIL => new(OpCode.MCIL, Operand);
 
         public OpCode OpCode { get; }
 

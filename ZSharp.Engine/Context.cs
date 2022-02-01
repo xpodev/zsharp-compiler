@@ -9,17 +9,19 @@ using System.Reflection.Emit;
 
 namespace ZSharp.Engine
 {
-    public class Context : Core.ILanguageEngine<string>
+    public class Context : Core.ILanguageEngine
     {
+        private Dictionary<Core.DocumentInfo, SearchScope> _documentScopes = new();
+
         private interface IDocumentObject : IGenericCompilable<IDocumentObject> { }
 
-        public static Context CurrentContext { get; private set; }
+        public static Context? CurrentContext { get; private set; }
 
-        public TypeSystem TypeSystem { get; private set; }
+        public TypeSystem? TypeSystem { get; private set; }
 
         public readonly SRFModule Module;
 
-        private static readonly string _exePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        private static readonly string _exePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
 
         private int _currentPass = 0;
 
@@ -27,7 +29,9 @@ namespace ZSharp.Engine
 
         public readonly ProjectScope Scope = new();
 
-        private readonly List<Core.IExpressionProcessor<string>> _processors = new();
+        private readonly List<BaseProcessor> _processors = new();
+
+        public BaseProcessor? CurrentProcessor { get; private set; }
 
         public Context()
         {
@@ -46,23 +50,17 @@ namespace ZSharp.Engine
         {
             TypeSystem = new(this);
 
-            GenericProcessor<ISRFCompilable> srfProcess;
-            _processors.AddRange(new Core.IExpressionProcessor<string>[]
+            _processors.AddRange(new BaseProcessor[]
             {
-                //new GenericProcessor<IDocumentObject>(this),
                 new DocumentProcessor(this),
-                //_evaluator,
                 new ObjectDesciptorProcessor(this),
                 new GenericProcessor<IBuildable>(this),
                 new DependencyFinder(this),
-                new GenericProcessor<ISRFResolvable>(this),
-                srfProcess = new GenericProcessor<ISRFCompilable>(this),
+                //new GenericProcessor<ISRFResolvable>(this),
+                //new GenericProcessor<ISRFCompilable>(this),
                 new GenericProcessor<IResolvable>(this),
                 new GenericProcessor<ICompilable>(this),
             });
-            if (srfProcess is not null)
-                srfProcess.OnPostProcess += () =>
-                    Module.SRF.CreateGlobalFunctions();
         }
 
         public void AddAssemblyReference(string path)
@@ -121,7 +119,15 @@ namespace ZSharp.Engine
                     {
                         if (method.GetCustomAttribute<KeywordOverloadAttribute>() is KeywordOverloadAttribute kw)
                         {
-                            Scope.GlobalScope.AddItem(new SRFFunctionOverload(new FunctionReference(method)), $"kw_{kw.Keyword}");
+                            string name = kw.Keyword;
+                            int numParameters = method.GetParameters().Length;
+                            name = numParameters switch
+                            {
+                                0 => name,
+                                1 => kw.IsPrefix ? name + '_' : '_' + name,
+                                2 => '_' + name + '_',
+                            };
+                            Scope.GlobalScope.AddItem(new SRFFunctionOverload(new FunctionReference(method)), name);
                         }
                         else if (method.GetCustomAttribute<SurroundingOperatorOverloadAttribute>() is SurroundingOperatorOverloadAttribute sur)
                         {
@@ -131,7 +137,9 @@ namespace ZSharp.Engine
                         }
                         else if (method.GetCustomAttribute<OperatorOverloadAttribute>() is OperatorOverloadAttribute op)
                         {
-                            Scope.GlobalScope.AddItem(new SRFFunctionOverload(new FunctionReference(method)), $"_{op.Operator}");
+                            string name = op.Operator;
+                            name = method.GetParameters().Length == 1 ? op.IsPrefix ? name + '_' : '_' + name : '_' + name + '_';
+                            Scope.GlobalScope.AddItem(new SRFFunctionOverload(new FunctionReference(method)), name);
                         }
                     }
                 }
@@ -147,6 +155,13 @@ namespace ZSharp.Engine
 
                 Scope.GetOrCreateNamespace(type.Namespace)
                     .AddItem(new GenericTypeOverload(new TypeReference(type)), name);
+
+                foreach (MethodInfo method in type.GetMethods())
+                {
+                    if (!method.IsPublic) return;
+
+                    Scope.AddItem(new SRFFunctionOverload(new MethodReference(method)));
+                }
             }
 
             foreach (TypeInfo type in assembly.GetForwardedTypes())
@@ -168,7 +183,7 @@ namespace ZSharp.Engine
                     if (!method.IsPublic) continue;
 
                     Scope.GlobalScope.AddItem(new FunctionOverload(
-                        method.DeclaringType is null ? new FunctionReference(method) : new MethodReference(method)
+                        new FunctionReference(method)
                         ));
                 }
             }
@@ -189,12 +204,12 @@ namespace ZSharp.Engine
 
         public void FinishCompilation(string path)
         {
-            string dir = Path.GetDirectoryName(Path.GetFullPath(path));
+            string dir = Path.GetDirectoryName(Path.GetFullPath(path))!;
             Module.MC.Assembly.Name.Name = Module.MC.Name = Path.GetFileNameWithoutExtension(path);
             
             Module.MC.Write(path);
 
-            CopyDependenciesRecursive(Module.MC.Assembly, dir);
+            //CopyDependenciesRecursive(Module.MC.Assembly, dir);
 
             //using (StreamWriter configFile = File.CreateText(Module.MC.Name + ".runtimeconfig.json"))
             //{
@@ -207,7 +222,7 @@ namespace ZSharp.Engine
             // we're gonna cheat a bit with this one. we need to generate App.runtimeconfig.json
             // to be able to run out application with 'dotnet app.runtimeconfig.json'
             string configFile = Path.GetFullPath(Module.MC.Name + ".runtimeconfig.json", dir);
-            if (true)
+            if (false)
             {
                 var json = Newtonsoft.Json.JsonSerializer.Create(new()
                 {
@@ -227,26 +242,33 @@ namespace ZSharp.Engine
             }
         }
 
-        public Core.IExpressionProcessor<string> NextProcessor()
+        public Core.IExpressionProcessor NextProcessor()
         {
             if (_currentPass >= _processors.Count) return null;
-            return _processors[_currentPass++];
+            return CurrentProcessor = _processors[_currentPass++];
         }
 
-        public Core.Result<string, Core.ObjectInfo> Evaluate(Core.ObjectInfo @object) =>
+        public Core.BuildResult<ErrorType, Core.ObjectInfo> Evaluate(Core.ObjectInfo @object) =>
             _evaluator.Evaluate(@object);
 
-        public Core.Result<string, Core.Expression> Evaluate(Core.Expression expression) =>
+        public Core.BuildResult<ErrorType, Core.Expression?> Evaluate(Core.Expression expression) =>
             _evaluator.Evaluate(expression);
 
         public void BeginDocument(Core.DocumentInfo document)
         {
+            if (!_documentScopes.TryGetValue(document, out SearchScope scope))
+            {
+                scope = Scope.EnterScope();
+                _documentScopes.Add(document, scope);
+            }
+            Scope.InsertScope(scope);
             //Console.WriteLine($"Begin document: {document}");
             //throw new NotImplementedException();
         }
 
         public void EndDocument()
         {
+            Scope.ExitScope();
             //throw new NotImplementedException();
         }
     }

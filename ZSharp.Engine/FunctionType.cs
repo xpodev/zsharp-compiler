@@ -1,9 +1,6 @@
-﻿using System.Linq;
-using ZSharp.Core;
-
-namespace ZSharp.Engine
+﻿namespace ZSharp.Engine
 {
-    public class FunctionType 
+    public class FunctionType
         : TypeReference
         , IType
     {
@@ -38,21 +35,21 @@ namespace ZSharp.Engine
             Output = output;
         }
 
-        [OperatorOverload("->")]
-        public static FunctionType CreateFunctionType(IType input, IType output)
-        {
-            return new(input, output);
-        }
+        //[OperatorOverload("->")]
+        //public static FunctionType CreateFunctionType(IType input, IType output)
+        //{
+        //    return new(input, output);
+        //}
 
-        [OperatorOverload("->")]
-        public static FunctionType CreateFunctionType(Collection input, IType output)
-        {
-            input = input.Select(Context.CurrentContext.Evaluate)
-                .Cast<Collection>().First();
-            IType[] inputTypes = input.Cast<IType>().ToArray();
-            return new(
-                Context.CurrentContext.TypeSystem.ValueTuple.Get(inputTypes), output
-                );
-        }
+        //[OperatorOverload("->")]
+        //public static FunctionType CreateFunctionType(Collection input, IType output)
+        //{
+        //    input = input.Select(Context.CurrentContext.Evaluate)
+        //        .Cast<Collection>().First();
+        //    IType[] inputTypes = input.Cast<IType>().ToArray();
+        //    return new(
+        //        Context.CurrentContext.TypeSystem.ValueTuple.Get(inputTypes), output
+        //        );
+        //}
     }
 }

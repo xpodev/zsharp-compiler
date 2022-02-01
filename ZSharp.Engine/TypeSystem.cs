@@ -51,7 +51,7 @@
         public static IType GetString() =>
             Current.String;
 
-        [KeywordOverload("int")]
+        [KeywordOverload("i32")]
         public static IType GetInt32() =>
             Current.Int32;
 

@@ -5,6 +5,6 @@ namespace ZSharp.Engine
     public interface IInvocable
         : INamedItem
     {
-        Result<string, Expression> Invoke(params object[] args);
+        BuildResult<ErrorType, Expression?> Invoke(params Expression[] args);
     }
 }

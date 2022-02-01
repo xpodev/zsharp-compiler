@@ -29,6 +29,8 @@ namespace ZSharp.Parser
             Try(Identifier.Parser.Select<ObjectInfo>(id => new(GetInfo(id), new Core.Identifier(id))))
         };
 
+        private static readonly List<string> _keywords = new();
+
         private static void AddOperator(OperatorTableRow<char, ObjectInfo> row, int precedence)
         {
             _isExpressionParserBuilt = false;
@@ -75,7 +77,7 @@ namespace ZSharp.Parser
             OperatorTableRow<char, ObjectInfo> row = fixity switch
             {
                 OperatorFixity.Prefix =>
-                    Operator.Prefix(
+                    Operator.PrefixChainable(
                         parser.WithResult<Func<ObjectInfo, ObjectInfo>>(
                             operand => new(
                                 operand.FileInfo,
@@ -102,7 +104,7 @@ namespace ZSharp.Parser
                             )
                         ),
                 OperatorFixity.Postfix =>
-                        Operator.Postfix(
+                        Operator.PostfixChainable(
                             parser.WithResult<Func<ObjectInfo, ObjectInfo>>(
                                 operand => new(
                                     operand.FileInfo,
@@ -120,6 +122,7 @@ namespace ZSharp.Parser
 
         public static void AddKeywordTerm(string kw)
         {
+            _keywords.Add(kw);
             Parser<char, string> parser;
             if (!kw.ToLower().All(c => 'a' <= c && c <= 'z')) parser = String(kw).Before(Syntax.Whitespaces);
             else parser = Identifier.Parser.Assert(s => s == kw);
@@ -129,6 +132,7 @@ namespace ZSharp.Parser
 
         public static void AddKeywordOperator(string kw, int precedence, OperatorFixity fixity)
         {
+            _keywords.Add(kw);
             AddOperator(
                 kw,
                 Try(Identifier.Parser.Assert(s => s == kw).Before(Syntax.Whitespaces)),

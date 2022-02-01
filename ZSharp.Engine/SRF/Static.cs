@@ -20,10 +20,10 @@ namespace ZSharp.Engine
         //    return MakeStatic<SRFFunction>(func);
         //}
 
-        [KeywordOverload("static")]
-        public static SRFFunctionBuilder MakeStatic(SRFFunctionBuilder func)
-        {
-            return MakeStatic<SRFFunctionBuilder>(func);
-        }
+        //[KeywordOverload("static")]
+        //public static SRFFunctionBuilder MakeStatic(SRFFunctionBuilder func)
+        //{
+        //    return MakeStatic<SRFFunctionBuilder>(func);
+        //}
     }
 }

@@ -1,139 +1,55 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Collections.Generic;
+using System.Linq;
 using ZSharp.Core;
 
 namespace ZSharp.Engine
 {
-    public abstract class BaseProcessor<T> : IExpressionProcessor<T>
-        where T : class
+    public abstract class BaseProcessor : IExpressionProcessor
     {
+        public BuildResult<ErrorType, Expression>? BuildContext { get; private set; }
+
         public Context Context { get; }
-
-        public event Action OnPreProcess;
-
-        public event Action OnPostProcess;
 
         public BaseProcessor(Context ctx)
         {
+            if (ctx is null)
+                throw new System.ArgumentNullException(nameof(ctx));
+
             Context = ctx;
         }
 
-        //#region Dynamic Invocation
-
-        //public MethodInfo GetMethod(string keyword, params System.Type[] types)
-        //{
-        //    return Context.Scope.GetItem<SRFFunctionOverload>(keyword)?.Get(types)?.SRF;
-        //}
-
-        //public Core.Expression InvokeUnaryOperator(string @operator, Core.Expression expression)
-        //{
-        //    MethodInfo method = GetMethod(@operator, expression.GetType());
-        //    if (method is null) return null;
-        //    return method.Invoke(null, new object[] { expression }) as Core.Expression;
-        //}
-
-        //public Core.Expression InvokeBinaryOperator(string @operator, Core.Expression left, Core.Expression right)
-        //{
-        //    MethodInfo method = GetMethod(@operator, new System.Type[] { left.GetType(), right.GetType() });
-        //    if (method is null) return null;
-        //    return method.Invoke(null, new object[] { left, right }) as Core.Expression;
-        //}
-
-        //public Core.Expression InvokeKeyword(string keyword, Core.Expression arg)
-        //{
-        //    return GetMethod(keyword, arg.GetType()).Invoke(null, new object[] { arg }) as Core.Expression;
-        //}
-
-        //#endregion
-
-        #region Binding
-
-        public static Result<T, ObjectInfo> Bind(Result<T, ObjectInfo> input, Func<ObjectInfo, Result<T, ObjectInfo>> func)
-        {
-            if (input.IsFailure) return input;
-            return func(input.Object);
-        }
-
-        public static Result<T, ObjectInfo> Bind(ObjectInfo @object, Func<Expression, Result<T, Expression>> func)
-        {
-            Result<T, Expression> result = func(@object.Expression);
-            return result.IsSuccess ? new(new(@object.FileInfo, result.Object)) : new(result.Error, @object);
-        }
-
-        public static Func<Result<T, Expression>, Result<T, Expression>> Bind(Func<Expression, Result<T, Expression>> func)
-        {
-            return result => result.IsSuccess ? func(result.Object) : result;
-        }
-
-        #endregion
-
         #region Processing
 
-        public virtual void PreProcess() { OnPreProcess?.Invoke(); }
+        public virtual void PreProcess() { }
 
-        public Result<T, ObjectInfo> Process(Result<T, ObjectInfo> input) =>
-            Bind(input, Process);
+        public virtual List<BuildResult<ErrorType, ObjectInfo>> Process(List<BuildResult<ErrorType, ObjectInfo>> input) => input.Select(Process).ToList();
 
-        public abstract Result<T, ObjectInfo> Process(ObjectInfo @object);
+        public BuildResult<ErrorType, ObjectInfo> Process(BuildResult<ErrorType, ObjectInfo> input)
+        {
+            if (input.Value.Expression is null) return input;
 
-        //public virtual Core.Expression Process(Core.Expression expr)
-        //{
-        //    return expr switch
-        //    {
-        //        Core.Identifier id =>
-        //            Context.CurrentContext.Scope.GetItem(id.Name) ?? expr,
-        //        Core.KeywordName kw =>
-        //            GetMethod(kw.Name, System.Type.EmptyTypes)
-        //                .Invoke(null, Array.Empty<object>()) as Core.Expression,
-        //        Core.UnaryExpression unary =>
-        //            InvokeUnaryOperator(
-        //                unary.Operator.Name,
-        //                Process(unary.Operand.Expression)
-        //                ),
-        //        Core.BinaryExpression binary =>
-        //            InvokeBinaryOperator(
-        //                binary.Operator.Name,
-        //                Process(binary.Left.Expression),
-        //                Process(binary.Right.Expression)
-        //                ),
-        //        //Core.Collection collection => collection,
-        //        Core.FunctionCall call => Call(call),
-        //        Core.Keyword keyword =>
-        //            InvokeKeyword(keyword.KeywordName, Process(keyword.SubExpression)),
-        //        _ => expr
-        //    } ?? expr;
-        //}
+            BuildContext = input.Cast(o => o.Expression);
 
-        public virtual void PostProcess() { OnPostProcess?.Invoke(); }
+            BuildResult<ErrorType, ObjectInfo> result = Process(input.Value);
+
+            BuildContext = null;
+
+            return result;
+        }
+
+        public virtual BuildResult<ErrorType, ObjectInfo> Process(ObjectInfo info)
+        {
+            BuildResult<ErrorType, ObjectInfo> result = 
+                BuildResultUtils.Bind<Expression>(info, Process)
+                .Cast(info.With);
+
+            return result;
+        }
+
+        public abstract BuildResult<ErrorType, Expression?> Process(Expression expr);
+
+        public virtual void PostProcess() { }
 
         #endregion
-
-        //private Core.Expression Call(Core.FunctionCall call)
-        //{
-        //    MethodInfo method;
-        //    Core.Expression callable = Process(call.Callable).Expression;
-        //    if (callable is null) return call;
-        //    Core.Expression arg = Process(call.Argument).Expression;
-        //    if (arg is Core.Collection args)
-        //    {
-        //        if (args.Items.Count == 0)
-        //        {
-        //            method = GetMethod(call.Name, callable.GetType());
-        //            if (method is null) return call;
-        //            if (method.IsStatic)
-        //                return method.Invoke(null, new object[] { callable }) as Core.Expression;
-        //            else
-        //                return method.Invoke(callable, Array.Empty<object>()) as Core.Expression;
-        //        }
-        //        //if (args.Items.Count == 1) arg = args.Items[0];
-        //        //else arg = new Core.Collection<Core.Expression>(args.Items);
-        //    }
-        //    method = GetMethod(call.Name, callable.GetType(), arg.GetType());
-        //    if (method is null) return call;
-        //    if (method.IsStatic)
-        //        return method.Invoke(null, new object[] { callable, arg }) as Core.Expression;
-        //    else
-        //        return method.Invoke(callable, new object[] { arg }) as Core.Expression;
-        //}
     }
 }

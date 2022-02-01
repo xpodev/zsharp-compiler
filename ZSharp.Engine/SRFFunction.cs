@@ -13,12 +13,12 @@ namespace ZSharp.Engine
     {
         private const string Keyword = "func";
 
-        public static SRFFunctionBuilder CreateFunction(TypedName def)
-        {
-            if (def.Type is not FunctionType type)
-                type = new FunctionType(def.Type, Context.CurrentContext.TypeSystem.Void);
-            return new(def.Name, type);
-        }
+        //public static SRFFunctionBuilder CreateFunction(TypedName def)
+        //{
+        //    if (def.Type is not FunctionType type)
+        //        type = new FunctionType(def.Type, Context.CurrentContext.TypeSystem.Void);
+        //    return new(def.Name, type);
+        //}
 
         //[OperatorOverload("{}()")]
         //public static SRFFunction Initialize(SRFFunction func, Collection<Expression> exprs)

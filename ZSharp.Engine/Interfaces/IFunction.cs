@@ -6,9 +6,9 @@ namespace ZSharp.Engine
         : IInvocable
         , IGeneric<IFunction>
     {
-        public System.Reflection.MethodInfo SRF { get; }
+        public System.Reflection.MethodInfo? SRF { get; }
 
-        public Mono.Cecil.MethodReference MC { get; }
+        public Mono.Cecil.MethodReference? MC { get; }
 
         //public IEnumerable<IParameter> Parameters { get; }
 
@@ -20,6 +20,6 @@ namespace ZSharp.Engine
 
         bool IsCallableWith(params IType[] types);
 
-        IEnumerable<IType> GetParameterTypes();
+        IEnumerable<IType>? GetParameterTypes();
     }
 }
