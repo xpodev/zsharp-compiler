@@ -23,59 +23,69 @@ namespace ZSharp.Parser
                 );
 
         public static readonly Parser<char, ObjectInfo> StringParser =
-            AnyCharExcept('"').ManyString()
-            .Between(Symbols.DoubleQuotes, Symbols.DoubleQuotes)
-            .Before(Syntax.Whitespaces)
-            .Select<ObjectInfo>(s => new(GetInfo(s), new Literal(s)));
+            CreateFileInfo(
+                AnyCharExcept('"').ManyString()
+                .Between(Symbols.DoubleQuotes, Symbols.DoubleQuotes)
+                .Before(Syntax.Whitespaces)
+                .Select<Core.Expression>(s => new Literal(s))
+                );
 
         public static readonly Parser<char, ObjectInfo> CharacterParser =
-            Parser<char>.Any
-            .Between(Symbols.SingleQuote, Symbols.SingleQuote)
-            .Before(Syntax.Whitespaces)
-            .Select<ObjectInfo>(c => new(GetInfo(c.ToString()), new Literal(c)));
+            CreateFileInfo(
+                Parser<char>.Any
+                .Between(Symbols.SingleQuote, Symbols.SingleQuote)
+                .Before(Syntax.Whitespaces)
+                .Select<Core.Expression>(c => new Literal(c))
+                );
 
         public static readonly Parser<char, ObjectInfo> IntegerParser =
-            Map<char, string, string, ObjectInfo>((string num, string fmt) => fmt switch
-            {
-                "i8" => new(GetInfo(num + "i8"), new Literal(sbyte.Parse(num))),
-                "u8" => new(GetInfo(num + "u8"), new Literal(byte.Parse(num))),
-                "i16" => new(GetInfo(num + "i16"), new Literal(short.Parse(num))),
-                "u16" => new(GetInfo(num + "u16"), new Literal(ushort.Parse(num))),
-                "i32" => new(GetInfo(num + "i32"), new Literal(int.Parse(num))),
-                "u32" => new(GetInfo(num + "u32"), new Literal(uint.Parse(num))),
-                "i64" => new(GetInfo(num + "i64"), new Literal(long.Parse(num))),
-                "u64" => new(GetInfo(num + "u64"), new Literal(ulong.Parse(num))),
-                "N" => new(GetInfo(num + "N"), new Literal(nint.Parse(num))),
-                "U" => new(GetInfo(num + "U"), new Literal(nuint.Parse(num))),
-                _ => new(GetInfo(num), new Literal(int.Parse(num))),
-            }, 
-                IntegralNumber, 
-                OneOf(
-                    Try(String("i8")),
-                    Try(String("u8")),
-                    Try(String("i16")),
-                    Try(String("u16")),
-                    Try(String("i32")),
-                    Try(String("u32")),
-                    Try(String("i64")),
-                    Try(String("u64")),
-                    Try(String("N")),
-                    Try(String("U")),
-                    String(string.Empty)
-                )).Before(Syntax.Whitespaces);
+            CreateFileInfo(
+                Map<char, string, string, object>((string num, string fmt) => fmt switch
+                {
+                    "i8" => sbyte.Parse(num),
+                    "u8" => byte.Parse(num),
+                    "i16" => short.Parse(num),
+                    "u16" => ushort.Parse(num),
+                    "i32" => int.Parse(num),
+                    "u32" => uint.Parse(num),
+                    "i64" => long.Parse(num),
+                    "u64" => ulong.Parse(num),
+                    "N" => nint.Parse(num),
+                    "U" => nuint.Parse(num),
+                    _ => int.Parse(num),
+                }, 
+                    IntegralNumber, 
+                    OneOf(
+                        Try(String("i8")),
+                        Try(String("u8")),
+                        Try(String("i16")),
+                        Try(String("u16")),
+                        Try(String("i32")),
+                        Try(String("u32")),
+                        Try(String("i64")),
+                        Try(String("u64")),
+                        Try(String("N")),
+                        Try(String("U")),
+                        String(string.Empty)
+                    )).Before(Syntax.Whitespaces)
+                .Select<Core.Expression>(o => new Literal(o))
+                );
 
         public static readonly Parser<char, ObjectInfo> RealParser =
-            Map<char, string, string, ObjectInfo>((num, fmt) => fmt switch
-            {
-                "f32" => new(GetInfo(num + "f32"), new Literal(float.Parse(num))),
-                "f64" => new(GetInfo(num + "f64"), new Literal(double.Parse(num))),
-                _ => new(GetInfo(num), new Literal(double.Parse(num)))
-            }, RealNumber,
+            CreateFileInfo(
+                Map<char, string, string, object>((num, fmt) => fmt switch
+                {
+                    "f32" => float.Parse(num),
+                    "f64" => double.Parse(num),
+                    _ => double.Parse(num)
+                }, RealNumber,
                 OneOf(
                     Try(String("f32")),
                     Try(String("f64")),
                     String(string.Empty)
-                    )).Before(Syntax.Whitespaces);
+                    )).Before(Syntax.Whitespaces)
+                .Select<Core.Expression>(o => new Literal(o))
+                );
 
         public static readonly Parser<char, ObjectInfo> Parser =
             OneOf(

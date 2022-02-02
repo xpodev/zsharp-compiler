@@ -1,32 +1,29 @@
 ﻿using Pidgin;
 using static Pidgin.Parser;
-using static ZSharp.Parser.ParserState;
 
 namespace ZSharp.Parser
 {
     public static class Syntax
     {
-        private static readonly Parser<char, string> Whitespace = 
+        private static readonly Parser<char, Unit> Whitespace = 
             Pidgin.Parser
             .Whitespace
-            .Select(c => c.ToString())
-            .Or(EndOfLine);
+            .IgnoreResult()
+            .Or(EndOfLine.IgnoreResult());
 
-        public static readonly Parser<char, Core.FileInfo> Whitespaces =
+        public static readonly Parser<char, Unit> Whitespaces =
             Whitespace
-            .ManyString()
-            .Select(GetInfo);
+            .Many()
+            .IgnoreResult();
 
-        public static Parser<char, Core.FileInfo> Char(char c) =>
+        public static Parser<char, Unit> Char(char c) =>
             Pidgin.Parser
             .Char(c)
-            .Select(c => GetInfo(c.ToString()))
-            .Before(Whitespaces);
+            .Then(Whitespaces);
 
-        public static Parser<char, Core.FileInfo> String(string s) =>
+        public static Parser<char, Unit> String(string s) =>
             Pidgin.Parser
             .String(s)
-            .Select(GetInfo)
-            .Before(Whitespaces);
+            .Then(Whitespaces);
     }
 }

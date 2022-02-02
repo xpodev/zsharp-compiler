@@ -53,6 +53,7 @@ namespace ZSharp.Compiler
 
         public void Compile(IEnumerable<string> files)
         {
+            Core.IParser parser = Engine.GetParser();
             Core.IExpressionProcessor processor;
 
             List<Core.BuildResult<ErrorType, Core.ObjectInfo>> source = new(), target = new();
@@ -69,10 +70,7 @@ namespace ZSharp.Compiler
                     new(
                         document,
                         new(
-                            Parser.Expression.Single
-                            .Many()
-                            .ParseOrThrow(content)
-                            .Select(o => new Core.BuildResult<ErrorType, Core.ObjectInfo>(o))
+                            parser.Parse(content).Select(o => new Core.BuildResult<ErrorType, Core.ObjectInfo>(o))
                             )
                         )
                     );

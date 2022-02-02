@@ -53,5 +53,8 @@
             _state._column = endColumn;
             return Pidgin.Unit.Value;
         }
+
+        public static Pidgin.Parser<char, Core.ObjectInfo> CreateFileInfo(Pidgin.Parser<char, Core.Expression> parser) =>
+            Pidgin.Parser.Rec(() => Utils.CreateObjectInfo(_state._document, parser));
     }
 }

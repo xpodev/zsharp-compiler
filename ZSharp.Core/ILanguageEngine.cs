@@ -14,6 +14,8 @@
 
         void FinishCompilation(string path);
 
+        IParser GetParser();
+
         IExpressionProcessor NextProcessor();
     }
 }

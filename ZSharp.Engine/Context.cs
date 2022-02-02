@@ -13,6 +13,8 @@ namespace ZSharp.Engine
     {
         private Dictionary<Core.DocumentInfo, SearchScope> _documentScopes = new();
 
+        private readonly Parser.DefaultParser _parser = new();
+
         private interface IDocumentObject : IGenericCompilable<IDocumentObject> { }
 
         public static Context? CurrentContext { get; private set; }
@@ -188,6 +190,8 @@ namespace ZSharp.Engine
                 }
             }
         }
+
+        public Core.IParser GetParser() => _parser;
 
         private void CopyDependenciesRecursive(AssemblyDefinition assembly, string dir)
         {
