@@ -206,7 +206,6 @@ namespace ZSharp.Engine
                     }
                 }
             }
-            else result = result.Return<Expression?>(null);
 
             ctx.Scope.ExitScope();
 

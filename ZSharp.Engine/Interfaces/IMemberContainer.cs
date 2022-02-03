@@ -1,6 +1,6 @@
 ﻿namespace ZSharp.Engine
 {
-    public interface IMemberContainer
+    public interface IMemberContainer : INamedItem
     {
         INamedItem GetMember(string name);
     }

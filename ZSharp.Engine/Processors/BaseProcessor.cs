@@ -27,6 +27,7 @@ namespace ZSharp.Engine
         public BuildResult<ErrorType, ObjectInfo> Process(BuildResult<ErrorType, ObjectInfo> input)
         {
             if (input.Value.Expression is null) return input;
+            if (input.HasErrors) return input;
 
             BuildContext = input.Cast(o => o.Expression);
 

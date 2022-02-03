@@ -4,7 +4,10 @@ using System.Collections.Generic;
 
 namespace ZSharp.Engine
 {
-    public class SearchScope : NamedItem, IEnumerable<INamedItem>
+    public class SearchScope 
+        : NamedItem
+        , IMemberContainer
+        , IEnumerable<INamedItem>
     {
         private readonly Dictionary<string, INamedItem> _items = new();
 
@@ -19,6 +22,8 @@ namespace ZSharp.Engine
 
         public INamedItem TryGetItem(string name) => 
             _items.TryGetValue(name, out INamedItem result) ? result : null;
+
+        public INamedItem GetMember(string name) => GetItem(name);
 
         public bool TryGetItem(string name, out INamedItem value) =>
             _items.TryGetValue(name, out value);

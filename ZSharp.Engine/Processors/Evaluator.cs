@@ -14,8 +14,8 @@ namespace ZSharp.Engine
         public BuildResult<ErrorType, Expression?> Evaluate(Expression expression) =>
             expression switch
             {
-                Identifier id => Context.Scope.GetItem<NamedItem>(id.Name) is NamedItem item
-                    ? new(item) : new(expression),//BuildResultUtils.Error($"Could not find item \'{id.Name}\'"),
+                //Identifier id => Context.Scope.GetItem<NamedItem>(id.Name) is NamedItem item
+                //    ? new(item) : BuildResultUtils.Error($"Could not find item \'{id.Name}\'"),
                 UnaryExpression unary => Evaluate(unary),
                 BinaryExpression binary => Evaluate(binary),
                 FunctionCall call => Evaluate(call),
