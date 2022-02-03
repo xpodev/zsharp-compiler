@@ -20,7 +20,7 @@ namespace ZSharp.Parser
 
         private DocumentInfo _document;
 
-        public IEnumerable<ObjectInfo> Parse(TextReader stream) => Expression.Single.Many().ParseOrThrow(stream);
+        public IEnumerable<ObjectInfo> Parse(TextReader stream) => Syntax.Whitespaces.Then(Expression.Single.Many()).ParseOrThrow(stream);
 
         public void SetDocument(DocumentInfo document) => ParserState.Reset(_document = document);
 

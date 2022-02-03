@@ -9,7 +9,9 @@ namespace ZSharp.Parser
             Pidgin.Parser
             .Whitespace
             .IgnoreResult()
-            .Or(EndOfLine.IgnoreResult());
+            .Or(EndOfLine.IgnoreResult())
+            .Or(Try(Pidgin.Comment.CommentParser.SkipLineComment(Pidgin.Parser.String("//"))))
+            .Or(Pidgin.Comment.CommentParser.SkipBlockComment(Pidgin.Parser.String("/*"), Pidgin.Parser.String("*/")));
 
         public static readonly Parser<char, Unit> Whitespaces =
             Whitespace
