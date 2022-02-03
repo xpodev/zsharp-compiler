@@ -13,15 +13,15 @@ There are currently 4 projects (hopefully, in the next version, there will be mo
 
 
 ### ZSharpCompiler
-This project produces the compiler executable. 
+[This project](https://github.com/xpodev/zsharp-compiler/tree/wiki-infrastructure-1/Infrastructure/ZSharpCompiler.md) produces the compiler executable. 
 It contains only a few files. 
 It is responsible to:
  * Parse command line arguments
- * Load the language engine (according to the command line arguments) and initialize it
- * Read all the files (from command line arguments) and parse them with the engine's parser
- * Process the files until no more processing is done
- * Finalize the compilation
- * Print out the all the errors that were accumulated in the compilation process
+ * Load the language engine (according to the command line arguments) and initialize it.
+ * Read all the files (from command line arguments) and parse them with the engine's parser.
+ * Process the files until no more processing is done.
+ * Finalize the compilation.
+ * Print out the all the errors that were accumulated in the compilation process.
 
 
 ### ZSharp.Core
