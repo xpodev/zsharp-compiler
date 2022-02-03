@@ -53,7 +53,6 @@ namespace ZSharp.Compiler
         public void Compile(IEnumerable<string> files)
         {
             Core.IParser parser = Engine.GetParser();
-            Core.IExpressionProcessor processor;
 
             List<Core.BuildResult<ErrorType, Core.ObjectInfo>> source = new(), target = new();
 
@@ -75,8 +74,7 @@ namespace ZSharp.Compiler
                     );
             }
 
-            // todo: replace with for-loop
-            while ((processor = Engine.NextProcessor()) is not null)
+            foreach (Core.IExpressionProcessor processor in Engine)
             {
                 processor.PreProcess();
 

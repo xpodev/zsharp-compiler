@@ -1,5 +1,6 @@
 ﻿using Mono.Cecil;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -274,6 +275,16 @@ namespace ZSharp.Engine
         {
             Scope.ExitScope();
             //throw new NotImplementedException();
+        }
+
+        public IEnumerator<Core.IExpressionProcessor> GetEnumerator()
+        {
+            return _processors.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace ZSharp.Core
 {
-    public interface ILanguageEngine
+    public interface ILanguageEngine : System.Collections.Generic.IEnumerable<IExpressionProcessor>
     {
         void AddAssemblyReference(string path);
 
@@ -15,7 +15,5 @@
         void FinishCompilation(string path);
 
         IParser GetParser();
-
-        IExpressionProcessor NextProcessor();
     }
 }
