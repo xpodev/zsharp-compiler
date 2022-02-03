@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.IO;
-using Pidgin;
 using System.Linq;
 
 namespace ZSharp.Compiler
@@ -65,7 +64,7 @@ namespace ZSharp.Compiler
                 using TextReader content = File.OpenText(file);
 
                 Core.DocumentInfo document = new(file);
-                Parser.ParserState.Reset(document);
+                parser.SetDocument(document);
                 documents.Add(
                     new(
                         document,
