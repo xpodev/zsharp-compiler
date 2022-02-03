@@ -69,12 +69,12 @@ namespace ZSharp.Engine
             => Initialize(func, Collection.Empty);
 
         [SurroundingOperatorOverload("(", ")")]
-        public FunctionDescriptor SetParameters(Collection items)
+        public static FunctionDescriptor SetParameters(FunctionDescriptor func, ECollection<Identifier> items)
         {
-            if (ParameterNames is not null)
+            if (func.ParameterNames is not null)
                 throw new InvalidOperationException();
-            ParameterNames = new(items.Cast<Identifier>().Select(id => id.Name));
-            return this;
+            func.ParameterNames = new(items.Select(id => id.Name));
+            return func;
         }
 
         [SurroundingOperatorOverload("(", ")")]
@@ -87,7 +87,7 @@ namespace ZSharp.Engine
         [SurroundingOperatorOverload("(", ")")]
         public FunctionDescriptor SetParameters()
         {
-            return SetParameters(Collection.Empty);
+            return SetParameters(this, new ECollection<Identifier>());
         }
 
         [KeywordOverload("__entrypoint")]
