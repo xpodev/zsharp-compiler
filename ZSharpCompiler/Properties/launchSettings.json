@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "ZSharpCompiler": {
+      "commandName": "Project",
+      "commandLineArgs": ". -o source.exe -r \"./SDK/System.Console.dll;./SDK/System.Runtime.dll\"",
+      "workingDirectory": "C:\\Users\\binya\\source\\repos\\ZSharp\\ZSharpCompiler\\bin\\Debug\\net5.0\\test"
+    }
+  }
+}

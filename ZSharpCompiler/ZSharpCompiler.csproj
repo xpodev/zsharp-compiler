@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFrameworks>net5.0;net6.0</TargetFrameworks>
+    <RootNamespace>ZSharp.Compiler</RootNamespace>
+	  <LangVersion>10</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommandLineParser" Version="2.8.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ZSharp.Core\ZSharp.Core.csproj" />
+    <ProjectReference Include="..\ZSharp.Engine\ZSharp.Engine.csproj" />
+  </ItemGroup>
+
+    <ItemGroup>
+	    <Compile Include="../GlobalUsings.cs" />
+    </ItemGroup>
+
+  <ItemGroup>
+    <None Update="runexe.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="source.zs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
