@@ -54,7 +54,11 @@ namespace ZSharp.Engine
 
         public override BuildResult<ErrorType, ObjectInfo> Process(ObjectInfo @object)
         {
-            if (@object.Expression is SRFObject srf) _objects.Add(srf, @object);
+            if (@object.Expression is SRFObject srf)
+            {
+                _objects.Add(srf, @object);
+                DependencyGraph.AddDependencies(srf);
+            }
             return base.Process(@object);
         }
 
