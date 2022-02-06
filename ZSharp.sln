@@ -21,6 +21,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZSharp.CodeGeneration", "ZS
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CodeGen", "CodeGen", "{FD5F4A85-0DB9-4D18-AB70-231A0CFACDC0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZSharp.CodeGen.Test", "ZSharp.CodeGen.Test\ZSharp.CodeGen.Test.csproj", "{FE858914-5898-45B1-81B6-8D9186F96F1A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZSharp.Parser.Tests", "ZSharp.Parser.Tests\ZSharp.Parser.Tests.csproj", "{13199130-A039-41EF-86A2-B6965A1BB3AB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +63,14 @@ Global
 		{7FD21045-D55A-41F5-8D05-9A99C52CDA56}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7FD21045-D55A-41F5-8D05-9A99C52CDA56}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7FD21045-D55A-41F5-8D05-9A99C52CDA56}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE858914-5898-45B1-81B6-8D9186F96F1A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE858914-5898-45B1-81B6-8D9186F96F1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE858914-5898-45B1-81B6-8D9186F96F1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE858914-5898-45B1-81B6-8D9186F96F1A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{13199130-A039-41EF-86A2-B6965A1BB3AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13199130-A039-41EF-86A2-B6965A1BB3AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13199130-A039-41EF-86A2-B6965A1BB3AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13199130-A039-41EF-86A2-B6965A1BB3AB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

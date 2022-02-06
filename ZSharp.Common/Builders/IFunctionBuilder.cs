@@ -12,6 +12,11 @@
         new IParameterBuilder ReturnParameter { get; }
 
         /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        IParameter IFunction.ReturnParameter => ReturnParameter;
+
+        /// <summary>
         /// Defines a parameter for the function. The parameter is placed last.
         /// </summary>
         /// <param name="name">The name of the parameter.</param>

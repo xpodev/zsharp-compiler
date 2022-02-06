@@ -10,6 +10,6 @@
         /// <summary>
         /// The position of the parameter (0-based)
         /// </summary>
-        int Position { get; }
+        int Index { get; }
     }
 }

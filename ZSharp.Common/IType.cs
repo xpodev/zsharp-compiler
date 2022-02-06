@@ -4,7 +4,7 @@
     /// Base definition for a type.
     /// </summary>
     public interface IType
-        : INamedItem
+        : IMember
     {
     }
 }

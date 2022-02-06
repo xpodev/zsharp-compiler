@@ -5,13 +5,8 @@
     /// </summary>
     public interface IMethod
         : IFunction
+        , IMember
     {
-        /// <summary>
-        /// The type that owns the method.
-        /// </summary>
-        IType DeclaringType { get; }
-
-
         /// <summary>
         /// Returns whether or not the method is declared as static.
         /// </summary>

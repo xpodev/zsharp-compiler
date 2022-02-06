@@ -1,4 +1,6 @@
-﻿namespace ZSharp
+﻿using System.Collections.Generic;
+
+namespace ZSharp
 {
     /// <summary>
     /// Base definition of a function.
@@ -15,7 +17,7 @@
         /// <summary>
         /// Input parameters types.
         /// </summary>
-        IType[] Input { get; }
+        IEnumerable<IType> Input { get; }
 
         /// <summary>
         /// Return type of the function.
