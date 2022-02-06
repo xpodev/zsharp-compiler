@@ -26,5 +26,8 @@ namespace ZSharp.Engine
                 currentScope.AddItem(item);
             }
         }
+
+        [OperatorOverload(";", false)]
+        public static Expression GetExpression(Expression e) => e;
     }
 }

@@ -6,6 +6,8 @@ using ZSharp.Engine;
 [assembly: CustomOperator(",", 45, OperatorFixity.Infix, Associativity.Left)]
 [assembly: CustomOperator(":", 50, OperatorFixity.Infix)]
 
+[assembly: CustomOperator(";", 1000, OperatorFixity.Postfix)]
+
 [assembly: CustomSurroundingOperator("(", ")", 15, false)]
 [assembly: CustomSurroundingOperator("{", "}", 100, false, true)]
 
