@@ -44,9 +44,11 @@ namespace ZSharp.Engine
             _info = info;
         }
 
-        public BuildResult<ErrorType, Expression> Compile(GenericProcessor<IBuildable> proc, Context ctx)
+        public BuildResult<ErrorType, Expression?> Compile(GenericProcessor<IBuildable> proc, Context ctx)
         {
             if (IsBuilt) throw new InvalidOperationException($"Type {Name} is already built");
+
+            BuildResult<ErrorType, Expression?> result = new(this);
 
             // SRF type definition
             {
@@ -109,7 +111,7 @@ namespace ZSharp.Engine
             //    if (item is IBuildable builder) builder.Compile(proc, ctx);
             //}
 
-            return null;
+            return result;
         }
 
         public BuildResult<ErrorType, Expression?> Compile(GenericProcessor<IResolvable> proc, Context ctx)
@@ -176,13 +178,16 @@ namespace ZSharp.Engine
             //    if (item is IResolvable resolve) resolve.Compile(proc, ctx);
             //}
 
-            return new(this);
+            return result;
         }
 
         public BuildResult<ErrorType, Expression?> Compile(DependencyFinder finder, Context ctx)
         {
-            finder.FindDependencies(this, _info.Base);
-            finder.FindDependencies(this, _info.MetaClass);
+            if (_info.Base is not null)
+                finder.FindDependencies(this, _info.Base);
+
+            if (_info.MetaClass is not null)
+                finder.FindDependencies(this, _info.MetaClass);
 
             return new(this);
         }
