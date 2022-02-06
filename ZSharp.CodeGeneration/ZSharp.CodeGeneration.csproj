@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-    <RootNamespace>$(SolutionName)</RootNamespace>
+    <RootNamespace>$(SolutionName).CG</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
