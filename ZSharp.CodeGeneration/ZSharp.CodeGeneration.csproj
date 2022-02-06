@@ -1,12 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-    <RootNamespace>$(SolutionName).CG</RootNamespace>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net5.0</TargetFramework>
+		<RootNamespace>$(SolutionName).CG</RootNamespace>
+		<LangVersion>10</LangVersion>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Mono.Cecil" Version="0.11.4" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Mono.Cecil" Version="0.11.4" />
+	</ItemGroup>
 
 </Project>
