@@ -1,11 +1,12 @@
 ﻿using System;
 using Pidgin;
 using static Pidgin.Parser;
+using static Pidgin.Parser<char>;
 using ZSharp.Core;
 
 namespace ZSharp.Parser
 {
-    internal class NumberLiteral
+    public class NumberLiteral
     {
         /// <summary>
         /// Signed byte (sbyte) postfix
@@ -67,9 +68,9 @@ namespace ZSharp.Parser
         /// </summary>
         const string UN = "U";
 
-        internal Parser<char, Literal> Integer { get; }
+        public Parser<char, Literal> Integer { get; }
 
-        internal Parser<char, Literal> Real { get; }
+        public Parser<char, Literal> Real { get; }
 
         private static Parser<char, object> CreateIntegerParser(Parser<char, string> parser, int @base) =>
             Map<char, string, string, object>((string num, string fmt) => fmt switch
@@ -101,46 +102,46 @@ namespace ZSharp.Parser
                     String(string.Empty)
                 ));
 
-        internal NumberLiteral()
+        public NumberLiteral()
         {
             Parser<char, char> zero, nonZeroDigit, digit;
             zero = Char('0');
             nonZeroDigit = OneOf("123456789");
             digit = zero.Or(nonZeroDigit);
-            Parser<char, string> sign = Try(String("-").Or(Char('+').ThenReturn(string.Empty)));
+            Parser<char, string> sign = Try(String("-").Or(Char('+').ThenReturn(string.Empty))).Or(Return(string.Empty));
 
             Parser<char, string> @decimal = 
-                Map(string.Concat, sign, nonZeroDigit.Cast<string>(), digit.ManyString()).Or(zero.Cast<string>());
+                Map(string.Concat, nonZeroDigit.Select(s => s.ToString()), digit.ManyString()).Or(zero.Select(s => s.ToString()));
 
             Parser<char, string> hex =
-                Map(string.Concat, sign, zero.Then(Char('x')).Then(digit.Or(CIOneOf("ABCDEF")).ManyString()));
+                Map(string.Concat, zero.Then(Char('x')).Then(digit.Or(CIOneOf("ABCDEF")).ManyString()));
 
             Parser<char, string> octal =
-                Map(string.Concat, sign, zero.Then(Char('o')).Then(OneOf("01234567").ManyString()));
+                Map(string.Concat, zero.Then(Char('o')).Then(OneOf("01234567").ManyString()));
 
             Integer = OneOf(
-                CreateIntegerParser(@decimal, 10),
-                CreateIntegerParser(hex, 16),
-                CreateIntegerParser(octal, 8)
+                CreateIntegerParser(Map(string.Concat, sign, @decimal), 10),
+                CreateIntegerParser(Map(string.Concat, sign, hex), 16),
+                CreateIntegerParser(Map(string.Concat, sign, octal), 8)
                 ).Select(o => new Literal(o));
 
             Parser<char, string> real =
                 Map(string.Concat,
                     sign,
                     OneOf(
-                        Try(Map((i, dot, f) => i + dot + f, @decimal, Char('.'), @decimal)),
+                        Try(Map((i, dot, f) => i + dot + f, @decimal, Char('.'), digit.ManyString())),
                         Try(Map((i, dot) => i + dot, @decimal, Char('.'))),
-                        Map((dot, f) => dot + f, Char('.'), @decimal)
+                        Map((dot, f) => dot + f, Char('.'), digit.ManyString())
                         )
                     );
 
             Real =
-                Map<char, string, string, object>(
+                Map(
                     (num, fmt) => fmt switch
                     {
                         R4 => Convert.ToSingle(num),
                         R8 => Convert.ToDouble(num),
-                        _ => Convert.ToDouble(num),
+                        _ => (object)Convert.ToDouble(num),
                     }, 
                     real,
                     OneOf(
