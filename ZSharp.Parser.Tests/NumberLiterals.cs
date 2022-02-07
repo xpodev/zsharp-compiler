@@ -44,6 +44,32 @@ namespace ZSharp.Parser.Tests
             ExpectLiteral(parser.Real, s, f);
         }
 
+        [Theory]
+        [InlineData("0.0", 0)]
+        [InlineData("1.0", 1)]
+        [InlineData("1.5", 1.5)]
+        [InlineData("0.", 0)]
+        [InlineData(".0", 0)]
+        [InlineData(".5", .5)]
+        [InlineData(".010", .010)]
+        [InlineData("1.", 1)]
+        [InlineData("190.010", 190.010)]
+        [InlineData("190.", 190)]
+        [InlineData("0.0f64", 0)]
+        [InlineData("1.0f64", 1)]
+        [InlineData("1.5f64", 1.5)]
+        [InlineData("0.f64", 0)]
+        [InlineData(".0f64", 0)]
+        [InlineData(".5f64", .5)]
+        [InlineData(".010f64", .010)]
+        [InlineData("1.f64", 1)]
+        [InlineData("190.010f64", 190.010)]
+        [InlineData("190.f64", 190)]
+        public void ExpectDouble(string s, double f)
+        {
+            ExpectLiteral(parser.Real, s, f);
+        }
+
 
         public abstract class Integers
         {
