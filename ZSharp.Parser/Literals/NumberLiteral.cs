@@ -11,82 +11,88 @@ namespace ZSharp.Parser
         /// <summary>
         /// Signed byte (sbyte) postfix
         /// </summary>
-        const string I1 = "i8";
+        public const string I1 = "i8";
 
         /// <summary>
         /// Unsigned byte (byte) postfix
         /// </summary>
-        const string U1 = "u8";
+        public const string U1 = "u8";
 
         /// <summary>
         /// Signed short (short) postfix
         /// </summary>
-        const string I2 = "i16";
+        public const string I2 = "i16";
 
         /// <summary>
         /// Unsigned short (ushort) postfix
         /// </summary>
-        const string U2 = "u16";
+        public const string U2 = "u16";
 
         /// <summary>
         /// Signed int (int) postfix
         /// </summary>
-        const string I4 = "i32";
+        public const string I4 = "i32";
 
         /// <summary>
         /// Unsigned int (uint) postfix
         /// </summary>
-        const string U4 = "u32";
+        public const string U4 = "u32";
 
         /// <summary>
         /// Signed long (long) postfix
         /// </summary>
-        const string I8 = "i64";
+        public const string I8 = "i64";
 
         /// <summary>
         /// Unsigned long (ulong) postfix
         /// </summary>
-        const string U8 = "u64";
+        public const string U8 = "u64";
 
         /// <summary>
         /// Float 32 (single/float) postfix
         /// </summary>
-        const string R4 = "f32";
+        public const string R4 = "f32";
 
         /// <summary>
         /// Float 64 (double) postfix
         /// </summary>
-        const string R8 = "f64";
+        public const string R8 = "f64";
 
         /// <summary>
         /// Native int (nint) postfix
         /// </summary>
-        const string IN = "I";
+        public const string IN = "I";
 
         /// <summary>
         /// Native unsigned int (nuint) postfix
         /// </summary>
-        const string UN = "U";
+        public const string UN = "U";
 
         public Parser<char, Literal> Integer { get; }
 
         public Parser<char, Literal> Real { get; }
 
-        private static Parser<char, object> CreateIntegerParser(Parser<char, string> parser, int @base) =>
-            Map<char, string, string, object>((string num, string fmt) => fmt switch
+        private static Parser<char, object> CreateIntegerParser(Parser<char, string> parser, Parser<char, string> sign, int @base) =>
+            Map((string s, string num, string fmt) =>
             {
-                I1 => Convert.ToSByte(num, @base),
-                U1 => Convert.ToByte(num, @base),
-                I2 => Convert.ToInt16(num, @base),
-                U2 => Convert.ToUInt16(num, @base),
-                I4 => Convert.ToInt32(num, @base),
-                U4 => Convert.ToUInt32(num, @base),
-                I8 => Convert.ToInt64(num, @base),
-                U8 => Convert.ToUInt64(num, @base),
-                IN => (nint)Convert.ToInt64(num, @base),
-                UN => (nuint)Convert.ToUInt64(num, @base),
-                _ => Convert.ToInt32(num, @base),
+                bool neg = s == "-";
+                object value = fmt switch
+                {
+                    I1 => (sbyte)(neg ? -Convert.ToSByte(num, @base) : Convert.ToSByte(num, @base)),
+                    U1 => Convert.ToByte(num, @base),
+                    I2 => (short)(neg ? -Convert.ToInt16(num, @base) : Convert.ToInt16(num, @base)),
+                    U2 => Convert.ToUInt16(num, @base),
+                    I4 => neg ? -Convert.ToInt32(num, @base) : Convert.ToInt32(num, @base),
+                    U4 => Convert.ToUInt32(num, @base),
+                    I8 => neg ? -Convert.ToInt64(num, @base) : Convert.ToInt64(num, @base),
+                    U8 => Convert.ToUInt64(num, @base),
+                    IN => (nint)(neg ? -Convert.ToInt64(num, @base) : Convert.ToInt64(num, @base)),
+                    UN => (nuint)Convert.ToUInt64(num, @base),
+                    _ => (object)(neg ? -Convert.ToInt32(num, @base) : Convert.ToInt32(num, @base))
+                };
+                return value;
             },
+                sign,
                 parser,
                 OneOf(
                     Try(String(I1)),
@@ -110,7 +116,7 @@ namespace ZSharp.Parser
             digit = zero.Or(nonZeroDigit);
             Parser<char, string> sign = Try(String("-").Or(Char('+').ThenReturn(string.Empty))).Or(Return(string.Empty));
 
-            Parser<char, string> @decimal = 
+            Parser<char, string> dec = 
                 Map(string.Concat, nonZeroDigit.Select(s => s.ToString()), digit.ManyString()).Or(zero.Select(s => s.ToString()));
 
             Parser<char, string> hex =
@@ -120,17 +126,16 @@ namespace ZSharp.Parser
                 Map(string.Concat, zero.Then(Char('o')).Then(OneOf("01234567").ManyString()));
 
             Integer = OneOf(
-                CreateIntegerParser(Map(string.Concat, sign, @decimal), 10),
-                CreateIntegerParser(Map(string.Concat, sign, hex), 16),
-                CreateIntegerParser(Map(string.Concat, sign, octal), 8)
+                Try(CreateIntegerParser(hex, sign, 16)),
+                CreateIntegerParser(dec, sign, 10)
                 ).Select(o => new Literal(o));
 
             Parser<char, string> real =
                 Map(string.Concat,
                     sign,
                     OneOf(
-                        Try(Map((i, dot, f) => i + dot + f, @decimal, Char('.'), digit.ManyString())),
-                        Try(Map((i, dot) => i + dot, @decimal, Char('.'))),
+                        Try(Map((i, dot, f) => i + dot + f, dec, Char('.'), digit.ManyString())),
+                        Try(Map((i, dot) => i + dot, dec, Char('.'))),
                         Map((dot, f) => dot + f, Char('.'), digit.ManyString())
                         )
                     );
