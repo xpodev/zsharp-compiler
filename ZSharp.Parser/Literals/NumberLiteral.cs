@@ -126,6 +126,7 @@ namespace ZSharp.Parser
                 Map(string.Concat, zero.Then(Char('o')).Then(OneOf("01234567").ManyString()));
 
             Integer = OneOf(
+                Try(CreateIntegerParser(octal, sign, 8)),
                 Try(CreateIntegerParser(hex, sign, 16)),
                 CreateIntegerParser(dec, sign, 10)
                 ).Select(o => new Literal(o));
