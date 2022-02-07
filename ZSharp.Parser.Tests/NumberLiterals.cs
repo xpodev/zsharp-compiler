@@ -44,8 +44,46 @@ namespace ZSharp.Parser.Tests
             ExpectLiteral(parser.Real, s, f);
         }
 
+        #region Integers.Decimal
+
         [Fact]
-        public void ExpectIntDecimal()
+        public void ExpectInt8Decimal()
+        {
+            for (sbyte i = -100; i <= 100; i++)
+            {
+                ExpectLiteral(parser.Integer, i.ToString() + "i8", i);
+            }
+        }
+
+        [Fact]
+        public void ExpectUInt8Decimal()
+        {
+            for (byte i = 0; i <= 200; i++)
+            {
+                ExpectLiteral(parser.Integer, i.ToString() + "u8", i);
+            }
+        }
+
+        [Fact]
+        public void ExpectInt16Decimal()
+        {
+            for (short i = -1000; i <= 1000; i++)
+            {
+                ExpectLiteral(parser.Integer, i.ToString() + "i16", i);
+            }
+        }
+
+        [Fact]
+        public void ExpectUInt16Decimal()
+        {
+            for (ushort i = 0; i <= 1000; i++)
+            {
+                ExpectLiteral(parser.Integer, i.ToString() + "u16", i);
+            }
+        }
+
+        [Fact]
+        public void ExpectInt32Decimal()
         {
             for (int i = -1000; i <= 1000; i++)
             {
@@ -53,5 +91,52 @@ namespace ZSharp.Parser.Tests
                 ExpectLiteral(parser.Integer, i.ToString() + "i32", i);
             }
         }
+
+        [Fact]
+        public void ExpectUInt32Decimal()
+        {
+            for (uint i = 0; i <= 1000; i++)
+            {
+                ExpectLiteral(parser.Integer, i.ToString() + "u32", i);
+            }
+        }
+
+        [Fact]
+        public void ExpectInt64Decimal()
+        {
+            for (long i = -1000; i <= 1000; i++)
+            {
+                ExpectLiteral(parser.Integer, i.ToString() + "i64", i);
+            }
+        }
+
+        [Fact]
+        public void ExpectUInt64Decimal()
+        {
+            for (ulong i = 0; i <= 1000; i++)
+            {
+                ExpectLiteral(parser.Integer, i.ToString() + "u64", i);
+            }
+        }
+
+        [Fact]
+        public void ExpectNIntDecimal()
+        {
+            for (nint i = -1000; i <= 1000; i++)
+            {
+                ExpectLiteral(parser.Integer, i.ToString() + "I", i);
+            }
+        }
+
+        [Fact]
+        public void ExpectNUIntDecimal()
+        {
+            for (nuint i = 0; i <= 1000; i++)
+            {
+                ExpectLiteral(parser.Integer, i.ToString() + "U", i);
+            }
+        }
+
+        #endregion
     }
 }
