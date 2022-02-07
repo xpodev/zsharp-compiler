@@ -44,184 +44,132 @@ namespace ZSharp.Parser.Tests
             ExpectLiteral(parser.Real, s, f);
         }
 
-        #region Integers
-
-        static string GetBaseString(int @base) =>
-            @base switch
-            {
-                8 => "0o",
-                10 => string.Empty,
-                16 => "0x",
-                _ => throw new ArgumentException("Invalid base: " + @base, nameof(@base))
-            };
-
-        static string ToString(long x, int @base) =>
-            (x < 0 ? "-" : "") + GetBaseString(@base) + Convert.ToString(Math.Abs(x), @base);
-
-        static string ToSignedString(long x, int @base) =>
-            (x < 0 ? "-" : "+") + GetBaseString(@base) + Convert.ToString(Math.Abs(x), @base);
-
-        static string ToString(ulong x, int @base) => ToString((long)x, @base);
-
-        static string ToSignedString(ulong x, int @base) => ToSignedString((long)x, @base);
-
-        static void ExpectInt8(int @base)
-        {
-            for (sbyte i = -100; i <= 100; i++)
-            {
-                ExpectLiteral(parser.Integer, ToString(i, @base) + NumberLiteral.I1, i);
-                ExpectLiteral(parser.Integer, ToSignedString(i, @base) + NumberLiteral.I1, i);
-            }
-        }
-
-        static void ExpectUInt8(int @base)
-        {
-            for (byte i = 0; i <= 200; i++)
-            {
-                ExpectLiteral(parser.Integer, ToString(i, @base) + NumberLiteral.U1, i);
-                ExpectLiteral(parser.Integer, ToSignedString(i, @base) + NumberLiteral.U1, i);
-            }
-        }
-
-        static void ExpectInt16(int @base)
-        {
-            for (short i = -1000; i <= 1000; i++)
-            {
-                ExpectLiteral(parser.Integer, ToString(i, @base) + NumberLiteral.I2, i);
-                ExpectLiteral(parser.Integer, ToSignedString(i, @base) + NumberLiteral.I2, i);
-            }
-        }
-
-        static void ExpectUInt16(int @base)
-        {
-            for (ushort i = 0; i <= 1000; i++)
-            {
-                ExpectLiteral(parser.Integer, ToString(i, @base) + NumberLiteral.U2, i);
-                ExpectLiteral(parser.Integer, ToSignedString(i, @base) + NumberLiteral.U2, i);
-            }
-        }
-
-        static void ExpectInt32(int @base)
-        {
-            for (int i = -1000; i <= 1000; i++)
-            {
-                ExpectLiteral(parser.Integer, ToString(i, @base), i);
-                ExpectLiteral(parser.Integer, ToSignedString(i, @base), i);
-                ExpectLiteral(parser.Integer, ToString(i, @base) + NumberLiteral.I4, i);
-                ExpectLiteral(parser.Integer, ToSignedString(i, @base) + NumberLiteral.I4, i);
-            }
-        }
-
-        static void ExpectUInt32(int @base)
-        {
-            for (uint i = 0; i <= 1000; i++)
-            {
-                ExpectLiteral(parser.Integer, ToString(i, @base) + NumberLiteral.U4, i);
-                ExpectLiteral(parser.Integer, ToSignedString(i, @base) + NumberLiteral.U4, i);
-            }
-        }
-
-        static void ExpectInt64(int @base)
-        {
-            for (long i = -1000; i <= 1000; i++)
-            {
-                ExpectLiteral(parser.Integer, ToString(i, @base) + NumberLiteral.I8, i);
-                ExpectLiteral(parser.Integer, ToSignedString(i, @base) + NumberLiteral.I8, i);
-            }
-        }
-
-        static void ExpectUInt64(int @base)
-        {
-            for (ulong i = 0; i <= 1000; i++)
-            {
-                ExpectLiteral(parser.Integer, ToString(i, @base) + NumberLiteral.U8, i);
-                ExpectLiteral(parser.Integer, ToSignedString(i, @base) + NumberLiteral.U8, i);
-            }
-        }
-
-        static void ExpectNInt(int @base)
-        {
-            for (nint i = -1000; i <= 1000; i++)
-            {
-                ExpectLiteral(parser.Integer, ToString(i, @base) + NumberLiteral.IN, i);
-                ExpectLiteral(parser.Integer, ToSignedString(i, @base) + NumberLiteral.IN, i);
-            }
-        }
-
-        static void ExpectNUInt(int @base)
-        {
-            for (nuint i = 0; i <= 1000; i++)
-            {
-                ExpectLiteral(parser.Integer, ToString(i, @base) + NumberLiteral.UN, i);
-                ExpectLiteral(parser.Integer, ToSignedString(i, @base) + NumberLiteral.UN, i);
-            }
-        }
-
-        #endregion
 
         public abstract class Integers
         {
             protected abstract int Base { get; }
 
+            static string GetBaseString(int @base) =>
+                @base switch
+                {
+                    8 => "0o",
+                    10 => string.Empty,
+                    16 => "0x",
+                    _ => throw new ArgumentException("Invalid base: " + @base, nameof(@base))
+                };
+
+            static string ToString(long x, int @base) =>
+                (x < 0 ? "-" : "") + GetBaseString(@base) + Convert.ToString(Math.Abs(x), @base);
+
+            static string ToSignedString(long x, int @base) =>
+                (x < 0 ? "-" : "+") + GetBaseString(@base) + Convert.ToString(Math.Abs(x), @base);
+
+            static string ToString(ulong x, int @base) => ToString((long)x, @base);
+
+            static string ToSignedString(ulong x, int @base) => ToSignedString((long)x, @base);
+
             [Fact]
-            public void ExpectInt8HexaDecimal()
+            public void ExpectInt8()
             {
-                ExpectInt8(Base);
+                for (sbyte i = -100; i <= 100; i++)
+                {
+                    ExpectLiteral(parser.Integer, ToString(i, Base) + NumberLiteral.I1, i);
+                    ExpectLiteral(parser.Integer, ToSignedString(i, Base) + NumberLiteral.I1, i);
+                }
             }
 
             [Fact]
-            public void ExpectUInt8HexaDecimal()
+            public void ExpectUInt8()
             {
-                ExpectUInt8(Base);
+                for (byte i = 0; i <= 200; i++)
+                {
+                    ExpectLiteral(parser.Integer, ToString(i, Base) + NumberLiteral.U1, i);
+                    ExpectLiteral(parser.Integer, ToSignedString(i, Base) + NumberLiteral.U1, i);
+                }
             }
 
             [Fact]
-            public void ExpectInt16HexaDecimal()
+            public void ExpectInt16()
             {
-                ExpectInt16(Base);
+                for (short i = -1000; i <= 1000; i++)
+                {
+                    ExpectLiteral(parser.Integer, ToString(i, Base) + NumberLiteral.I2, i);
+                    ExpectLiteral(parser.Integer, ToSignedString(i, Base) + NumberLiteral.I2, i);
+                }
             }
 
             [Fact]
-            public void ExpectUInt16HexaDecimal()
+            public void ExpectUInt16()
             {
-                ExpectUInt16(Base);
+                for (ushort i = 0; i <= 1000; i++)
+                {
+                    ExpectLiteral(parser.Integer, ToString(i, Base) + NumberLiteral.U2, i);
+                    ExpectLiteral(parser.Integer, ToSignedString(i, Base) + NumberLiteral.U2, i);
+                }
             }
 
             [Fact]
-            public void ExpectInt32HexaDecimal()
+            public void ExpectInt32()
             {
-                ExpectInt32(Base);
+                for (int i = -1000; i <= 1000; i++)
+                {
+                    ExpectLiteral(parser.Integer, ToString(i, Base), i);
+                    ExpectLiteral(parser.Integer, ToSignedString(i, Base), i);
+                    ExpectLiteral(parser.Integer, ToString(i, Base) + NumberLiteral.I4, i);
+                    ExpectLiteral(parser.Integer, ToSignedString(i, Base) + NumberLiteral.I4, i);
+                }
             }
 
             [Fact]
-            public void ExpectUInt32HexaDecimal()
+            public void ExpectUInt32()
             {
-                ExpectUInt32(Base);
+                for (uint i = 0; i <= 1000; i++)
+                {
+                    ExpectLiteral(parser.Integer, ToString(i, Base) + NumberLiteral.U4, i);
+                    ExpectLiteral(parser.Integer, ToSignedString(i, Base) + NumberLiteral.U4, i);
+                }
             }
 
             [Fact]
-            public void ExpectInt64HexaDecimal()
+            public void ExpectInt64()
             {
-                ExpectInt64(Base);
+                for (long i = -1000; i <= 1000; i++)
+                {
+                    ExpectLiteral(parser.Integer, ToString(i, Base) + NumberLiteral.I8, i);
+                    ExpectLiteral(parser.Integer, ToSignedString(i, Base) + NumberLiteral.I8, i);
+                }
             }
 
             [Fact]
-            public void ExpectUInt64HexaDecimal()
+            public void ExpectUInt64()
             {
-                ExpectUInt64(Base);
+                for (ulong i = 0; i <= 1000; i++)
+                {
+                    ExpectLiteral(parser.Integer, ToString(i, Base) + NumberLiteral.U8, i);
+                    ExpectLiteral(parser.Integer, ToSignedString(i, Base) + NumberLiteral.U8, i);
+                }
             }
 
             [Fact]
-            public void ExpectNIntHexaDecimal()
+            public void ExpectNInt()
             {
-                ExpectNInt(Base);
+                for (nint i = -1000; i <= 1000; i++)
+                {
+                    ExpectLiteral(parser.Integer, ToString(i, Base) + NumberLiteral.IN, i);
+                    ExpectLiteral(parser.Integer, ToSignedString(i, Base) + NumberLiteral.IN, i);
+                }
             }
 
             [Fact]
-            public void ExpectNUIntHexaDecimal()
+            public void ExpectNUInt()
             {
-                ExpectNUInt(Base);
+                for (nuint i = 0; i <= 1000; i++)
+                {
+                    ExpectLiteral(parser.Integer, ToString(i, Base) + NumberLiteral.UN, i);
+                    ExpectLiteral(parser.Integer, ToSignedString(i, Base) + NumberLiteral.UN, i);
+                }
             }
+
         }
 
         public class IntegersDecimals : Integers
@@ -232,6 +180,11 @@ namespace ZSharp.Parser.Tests
         public class IntegersHexadecimals : Integers
         {
             protected override int Base => 16;
+        }
+
+        public class IntegersOctals : Integers
+        {
+            protected override int Base => 8;
         }
     }
 }
