@@ -1,7 +1,4 @@
-﻿using Pidgin;
-using ZSharp.Core;
-
-namespace ZSharp.Parser
+﻿namespace ZSharp.Parser
 {
     internal class KeywordLiteral
     {

@@ -1,15 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFrameworks>net5.0;net6.0</TargetFrameworks>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>net5.0;net6.0</TargetFrameworks>
+		<LangVersion>10</LangVersion>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Pidgin" Version="3.0.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Pidgin" Version="3.0.0" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\ZSharp.Core\ZSharp.Core.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\ZSharp.Core\ZSharp.Core.csproj" />
+	</ItemGroup>
 
 </Project>

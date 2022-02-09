@@ -1,8 +1,4 @@
-﻿using Pidgin;
-using static Pidgin.Parser;
-using ZSharp.Core;
-
-namespace ZSharp.Parser
+﻿namespace ZSharp.Parser
 {
     internal class LiteralParser
     {

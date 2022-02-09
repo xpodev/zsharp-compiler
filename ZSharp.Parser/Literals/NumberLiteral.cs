@@ -1,8 +1,4 @@
 ﻿using System;
-using Pidgin;
-using static Pidgin.Parser;
-using static Pidgin.Parser<char>;
-using ZSharp.Core;
 
 namespace ZSharp.Parser
 {

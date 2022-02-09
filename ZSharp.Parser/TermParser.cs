@@ -1,8 +1,4 @@
-﻿using Pidgin;
-using ZSharp.Core;
-using static Pidgin.Parser;
-
-namespace ZSharp.Parser
+﻿namespace ZSharp.Parser
 {
     internal class TermParser
     {

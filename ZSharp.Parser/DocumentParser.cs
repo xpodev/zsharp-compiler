@@ -1,8 +1,6 @@
-﻿using Pidgin;
-using Pidgin.Comment;
+﻿using Pidgin.Comment;
 using System.Collections.Generic;
 using System.IO;
-using static Pidgin.Parser;
 
 namespace ZSharp.Parser
 {
