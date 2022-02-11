@@ -5,6 +5,7 @@
     /// </summary>
     public interface IParameterBuilder
         : IParameter
+        , IBuilder
     {
     }
 }

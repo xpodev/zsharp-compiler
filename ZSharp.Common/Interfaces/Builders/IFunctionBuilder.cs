@@ -5,6 +5,7 @@
     /// </summary>
     public interface IFunctionBuilder
         : IFunction
+        , IBuilder
     {
         /// <summary>
         /// The return value parameter.

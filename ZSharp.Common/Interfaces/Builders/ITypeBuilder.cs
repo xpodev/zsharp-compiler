@@ -5,6 +5,7 @@
     /// </summary>
     public interface ITypeBuilder
         : IType
+        , IBuilder
     {
         /// <summary>
         /// Defines a field inside the type and return its builder.
