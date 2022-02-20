@@ -38,6 +38,8 @@ namespace ZSharp.CG
             _def.IsStatic = true;
         }
 
+        public void Build() { }
+
         public ParameterBuilder DefineParameter(string name, IType type)
         {
             if (type is not TypeReference _ref)

@@ -19,5 +19,10 @@
             _def = owner._def.DefineField(name, type._ref, FieldAttributes.PrivateScope);
             Type = type;
         }
+
+        public void Build()
+        {
+
+        }
     }
 }

@@ -26,6 +26,11 @@ namespace ZSharp.SR
             DeclaringType = owner;
         }
 
+        public void Build()
+        {
+
+        }
+
         public FieldBuilder DefineField(string name) => DefineField(name, EmptyType);
 
         public FieldBuilder DefineField(string name, TypeReference type)

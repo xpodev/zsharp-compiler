@@ -13,7 +13,7 @@
 
         public FunctionBuilder DefineFunction(string name, TypeReference returnType)
         {
-            FunctionBuilder builder = new(name, returnType);
+            MethodBuilder builder = new(name, this, returnType);
 
             // todo: check result.
             AddMember(builder);

@@ -15,5 +15,7 @@
             _def = new(name, ParameterAttributes.None, type._ref);
             Type = type;
         }
+
+        public void Build() { }
     }
 }

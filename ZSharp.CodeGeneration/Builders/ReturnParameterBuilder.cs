@@ -27,5 +27,7 @@
             _def = def;
             _type = type;
         }
+
+        public void Build() { }
     }
 }

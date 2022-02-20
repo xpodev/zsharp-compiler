@@ -30,5 +30,7 @@
             DeclaringType = owner;
             _type = type;
         }
+
+        public void Build() { }
     }
 }
