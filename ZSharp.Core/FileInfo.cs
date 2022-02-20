@@ -28,12 +28,23 @@ namespace ZSharp.Core
             if (a.Document != b.Document)
                 throw new ArgumentException($"Can't combine infos of different documents \'{a.Document}\' and \'{b.Document}\'");
 
+            FileInfo start, end;
+            if (a.StartLine != b.StartLine)
+                start = a.StartLine < b.StartLine ? ref a : ref b;
+            else
+                start = a.StartColumn < b.StartColumn ? ref a : ref b;
+
+            if (a.EndLine != b.EndLine)
+                end = a.EndLine > b.EndLine ? ref a : ref b;
+            else
+                end = a.EndColumn > b.EndColumn ? ref a : ref b;
+
             return new(
                 a.Document,
-                Math.Min(a.StartLine, b.StartLine),
-                Math.Max(a.EndLine, b.EndLine),
-                Math.Min(a.StartColumn, b.StartColumn),
-                Math.Max(a.EndColumn, b.EndColumn)
+                start.StartLine,
+                start.StartColumn,
+                end.EndLine,
+                end.EndColumn
                 );
         }
 
@@ -56,5 +67,15 @@ namespace ZSharp.Core
             EndLine.GetHashCode() ^
             StartColumn.GetHashCode() ^
             EndColumn.GetHashCode();
+
+        public static bool operator ==(FileInfo left, FileInfo right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(FileInfo left, FileInfo right)
+        {
+            return !(left == right);
+        }
     }
 }

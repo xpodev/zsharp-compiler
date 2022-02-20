@@ -9,4 +9,14 @@
             Value = value;
         }
     }
+
+    public class Literal<T> : Literal
+    {
+        public new T Value { get; set; }
+
+        public Literal(T value) : base(value)
+        {
+            Value = value;
+        }
+    }
 }
