@@ -5,19 +5,19 @@
         private static ParserState _state;
 
         private int _line = 1, _column = 0;
-        private readonly Core.DocumentInfo _document;
+        private readonly OldCore.DocumentInfo _document;
 
-        private ParserState(Core.DocumentInfo document)
+        private ParserState(OldCore.DocumentInfo document)
         {
             _document = document;
         }
 
-        public static void Reset(Core.DocumentInfo document)
+        public static void Reset(OldCore.DocumentInfo document)
         {
             _state = new(document);
         }
 
-        public static Core.FileInfo GetInfo(string text)
+        public static OldCore.FileInfo GetInfo(string text)
         {
             int startLine = _state._line;
             int startColumn = _state._column;
@@ -54,7 +54,7 @@
             return Pidgin.Unit.Value;
         }
 
-        public static Pidgin.Parser<char, Core.ObjectInfo> CreateFileInfo(Pidgin.Parser<char, Core.Expression> parser) =>
+        public static Pidgin.Parser<char, OldCore.ObjectInfo> CreateFileInfo(Pidgin.Parser<char, OldCore.Expression> parser) =>
             Pidgin.Parser.Rec(() => Utils.CreateObjectInfo(_state._document, parser));
     }
 }

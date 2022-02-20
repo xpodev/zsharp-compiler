@@ -5,7 +5,7 @@ using System.IO;
 using Pidgin;
 using static Pidgin.Parser;
 using static Pidgin.Parser<char>;
-using ZSharp.Core;
+using ZSharp.OldCore;
 
 namespace ZSharp.Parser
 {
@@ -24,6 +24,6 @@ namespace ZSharp.Parser
 
         public void SetDocument(DocumentInfo document) => ParserState.Reset(_document = document);
 
-        public Parser<char, ObjectInfo> CreateFileInfo(Parser<char, Core.Expression> parser) => Utils.CreateObjectInfo(_document, parser);
+        public Parser<char, ObjectInfo> CreateFileInfo(Parser<char, OldCore.Expression> parser) => Utils.CreateObjectInfo(_document, parser);
     }
 }

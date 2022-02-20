@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Pidgin;
 using Pidgin.Expression;
-using ZSharp.Core;
+using ZSharp.OldCore;
 using static Pidgin.Parser;
 using static Pidgin.Parser<char>;
 using static ZSharp.Parser.ParserState;
@@ -26,7 +26,7 @@ namespace ZSharp.Parser
         {
             Try(Rec(() => Single).Between(Symbols.LCurvyBracket, Symbols.RCurvyBracket)),
             Try(Literals.Parser),
-            Try(CreateFileInfo(Identifier.Parser.Select<Core.Expression>(id => new Core.Identifier(id))))
+            Try(CreateFileInfo(Identifier.Parser.Select<OldCore.Expression>(id => new OldCore.Identifier(id))))
         };
 
         private static readonly List<string> _keywords = new();
@@ -127,7 +127,7 @@ namespace ZSharp.Parser
             if (!kw.ToLower().All(c => 'a' <= c && c <= 'z')) parser = String(kw).Before(Syntax.Whitespaces);
             else parser = Identifier.Parser.Assert(s => s == kw);
             _isExpressionParserBuilt = _isTermParserBuilt = false;
-            _terms.Insert(0, CreateFileInfo(Try(parser).Select<Core.Expression>(s => new Keyword(s))));
+            _terms.Insert(0, CreateFileInfo(Try(parser).Select<OldCore.Expression>(s => new Keyword(s))));
         }
 
         public static void AddKeywordOperator(string kw, int precedence, OperatorFixity fixity)
@@ -163,7 +163,7 @@ namespace ZSharp.Parser
             string name = left + '_' + right;
             name = isPrefix ? name + '_' : '_' + name;
             Parser<char, Func<ObjectInfo, ObjectInfo>> parser =
-                Try(CreateFileInfo(Rec(() => Return<Core.Expression>(Collection.Empty)))
+                Try(CreateFileInfo(Rec(() => Return<OldCore.Expression>(Collection.Empty)))
                 .Between(Syntax.String(left), Syntax.String(right)))
                 .Or(
                     Rec(() => allowMultiple ? Many : Single)

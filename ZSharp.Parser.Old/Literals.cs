@@ -1,5 +1,5 @@
 ﻿using Pidgin;
-using ZSharp.Core;
+using ZSharp.OldCore;
 using static Pidgin.Parser;
 using static ZSharp.Parser.ParserState;
 
@@ -27,7 +27,7 @@ namespace ZSharp.Parser
                 AnyCharExcept('"').ManyString()
                 .Between(Symbols.DoubleQuotes, Symbols.DoubleQuotes)
                 .Before(Syntax.Whitespaces)
-                .Select<Core.Expression>(s => new Literal(s))
+                .Select<OldCore.Expression>(s => new Literal(s))
                 );
 
         public static readonly Parser<char, ObjectInfo> CharacterParser =
@@ -35,7 +35,7 @@ namespace ZSharp.Parser
                 Parser<char>.Any
                 .Between(Symbols.SingleQuote, Symbols.SingleQuote)
                 .Before(Syntax.Whitespaces)
-                .Select<Core.Expression>(c => new Literal(c))
+                .Select<OldCore.Expression>(c => new Literal(c))
                 );
 
         public static readonly Parser<char, ObjectInfo> IntegerParser =
@@ -68,7 +68,7 @@ namespace ZSharp.Parser
                         Try(String("U")),
                         String(string.Empty)
                     )).Before(Syntax.Whitespaces)
-                .Select<Core.Expression>(o => new Literal(o))
+                .Select<OldCore.Expression>(o => new Literal(o))
                 );
 
         public static readonly Parser<char, ObjectInfo> RealParser =
@@ -84,7 +84,7 @@ namespace ZSharp.Parser
                     Try(String("f64")),
                     String(string.Empty)
                     )).Before(Syntax.Whitespaces)
-                .Select<Core.Expression>(o => new Literal(o))
+                .Select<OldCore.Expression>(o => new Literal(o))
                 );
 
         public static readonly Parser<char, ObjectInfo> Parser =
