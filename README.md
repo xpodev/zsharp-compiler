@@ -39,7 +39,7 @@ If you want to build for a specific target runtime, add one of the following opt
 | Types                  | :x:                | Classes, interfaces, enums and structs |
 | Lambda/Currying        | :x:                |                                        |
 | Data type              | :x:                |                                        |
-| Better error messages  | :x:                |                                        |
+| Better error messages  | :heavy_check_mark: |                                        |
 | Type inference         | :construction:     |                                        |
 | Typeclass              | :x:                |                                        |
 | Templates              | :x:                |                                        |
