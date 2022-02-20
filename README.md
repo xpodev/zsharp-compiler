@@ -47,6 +47,7 @@ If you want to build for a specific target runtime, add one of the following opt
 | Framework independency | :x:                |                                        |
 | Comments               | :heavy_check_mark: |                                        |
 
+
 # ToDo List
 * Only load user defined keywords/operator when their namespace is used (currently always in global scope)
 * Generated assembly should not rely on the framework version of the compiler (and also not copy the runtimeconfig.json)
