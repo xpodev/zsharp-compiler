@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31919.166
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZSharp.Engine", "ZSharp.Engine\ZSharp.Engine.csproj", "{A980DBC8-19F7-44F6-9A23-B15FB2BD07FA}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZSharp.Core", "ZSharp.Core\ZSharp.Core.csproj", "{C11E0F8A-2377-49F3-9345-125C79935511}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZSharp.Parser", "ZSharp.Parser\ZSharp.Parser.csproj", "{72FE7686-F2BC-456B-9D85-DDA97CB3E91F}"
@@ -13,17 +11,25 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZSharpCompiler", "ZSharpCom
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZSharp.Parser.Old", "ZSharp.Parser.Old\ZSharp.Parser.Old.csproj", "{EF5F36C9-FB28-497E-8BD0-5B022081C397}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZSharp.Common", "ZSharp.Common\ZSharp.Common.csproj", "{A60A1475-D364-4238-88DF-4ECB3FFC6C3C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZSharp.Common", "ZSharp.Common\ZSharp.Common.csproj", "{A60A1475-D364-4238-88DF-4ECB3FFC6C3C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZSharp.StaticReflection", "ZSharp.StaticReflection\ZSharp.StaticReflection.csproj", "{9DEF80DE-F739-404B-8C4D-F234D1DDC128}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZSharp.StaticReflection", "ZSharp.StaticReflection\ZSharp.StaticReflection.csproj", "{9DEF80DE-F739-404B-8C4D-F234D1DDC128}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZSharp.CodeGeneration", "ZSharp.CodeGeneration\ZSharp.CodeGeneration.csproj", "{7FD21045-D55A-41F5-8D05-9A99C52CDA56}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CodeGen", "CodeGen", "{FD5F4A85-0DB9-4D18-AB70-231A0CFACDC0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZSharp.CodeGen.Test", "ZSharp.CodeGen.Test\ZSharp.CodeGen.Test.csproj", "{FE858914-5898-45B1-81B6-8D9186F96F1A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZSharp.CodeGen.Test", "ZSharp.CodeGen.Test\ZSharp.CodeGen.Test.csproj", "{FE858914-5898-45B1-81B6-8D9186F96F1A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZSharp.Parser.Tests", "ZSharp.Parser.Tests\ZSharp.Parser.Tests.csproj", "{13199130-A039-41EF-86A2-B6965A1BB3AB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZSharp.Parser.Tests", "ZSharp.Parser.Tests\ZSharp.Parser.Tests.csproj", "{13199130-A039-41EF-86A2-B6965A1BB3AB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZSharp.Language", "ZSharp.Language\ZSharp.Language.csproj", "{279F833C-DE0E-4138-9766-565CFCD4CE32}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZSharp.Engine.Old", "ZSharp.Engine.Old\ZSharp.Engine.Old.csproj", "{9FE7B90E-D46D-409B-A072-D2C286528E16}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Old", "Old", "{A265C4D7-20DE-4B93-8003-8A926D650222}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZSharp.Engine", "ZSharp.Engine\ZSharp.Engine.csproj", "{8CDDD8A3-654D-414E-AEA7-1486BF7FD548}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,10 +37,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{A980DBC8-19F7-44F6-9A23-B15FB2BD07FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A980DBC8-19F7-44F6-9A23-B15FB2BD07FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A980DBC8-19F7-44F6-9A23-B15FB2BD07FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A980DBC8-19F7-44F6-9A23-B15FB2BD07FA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C11E0F8A-2377-49F3-9345-125C79935511}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C11E0F8A-2377-49F3-9345-125C79935511}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C11E0F8A-2377-49F3-9345-125C79935511}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -71,14 +73,28 @@ Global
 		{13199130-A039-41EF-86A2-B6965A1BB3AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{13199130-A039-41EF-86A2-B6965A1BB3AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{13199130-A039-41EF-86A2-B6965A1BB3AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{279F833C-DE0E-4138-9766-565CFCD4CE32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{279F833C-DE0E-4138-9766-565CFCD4CE32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{279F833C-DE0E-4138-9766-565CFCD4CE32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{279F833C-DE0E-4138-9766-565CFCD4CE32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9FE7B90E-D46D-409B-A072-D2C286528E16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9FE7B90E-D46D-409B-A072-D2C286528E16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9FE7B90E-D46D-409B-A072-D2C286528E16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9FE7B90E-D46D-409B-A072-D2C286528E16}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CDDD8A3-654D-414E-AEA7-1486BF7FD548}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CDDD8A3-654D-414E-AEA7-1486BF7FD548}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CDDD8A3-654D-414E-AEA7-1486BF7FD548}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CDDD8A3-654D-414E-AEA7-1486BF7FD548}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{EF5F36C9-FB28-497E-8BD0-5B022081C397} = {A265C4D7-20DE-4B93-8003-8A926D650222}
 		{A60A1475-D364-4238-88DF-4ECB3FFC6C3C} = {FD5F4A85-0DB9-4D18-AB70-231A0CFACDC0}
 		{9DEF80DE-F739-404B-8C4D-F234D1DDC128} = {FD5F4A85-0DB9-4D18-AB70-231A0CFACDC0}
 		{7FD21045-D55A-41F5-8D05-9A99C52CDA56} = {FD5F4A85-0DB9-4D18-AB70-231A0CFACDC0}
+		{9FE7B90E-D46D-409B-A072-D2C286528E16} = {A265C4D7-20DE-4B93-8003-8A926D650222}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E0BE031C-9E1C-421F-83F6-4928A83C5485}
