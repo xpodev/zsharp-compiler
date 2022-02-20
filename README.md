@@ -8,7 +8,7 @@ It compiles to IL code which means it runs on the .NET ecosystem (currently .NET
 ## Requirements
 To build the compiler you need:
  - .NET5/6 SDK
- - The Z# compiler [source code](https://github.com/xpodev/zsharp-compiler/tree/development) (currently on a different branch)
+ - The Z# compiler [source code](https://github.com/xpodev/zsharp-compiler/tree/development-v2) (currently on a different branch)
 
 After you have the above requirements, navigate to the solution folder and execute the following command:
 ```cmd
@@ -46,7 +46,6 @@ If you want to build for a specific target runtime, add one of the following opt
 | Union types            | :x:                |                                        |
 | Framework independency | :x:                |                                        |
 | Comments               | :heavy_check_mark: |                                        |
-
 
 # ToDo List
 * Only load user defined keywords/operator when their namespace is used (currently always in global scope)
