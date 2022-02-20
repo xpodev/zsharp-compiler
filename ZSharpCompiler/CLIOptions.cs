@@ -11,7 +11,7 @@ namespace ZSharp.Compiler
         public string OutputPath { get; set; }
 
         [Option('t', "type")]
-        public Core.ModuleKind Kind { get; set; }
+        public OldCore.ModuleKind Kind { get; set; }
 
         [Option('v', "version")]
         public string Version { get; set; }

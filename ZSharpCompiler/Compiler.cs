@@ -19,7 +19,7 @@ namespace ZSharp.Compiler
             Options = options;
 
             Assembly engineAssembly = Assembly.LoadFrom(Path.GetFullPath(Options.LanguageEngine, _exePath));
-            if (engineAssembly.GetCustomAttribute<Core.LanguageEngineAttribute>() is Core.LanguageEngineAttribute engine)
+            if (engineAssembly.GetCustomAttribute<OldCore.LanguageEngineAttribute>() is OldCore.LanguageEngineAttribute engine)
             {
                 Engine =
                     engine
@@ -61,6 +61,8 @@ namespace ZSharp.Compiler
             foreach (string file in files)
             {
                 using TextReader content = File.OpenText(file);
+                string text = content.ReadToEnd();
+                StringReader sReader = new(text);
 
                 Core.DocumentInfo document = new(file);
                 parser.SetDocument(document);
@@ -68,27 +70,28 @@ namespace ZSharp.Compiler
                     new(
                         document,
                         new(
-                            parser.Parse(content).Select(o => new Core.BuildResult<ErrorType, Core.ObjectInfo>(o))
+                            parser.Parse(sReader).Select(o => new Core.BuildResult<ErrorType, Core.ObjectInfo>(o))
                             )
                         )
                     );
+                Console.WriteLine();
             }
 
-            foreach (Core.IExpressionProcessor processor in Engine)
-            {
-                processor.PreProcess();
+            //foreach (Core.IExpressionProcessor processor in Engine)
+            //{
+            //    processor.PreProcess();
 
-                foreach (var info in documents)
-                {
-                    Engine.BeginDocument(info.DocumentInfo);
+            //    foreach (var info in documents)
+            //    {
+            //        Engine.BeginDocument(info.DocumentInfo);
 
-                    info.Objects = processor.Process(info.Objects);
+            //        info.Objects = processor.Process(info.Objects);
 
-                    Engine.EndDocument();
-                }
+            //        Engine.EndDocument();
+            //    }
 
-                processor.PostProcess();
-            }
+            //    processor.PostProcess();
+            //}
 
             documents.ForEach(document => document.Objects.ForEach(LogErrors));
         }
@@ -105,7 +108,6 @@ namespace ZSharp.Compiler
             result.Errors.ForEach(error => 
                 Console.WriteLine(
                     $"{Path.GetFullPath(value.FileInfo.Document.Path)}" +
-                    //$"({value.FileInfo.StartLine}, {value.FileInfo.StartColumn}): " +
                     $"{error}"
                     )
                 );

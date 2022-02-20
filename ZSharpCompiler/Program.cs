@@ -13,14 +13,6 @@ namespace ZSharp.Compiler
 
             options.WithParsed(Compile);
 
-            //Compile(new()
-            //{
-            //    OutputPath = "source.exe",
-            //    Files = new[] { "." },
-            //    References = new[] { "./SDK/System.Console.dll" },
-            //    LanguageEngine = "ZSharp.Engine.dll"
-            //});
-
             return 0;
         }
 
