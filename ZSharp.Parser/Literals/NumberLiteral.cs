@@ -64,47 +64,90 @@ namespace ZSharp.Parser
         /// </summary>
         public const string UN = "U";
 
-        public Parser<char, Literal> Integer { get; }
+        #region Integer Decimal Parsers
 
-        public Parser<char, Literal> Real { get; }
+        public Parser<char, ObjectInfo<Literal<sbyte>>> SInt8 { get; }
+        public Parser<char, ObjectInfo<Literal<byte>>> UInt8 { get; }
+        public Parser<char, ObjectInfo<Literal<short>>> SInt16 { get; }
+        public Parser<char, ObjectInfo<Literal<ushort>>> UInt16 { get; }
+        public Parser<char, ObjectInfo<Literal<int>>> SInt32 { get; }
+        public Parser<char, ObjectInfo<Literal<uint>>> UInt32 { get; }
+        public Parser<char, ObjectInfo<Literal<long>>> SInt64 { get; }
+        public Parser<char, ObjectInfo<Literal<ulong>>> UInt64 { get; }
+        public Parser<char, ObjectInfo<Literal<nint>>> SIntN { get; }
+        public Parser<char, ObjectInfo<Literal<nuint>>> UIntN { get; }
 
-        private static Parser<char, object> CreateIntegerParser(Parser<char, string> parser, Parser<char, string> sign, int @base) =>
-            Map((string s, string num, string fmt) =>
-            {
-                bool neg = s == "-";
-                object value = fmt switch
-                {
-                    I1 => (sbyte)(neg ? -Convert.ToSByte(num, @base) : Convert.ToSByte(num, @base)),
-                    U1 => Convert.ToByte(num, @base),
-                    I2 => (short)(neg ? -Convert.ToInt16(num, @base) : Convert.ToInt16(num, @base)),
-                    U2 => Convert.ToUInt16(num, @base),
-                    I4 => neg ? -Convert.ToInt32(num, @base) : Convert.ToInt32(num, @base),
-                    U4 => Convert.ToUInt32(num, @base),
-                    I8 => neg ? -Convert.ToInt64(num, @base) : Convert.ToInt64(num, @base),
-                    U8 => Convert.ToUInt64(num, @base),
-                    IN => (nint)(neg ? -Convert.ToInt64(num, @base) : Convert.ToInt64(num, @base)),
-                    UN => (nuint)Convert.ToUInt64(num, @base),
-                    _ => (object)(neg ? -Convert.ToInt32(num, @base) : Convert.ToInt32(num, @base))
-                };
-                return value;
-            },
-                sign,
-                parser,
-                OneOf(
-                    Try(String(I1)),
-                    Try(String(U1)),
-                    Try(String(I2)),
-                    Try(String(U2)),
-                    Try(String(I4)),
-                    Try(String(U4)),
-                    Try(String(I8)),
-                    Try(String(U8)),
-                    Try(String(IN)),
-                    Try(String(UN)),
-                    String(string.Empty)
-                ));
+        #endregion
 
-        public NumberLiteral()
+        #region Integer HexaDecimal Parsers
+
+        public Parser<char, ObjectInfo<Literal<sbyte>>> SInt8Hex { get; }
+        public Parser<char, ObjectInfo<Literal<byte>>> UInt8Hex { get; }
+        public Parser<char, ObjectInfo<Literal<short>>> SInt16Hex { get; }
+        public Parser<char, ObjectInfo<Literal<ushort>>> UInt16Hex { get; }
+        public Parser<char, ObjectInfo<Literal<int>>> SInt32Hex { get; }
+        public Parser<char, ObjectInfo<Literal<uint>>> UInt32Hex { get; }
+        public Parser<char, ObjectInfo<Literal<long>>> SInt64Hex { get; }
+        public Parser<char, ObjectInfo<Literal<ulong>>> UInt64Hex { get; }
+        public Parser<char, ObjectInfo<Literal<nint>>> SIntNHex { get; }
+        public Parser<char, ObjectInfo<Literal<nuint>>> UIntNHex { get; }
+
+        #endregion
+
+        #region Integer Octal Parsers
+
+        public Parser<char, ObjectInfo<Literal<sbyte>>> SInt8Octal { get; }
+        public Parser<char, ObjectInfo<Literal<byte>>> UInt8Octal { get; }
+        public Parser<char, ObjectInfo<Literal<short>>> SInt16Octal { get; }
+        public Parser<char, ObjectInfo<Literal<ushort>>> UInt16Octal { get; }
+        public Parser<char, ObjectInfo<Literal<int>>> SInt32Octal { get; }
+        public Parser<char, ObjectInfo<Literal<uint>>> UInt32Octal { get; }
+        public Parser<char, ObjectInfo<Literal<long>>> SInt64Octal { get; }
+        public Parser<char, ObjectInfo<Literal<ulong>>> UInt64Octal { get; }
+        public Parser<char, ObjectInfo<Literal<nint>>> SIntNOctal { get; }
+        public Parser<char, ObjectInfo<Literal<nuint>>> UIntNOctal { get; }
+
+        #endregion
+
+        #region Integer Parsers
+
+        public Parser<char, ObjectInfo<Literal>> IntegerDecimal { get; }
+        public Parser<char, ObjectInfo<Literal>> IntegerHex { get; }
+        public Parser<char, ObjectInfo<Literal>> IntegerOctal { get; }
+
+        #endregion
+
+        #region Real Parsers
+
+        public Parser<char, ObjectInfo<Literal<float>>> Float32 { get; }
+        public Parser<char, ObjectInfo<Literal<double>>> Float64 { get; }
+
+        #endregion
+
+        public Parser<char, ObjectInfo<Literal>> Integer { get; }
+
+        public Parser<char, ObjectInfo<Literal>> Real { get; }
+
+        public Parser<char, ObjectInfo<Literal>> Parser { get; }
+
+        private static Parser<char, Literal<T>> CreateIntegerParser<T>(
+            Parser<char, string> parser, 
+            Parser<char, string> sign, 
+            int @base, 
+            Func<string, int, T> convertPositive,
+            Func<string, int, T> convertNegative,
+            string fmt = null) =>
+                Map(
+                    (s, num, _) =>
+                    {
+                        return new Literal<T>(s == "-" ? convertNegative(num, @base) : convertPositive(num, @base));
+                    },
+                    sign,
+                    parser,
+                    String(fmt)
+                    );
+
+        public NumberLiteral(DocumentParser doc)
         {
             Parser<char, char> zero, nonZeroDigit, digit;
             zero = Char('0');
@@ -121,11 +164,98 @@ namespace ZSharp.Parser
             Parser<char, string> octal =
                 Map(string.Concat, zero.Then(Char('o')).Then(OneOf("01234567").ManyString()));
 
+            // Integer Decimals
+            {
+                SInt8 = doc.CreateParser(CreateIntegerParser(dec, sign, 10, Convert.ToSByte, (n, b) => (sbyte)-Convert.ToSByte(n, b), I1));
+                UInt8 = doc.CreateParser(CreateIntegerParser(dec, sign, 10, Convert.ToByte, (n, b) => (byte)-Convert.ToByte(n, b), U1));
+                SInt16 = doc.CreateParser(CreateIntegerParser(dec, sign, 10, Convert.ToInt16, (n, b) => (short)-Convert.ToInt16(n, b), I2));
+                UInt16 = doc.CreateParser(CreateIntegerParser(dec, sign, 10, Convert.ToUInt16, (n, b) => (ushort)-Convert.ToUInt16(n, b), U2));
+                SInt32 = doc.CreateParser(OneOf(
+                    Try(CreateIntegerParser(dec, sign, 10, Convert.ToInt32, (n, b) => -Convert.ToInt32(n, b), I4)),
+                    CreateIntegerParser(dec, sign, 10, Convert.ToInt32, (n, b) => -Convert.ToInt32(n, b), string.Empty)
+                    ));
+                UInt32 = doc.CreateParser(CreateIntegerParser(dec, sign, 10, Convert.ToUInt32, (n, b) => (uint)-Convert.ToUInt32(n, b), U4));
+                SInt64 = doc.CreateParser(CreateIntegerParser(dec, sign, 10, Convert.ToInt64, (n, b) => -Convert.ToInt64(n, b), I8));
+                UInt64 = doc.CreateParser(dec.Before(String(U8)).Select(Convert.ToUInt64).Select<Literal<ulong>>(n => new(n)));
+                SIntN = doc.CreateParser(CreateIntegerParser(dec, sign, 10, (n, b) => (nint)Convert.ToInt64(n, b), (n, b) => (nint)(-Convert.ToInt64(n, b)), IN));
+                UIntN = doc.CreateParser(dec.Before(String(UN)).Select(Convert.ToUInt64).Select<Literal<nuint>>(n => new((nuint)n)));
+                IntegerDecimal = OneOf(
+                    Try(SInt8.Select(v => v.With<Literal>())),
+                    Try(UInt8.Select(v => v.With<Literal>())),
+                    Try(SInt16.Select(v => v.With<Literal>())),
+                    Try(UInt16.Select(v => v.With<Literal>())),
+                    Try(UInt32.Select(v => v.With<Literal>())),
+                    Try(SInt64.Select(v => v.With<Literal>())),
+                    Try(UInt64.Select(v => v.With<Literal>())),
+                    Try(SIntN.Select(v => v.With<Literal>())),
+                    Try(UIntN.Select(v => v.With<Literal>())),
+                    SInt32.Select(v => v.With<Literal>())
+                    );
+            }
+
+            // Integer Hex
+            {
+                SInt8Hex = doc.CreateParser(CreateIntegerParser(hex, sign, 16, Convert.ToSByte, (n, b) => (sbyte)-Convert.ToSByte(n, b), I1));
+                UInt8Hex = doc.CreateParser(CreateIntegerParser(hex, sign, 16, Convert.ToByte, (n, b) => (byte)-Convert.ToByte(n, b), U1));
+                SInt16Hex = doc.CreateParser(CreateIntegerParser(hex, sign, 16, Convert.ToInt16, (n, b) => (short)-Convert.ToInt16(n, b), I2));
+                UInt16Hex = doc.CreateParser(CreateIntegerParser(hex, sign, 16, Convert.ToUInt16, (n, b) => (ushort)-Convert.ToUInt16(n, b), U2));
+                SInt32Hex = doc.CreateParser(OneOf(
+                    Try(CreateIntegerParser(hex, sign, 16, Convert.ToInt32, (n, b) => -Convert.ToInt32(n, b), I4)),
+                    CreateIntegerParser(hex, sign, 16, Convert.ToInt32, (n, b) => -Convert.ToInt32(n, b), string.Empty)
+                    ));
+                UInt32Hex = doc.CreateParser(CreateIntegerParser(hex, sign, 16, Convert.ToUInt32, (n, b) => (uint)-Convert.ToUInt32(n, b), U4));
+                SInt64Hex = doc.CreateParser(CreateIntegerParser(hex, sign, 16, Convert.ToInt64, (n, b) => -Convert.ToInt64(n, b), I8));
+                UInt64Hex = doc.CreateParser(hex.Before(String(U8)).Select(s => Convert.ToUInt64(s, 16)).Select<Literal<ulong>>(n => new(n)));
+                SIntNHex = doc.CreateParser(CreateIntegerParser(hex, sign, 16, (n, b) => (nint)Convert.ToInt64(n, b), (n, b) => (nint)(-Convert.ToInt64(n, b)), IN));
+                UIntNHex = doc.CreateParser(hex.Before(String(UN)).Select(s => Convert.ToUInt64(s, 16)).Select<Literal<nuint>>(n => new((nuint)n)));
+                IntegerHex = OneOf(
+                    Try(SInt8Hex.Select(v => v.With<Literal>())),
+                    Try(UInt8Hex.Select(v => v.With<Literal>())),
+                    Try(SInt16Hex.Select(v => v.With<Literal>())),
+                    Try(UInt16Hex.Select(v => v.With<Literal>())),
+                    Try(UInt32Hex.Select(v => v.With<Literal>())),
+                    Try(SInt64Hex.Select(v => v.With<Literal>())),
+                    Try(UInt64Hex.Select(v => v.With<Literal>())),
+                    Try(SIntNHex.Select(v => v.With<Literal>())),
+                    Try(UIntNHex.Select(v => v.With<Literal>())),
+                    SInt32Hex.Select(v => v.With<Literal>())
+                    );
+            }
+
+            // Integer Octal
+            {
+                SInt8Octal = doc.CreateParser(CreateIntegerParser(octal, sign, 8, Convert.ToSByte, (n, b) => (sbyte)-Convert.ToSByte(n, b), I1));
+                UInt8Octal = doc.CreateParser(CreateIntegerParser(octal, sign, 8, Convert.ToByte, (n, b) => (byte)-Convert.ToByte(n, b), U1));
+                SInt16Octal = doc.CreateParser(CreateIntegerParser(octal, sign, 8, Convert.ToInt16, (n, b) => (short)-Convert.ToInt16(n, b), I2));
+                UInt16Octal = doc.CreateParser(CreateIntegerParser(octal, sign, 8, Convert.ToUInt16, (n, b) => (ushort)-Convert.ToUInt16(n, b), U2));
+                SInt32Octal = doc.CreateParser(OneOf(
+                    Try(CreateIntegerParser(octal, sign, 8, Convert.ToInt32, (n, b) => -Convert.ToInt32(n, b), I4)),
+                    CreateIntegerParser(octal, sign, 8, Convert.ToInt32, (n, b) => -Convert.ToInt32(n, b), string.Empty)
+                    ));
+                UInt32Octal = doc.CreateParser(CreateIntegerParser(octal, sign, 8, Convert.ToUInt32, (n, b) => (uint)-Convert.ToUInt32(n, b), U4));
+                SInt64Octal = doc.CreateParser(CreateIntegerParser(octal, sign, 8, Convert.ToInt64, (n, b) => -Convert.ToInt64(n, b), I8));
+                UInt64Octal = doc.CreateParser(octal.Before(String(U8)).Select(s => Convert.ToUInt64(s, 8)).Select<Literal<ulong>>(n => new(n)));
+                SIntNOctal = doc.CreateParser(CreateIntegerParser(octal, sign, 8, (n, b) => (nint)Convert.ToInt64(n, b), (n, b) => (nint)(-Convert.ToInt64(n, b)), IN));
+                UIntNOctal = doc.CreateParser(octal.Before(String(UN)).Select(s => Convert.ToUInt64(s, 8)).Select<Literal<nuint>>(n => new((nuint)n)));
+                IntegerOctal = OneOf(
+                    Try(SInt8Octal.Select(v => v.With<Literal>())),
+                    Try(UInt8Octal.Select(v => v.With<Literal>())),
+                    Try(SInt16Octal.Select(v => v.With<Literal>())),
+                    Try(UInt16Octal.Select(v => v.With<Literal>())),
+                    Try(UInt32Octal.Select(v => v.With<Literal>())),
+                    Try(SInt64Octal.Select(v => v.With<Literal>())),
+                    Try(UInt64Octal.Select(v => v.With<Literal>())),
+                    Try(SIntNOctal.Select(v => v.With<Literal>())),
+                    Try(UIntNOctal.Select(v => v.With<Literal>())),
+                    SInt32Octal.Select(v => v.With<Literal>())
+                    );
+            }
+
             Integer = OneOf(
-                Try(CreateIntegerParser(octal, sign, 8)),
-                Try(CreateIntegerParser(hex, sign, 16)),
-                CreateIntegerParser(dec, sign, 10)
-                ).Select(o => new Literal(o));
+                Try(IntegerHex),
+                Try(IntegerOctal),
+                IntegerDecimal
+                );
 
             Parser<char, string> real =
                 Map(string.Concat,
@@ -137,21 +267,18 @@ namespace ZSharp.Parser
                         )
                     );
 
-            Real =
-                Map(
-                    (num, fmt) => fmt switch
-                    {
-                        R4 => Convert.ToSingle(num),
-                        R8 => Convert.ToDouble(num),
-                        _ => (object)Convert.ToDouble(num),
-                    }, 
-                    real,
-                    OneOf(
-                        Try(String(R4)),
-                        Try(String(R8)),
-                        String(string.Empty)
-                        )
-                    ).Select(o => new Literal(o));
+            Float32 = doc.CreateParser(real.Before(String(R4).Optional()).Select(s => new Literal<float>(Convert.ToSingle(s))));
+            Float64 = doc.CreateParser(real.Before(String(R8).Optional()).Select(s => new Literal<double>(Convert.ToDouble(s))));
+
+            Real = OneOf(
+                Try(Float64).Select(v => v.With<Literal>()),
+                Float32.Select(v => v.With<Literal>())
+                );
+
+            Parser = OneOf(
+                Try(Integer),
+                Real
+                );
         }
     }
 }

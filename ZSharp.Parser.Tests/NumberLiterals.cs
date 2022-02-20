@@ -1,34 +1,23 @@
 ﻿using Pidgin;
 using System;
-using System.Collections.Generic;
 using Xunit;
 
 namespace ZSharp.Parser.Tests
 {
     public class NumberLiterals
     {
-        static NumberLiteral parser = new();
+        private static readonly NumberLiteral parser = DocumentParser.Instance.Literal.Number;
 
-        private static void ExpectLiteral<T>(Parser<char, Core.Literal> parser, string s, T expected)
+        private static void ExpectLiteral<T>(Parser<char, Core.ObjectInfo<Core.Literal>> parser, string s, T expected)
         {
-            Core.Literal result = parser.ParseOrThrow(s);
+            Core.ObjectInfo<Core.Literal> result = parser.ParseOrThrow(s);
 
-            T actual = Assert.IsType<T>(result.Value);
+            T actual = Assert.IsType<T>(result.Object.Value);
 
             Assert.Equal(expected, actual);
         }
 
         [Theory]
-        //[InlineData("0.0", 0f)]
-        //[InlineData("1.0", 1f)]
-        //[InlineData("1.5", 1.5f)]
-        //[InlineData("0.", 0f)]
-        //[InlineData(".0", 0f)]
-        //[InlineData(".5", .5f)]
-        //[InlineData(".010", .010f)]
-        //[InlineData("1.", 1f)]
-        //[InlineData("190.010", 190.010f)]
-        //[InlineData("190.", 190f)]
         [InlineData("0.0f32", 0f)]
         [InlineData("1.0f32", 1f)]
         [InlineData("1.5f32", 1.5f)]
@@ -172,7 +161,6 @@ namespace ZSharp.Parser.Tests
                 for (ulong i = 0; i <= 1000; i++)
                 {
                     ExpectLiteral(parser.Integer, ToString(i, Base) + NumberLiteral.U8, i);
-                    ExpectLiteral(parser.Integer, ToSignedString(i, Base) + NumberLiteral.U8, i);
                 }
             }
 
@@ -192,7 +180,6 @@ namespace ZSharp.Parser.Tests
                 for (nuint i = 0; i <= 1000; i++)
                 {
                     ExpectLiteral(parser.Integer, ToString(i, Base) + NumberLiteral.UN, i);
-                    ExpectLiteral(parser.Integer, ToSignedString(i, Base) + NumberLiteral.UN, i);
                 }
             }
 

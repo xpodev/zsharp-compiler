@@ -1,48 +1,73 @@
 ﻿using Pidgin.Comment;
 using System.Collections.Generic;
-using System.IO;
+using System.Linq;
+using ZSharp.Parser.Extensibility;
 
 namespace ZSharp.Parser
 {
-    internal class DocumentParser
+    public class DocumentParser : ExtensibleParser<Collection, DocumentObject>
     {
-        private Core.DocumentInfo _document;
-        private readonly Parser<char, IEnumerable<Core.ObjectInfo>> _documentParser;
+#if DEBUG
+        public static DocumentParser Instance { get; } = new();
+#endif
+
+        private DocumentInfo _document;
+        private Parser<char, Collection> _documentParser;
 
         private readonly Parser<char, Unit> _anyWhitespace;
 
-        internal TermParser Term { get; }
+        public Symbols Symbols { get; } = new();
 
-        internal DocumentParser()
+        public IdentifierParser Identifier { get; }
+
+        public LiteralParser Literal { get; }
+
+        public TermParser Term { get; }
+
+        public ExpressionParser Expression { get; }
+
+        public override Parser<char, Collection> Parser => _documentParser;
+
+        internal DocumentParser() : base("Core.Document", "<ZSharp>")
         {
-            Parser<char, Unit> comments, whitespaces;
+            Parser<char, Unit> comments, whitespace;
 
-            comments = 
+            comments =
                 Try(CommentParser.SkipLineComment(String("//")))
-                .Or(CommentParser.SkipBlockComment(String("/*"), String("*/")))
-                .SkipMany();
+                .Or(CommentParser.SkipBlockComment(String("/*"), String("*/")));
 
-            whitespaces = Whitespaces.IgnoreResult().Or(EndOfLine.IgnoreResult()).SkipMany();
-            _anyWhitespace = comments.Or(whitespaces);
+            whitespace = Whitespace.IgnoreResult().Or(EndOfLine.IgnoreResult());
+            _anyWhitespace = OneOf(comments, whitespace).SkipMany();
 
+            ParserExtensions.Symbols = Symbols;
+            ParserExtensions.Parser = this;
+
+            Identifier = new(this);
+            Literal = new(this);
             Term = new(this);
+            Expression = new(this);
+
+            Expression.Build(Term.Parser);
         }
 
-        internal void SetDoucument(Core.DocumentInfo document) => _document = document;
+        internal void SetDocument(DocumentInfo document) => _document = document;
 
-        internal IEnumerable<Core.ObjectInfo> Parse(TextReader stream) => _documentParser.ParseOrThrow(stream);
-
-        internal Parser<char, Core.ObjectInfo> CreateParser<T>(Parser<char, T> parser)
-            where T : Core.Expression 
+        public Parser<char, ObjectInfo<T>> CreateParser<T>(Parser<char, T> parser)
+            where T : DocumentObject 
             => WithAnyWhitespace(
                 Map((start, expr, end) => 
-                    new Core.ObjectInfo(new(_document, start.Line, start.Col, end.Line, end.Col), expr),
-                    Parser<char>.CurrentPos,
+                    new ObjectInfo<T>(new(_document, start.Line, start.Col, end.Line, end.Col), expr),
+                    CurrentPos,
                     parser,
-                    Parser<char>.CurrentPos
+                    CurrentPos
                     )
                 );
 
         internal Parser<char, T> WithAnyWhitespace<T>(Parser<char, T> parser) => parser.Before(_anyWhitespace);
+
+        public void Build(Parser parser)
+        {
+            _documentParser = _anyWhitespace.Then(OneOf(_extensions.Values.Select(extension => Try(extension.Parser))).BeforeWhitespace().ManyCollection());
+        }
     }
 }

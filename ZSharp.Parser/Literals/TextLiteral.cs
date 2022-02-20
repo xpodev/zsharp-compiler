@@ -1,12 +1,14 @@
 ﻿namespace ZSharp.Parser
 {
-    internal class TextLiteral
+    public class TextLiteral
     {
-        internal Parser<char, Core.Literal> String { get; }
+        public Parser<char, ObjectInfo<Literal<string>>> String { get; }
 
-        internal Parser<char, Core.Literal> Char { get; }
+        public Parser<char, ObjectInfo<Literal<char>>> Char { get; }
 
-        internal TextLiteral()
+        internal Parser<char, ObjectInfo<Literal>> Parser { get; }
+
+        internal TextLiteral(DocumentParser doc)
         {
             Parser<char, Unit> doubleQuotes, singleQuote, backslash;
             Parser<char, char> character;
@@ -24,13 +26,15 @@
                 }
             ));
 
-            Char = 
-                from c in character.Or(Any).Between(singleQuote)
-                select new Core.Literal(c);
+            Char = doc.CreateParser(
+                character.Or(Any).Between(singleQuote).Select(c => new Literal<char>(c))
+                );
 
-            String = 
-                from s in character.Or(AnyCharExcept('\"')).ManyString().Between(doubleQuotes)
-                select new Core.Literal(s);
+            String = doc.CreateParser(
+                character.Or(AnyCharExcept('\"')).ManyString().Between(doubleQuotes).Select(s => new Literal<string>(s))
+                );
+
+            Parser = OneOf(Char.Cast<ObjectInfo<Literal>>(), String.Cast<ObjectInfo<Literal>>());
         }
     }
 }

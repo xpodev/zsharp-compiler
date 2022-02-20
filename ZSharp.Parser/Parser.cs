@@ -3,12 +3,21 @@ using System.IO;
 
 namespace ZSharp.Parser
 {
-    internal class Parser : IParser
+    public class Parser : IParser
     {
         private readonly DocumentParser _parser = new();
 
+        public DocumentParser Document => _parser;
+
+        public Parser()
+        {
+            
+        }
+
+        public void SetDocument(DocumentInfo document) => _parser.SetDocument(document);
+
         public IEnumerable<ObjectInfo> Parse(TextReader input) => _parser.Parse(input);
 
-        public void SetDocument(DocumentInfo document) => _parser.SetDoucument(document);
+        public void Build() => _parser.Build(this);
     }
 }

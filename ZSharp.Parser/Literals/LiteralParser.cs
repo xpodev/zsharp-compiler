@@ -1,21 +1,25 @@
 ﻿namespace ZSharp.Parser
 {
-    internal class LiteralParser
+    public class LiteralParser
     {
-        internal Parser<char, ObjectInfo> Parser;
+        public TextLiteral Text { get; }
 
-        internal LiteralParser(DocumentParser p, TermParser t)
+        public NumberLiteral Number { get; }
+
+        public KeywordLiteral Keyword { get; }
+
+        internal Parser<char, ObjectInfo<Literal>> Parser { get; }
+
+        internal LiteralParser(DocumentParser doc)
         {
-            TextLiteral text = new();
-            NumberLiteral number = new();
-            KeywordLiteral keyword = new(t);
+            Text = new(doc);
+            Number = new(doc);
+            Keyword = new(doc);
 
             Parser = OneOf(
-                p.CreateParser(text.Char),
-                p.CreateParser(text.String),
-                p.CreateParser(number.Integer),
-                p.CreateParser(number.Real),
-                p.CreateParser(keyword.Parser)
+                Text.Parser,
+                Number.Parser,
+                Keyword.Parser
                 );
         }
     }

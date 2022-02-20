@@ -1,23 +1,38 @@
 ﻿namespace ZSharp.Parser
 {
-    internal class KeywordLiteral
+    public class KeywordLiteral
     {
         const string NullKeyword = "null";
         const string TrueKeyword = "true";
         const string FalseKeyword = "false";
 
-        internal Parser<char, Expression> Parser { get; }
+        public static Literal<object> Null { get; } = new(null);
 
-        internal KeywordLiteral(TermParser term)
+        public static Literal<bool> True { get; } = new(true);
+
+        public static Literal<bool> False { get; } = new(false);
+
+        public Parser<char, ObjectInfo<Literal<object>>> NullParser { get; }
+
+        public Parser<char, ObjectInfo<Literal<bool>>> TrueParser { get; }
+
+        public Parser<char, ObjectInfo<Literal<bool>>> FalseParser { get; }
+
+        public Parser<char, ObjectInfo<Literal<bool>>> Boolean { get; }
+
+        public Parser<char, ObjectInfo<Literal>> Parser { get; }
+
+        internal KeywordLiteral(DocumentParser doc)
         {
-            Parser = term.Identifier.Select<Expression>(
-                id => id.Name switch
-                {
-                    NullKeyword => new Literal(null),
-                    TrueKeyword => new Literal(true),
-                    FalseKeyword => new Literal(false),
-                    string s => new Identifier(s)
-                });
+            NullParser = doc.CreateParser(doc.Identifier.Parser.Assert(s => s.Object.Name == NullKeyword).ThenReturn(Null));
+            TrueParser = doc.CreateParser(doc.Identifier.Parser.Assert(s => s.Object.Name == TrueKeyword).ThenReturn(True));
+            FalseParser = doc.CreateParser(doc.Identifier.Parser.Assert(s => s.Object.Name == FalseKeyword).ThenReturn(False));
+
+            Parser = OneOf(
+                NullParser.Select(v => v.With<Literal>()),
+                TrueParser.Select(v => v.With<Literal>()),
+                FalseParser.Select(v => v.With<Literal>())
+                );
         }
     }
 }
