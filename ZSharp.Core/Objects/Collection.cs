@@ -51,16 +51,18 @@ namespace ZSharp.Core
             return $"[{string.Join(", ", Items)}]";
         }
 
-        public static ObjectInfo Create(IEnumerable<ObjectInfo> objects) => 
-            new(objects.Select(o => o.FileInfo).Aggregate(FileInfo.Combine), new Collection(objects));
+        public static ObjectInfo Create(IEnumerable<ObjectInfo> objects) =>
+            objects.Any() ? new(objects.Select(o => o.FileInfo).Aggregate(FileInfo.Combine), new Collection(objects)) : new(new(), Empty);
     }
 
-    public class Collection<T> : Collection
+    public class Collection<T>
+        : DocumentObject
+        , IEnumerable<ObjectInfo<T>>
         where T : DocumentObject
     {
-        public new List<ObjectInfo<T>> Items { get; set; }
+        public List<ObjectInfo<T>> Items { get; set; }
 
-        public static new readonly Collection<T> Empty = new();
+        public static readonly Collection<T> Empty = new();
 
         public Collection(params ObjectInfo<T>[] expressions) : this((IEnumerable<ObjectInfo<T>>)expressions)
         {
@@ -82,17 +84,19 @@ namespace ZSharp.Core
 
         public void AddRange(IEnumerable<ObjectInfo<T>> source) => Items.AddRange(source);
 
-        public new IEnumerator<ObjectInfo<T>> GetEnumerator()
+        public IEnumerator<ObjectInfo<T>> GetEnumerator()
         {
             return Items.GetEnumerator();
         }
 
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
         public override string ToString()
         {
-            return string.Join(", ", Items);
+            return $"[{string.Join(", ", Items)}]";
         }
 
         public static ObjectInfo<Collection<T>> Create(IEnumerable<ObjectInfo<T>> objects) =>
-            objects.Count() == 0 ? new(new(), Empty) : new(objects.Select(o => o.FileInfo).Aggregate(FileInfo.Combine), new Collection<T>(objects));
+            objects.Any() ? new(objects.Select(o => o.FileInfo).Aggregate(FileInfo.Combine), new Collection<T>(objects)) : new(new(), Empty);
     }
 }
