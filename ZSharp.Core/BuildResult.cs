@@ -50,7 +50,9 @@ namespace ZSharp.Core
 
         public static implicit operator ValueT(BuildResult<ErrorT, ValueT> input) => input.Value;
 
-        public static BuildResult<ErrorT, ValueT> operator|(BuildResult<ErrorT, ValueT> left, BuildResult<ErrorT, ValueT> right) =>
-            right.HasValue ? right : left;
+        public override string ToString()
+        {
+            return HasErrors ? $"{Errors.Count} Errors" : Value.ToString();
+        }
     }
 }
