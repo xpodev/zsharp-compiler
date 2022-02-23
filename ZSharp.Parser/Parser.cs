@@ -18,6 +18,12 @@ namespace ZSharp.Parser
 
         public IEnumerable<ObjectInfo> Parse(TextReader input) => _parser.Parse(input);
 
+        public IEnumerable<ObjectInfo> ParseFile(string filePath)
+        {
+            using TextReader stream = File.OpenText(filePath);
+            return Parse(stream);
+        }
+
         public void Build() => _parser.Build(this);
     }
 }
