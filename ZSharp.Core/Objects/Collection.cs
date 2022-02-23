@@ -5,7 +5,7 @@ using System.Linq;
 namespace ZSharp.Core
 {
     public class Collection
-        : DocumentObject
+        : Expression
         , IEnumerable<ObjectInfo>
     {
         public List<ObjectInfo> Items { get; set; }
@@ -56,7 +56,7 @@ namespace ZSharp.Core
     }
 
     public class Collection<T>
-        : DocumentObject
+        : Expression
         , IEnumerable<ObjectInfo<T>>
         where T : DocumentObject
     {
