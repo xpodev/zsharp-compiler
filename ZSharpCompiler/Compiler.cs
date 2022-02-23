@@ -96,7 +96,7 @@ namespace ZSharp.Compiler
             documents.ForEach(document => document.Objects.ForEach(LogErrors));
         }
 
-        public void FinishCompilcation()
+        public void FinishCompilation()
         {
             Engine.FinishCompilation(Options.OutputPath);
         }

@@ -34,7 +34,7 @@ namespace ZSharp.Compiler
 
             compiler.Compile(files);
 
-            compiler.FinishCompilcation();
+            compiler.FinishCompilation();
         }
     }
 }
