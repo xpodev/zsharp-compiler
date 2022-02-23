@@ -2,7 +2,7 @@
 
 namespace ZSharp.Core
 {
-    public interface IExpressionProcessor
+    public interface IDocumentObjectProcessor
     {
         void PreProcess();
 
