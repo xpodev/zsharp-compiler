@@ -54,46 +54,27 @@ namespace ZSharp.Compiler
         {
             Core.IParser parser = Engine.GetParser();
 
-            List<Core.BuildResult<ErrorType, Core.ObjectInfo>> source = new(), target = new();
-
-            List<Document> documents = new();
+            List<ObjectBuildResult> source = new(), target = new();
 
             foreach (string file in files)
             {
-                using TextReader content = File.OpenText(file);
-                string text = content.ReadToEnd();
-                StringReader sReader = new(text);
-
-                Core.DocumentInfo document = new(file);
-                parser.SetDocument(document);
-                documents.Add(
-                    new(
-                        document,
-                        new(
-                            parser.Parse(sReader).Select(o => new Core.BuildResult<ErrorType, Core.ObjectInfo>(o))
-                            )
-                        )
-                    );
-                Console.WriteLine();
+                source.AddRange(parser.ParseFile(file).Select(o => new Core.BuildResult<ErrorType, Core.ObjectInfo>(o)));
             }
 
-            //foreach (Core.IExpressionProcessor processor in Engine)
+            target.Capacity = source.Count;
+
+            //foreach (Core.IDocumentObjectProcessor processor in Engine)
             //{
             //    processor.PreProcess();
 
-            //    foreach (var info in documents)
-            //    {
-            //        Engine.BeginDocument(info.DocumentInfo);
-
-            //        info.Objects = processor.Process(info.Objects);
-
-            //        Engine.EndDocument();
-            //    }
+            //    target.AddRange(processor.Process(source));
 
             //    processor.PostProcess();
+
+            //    (source, target) = (target, source);
             //}
 
-            documents.ForEach(document => document.Objects.ForEach(LogErrors));
+            source.ForEach(LogErrors);
         }
 
         public void FinishCompilation()
