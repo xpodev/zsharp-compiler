@@ -1,13 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net5.0</TargetFramework>
+		<LangVersion>10</LangVersion>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\ZSharp.Core\ZSharp.Core.csproj" />
-    <ProjectReference Include="..\ZSharp.Language\ZSharp.Language.csproj" />
-    <ProjectReference Include="..\ZSharp.Parser\ZSharp.Parser.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+	  <Compile Include="..\GlobalUsings.cs" Link="GlobalUsings.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\ZSharp.Core\ZSharp.Core.csproj" />
+		<ProjectReference Include="..\ZSharp.Language\ZSharp.Language.csproj" />
+		<ProjectReference Include="..\ZSharp.Parser\ZSharp.Parser.csproj" />
+	</ItemGroup>
 
 </Project>
