@@ -6,7 +6,7 @@ namespace ZSharp.Core
     {
         void PreProcess();
 
-        List<BuildResult<ErrorType, ObjectInfo>> Process(List<BuildResult<ErrorType, ObjectInfo>> expression);
+        List<ObjectBuildResult> Process(List<ObjectBuildResult> expression);
 
         void PostProcess();
     }
