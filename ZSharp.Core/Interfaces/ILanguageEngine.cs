@@ -8,10 +8,6 @@
 
         void Setup();
 
-        void BeginDocument(DocumentInfo document);
-
-        void EndDocument();
-
         void FinishCompilation(string path);
 
         IParser GetParser();

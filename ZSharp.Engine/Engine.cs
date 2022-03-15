@@ -34,16 +34,6 @@ namespace ZSharp.Engine
             }
         }
 
-        public void BeginDocument(DocumentInfo document)
-        {
-            _parser.SetDocument(document);
-        }
-
-        public void EndDocument()
-        {
-            _parser.SetDocument(null);
-        }
-
         public void FinishCompilation(string path)
         {
             throw new NotImplementedException();
