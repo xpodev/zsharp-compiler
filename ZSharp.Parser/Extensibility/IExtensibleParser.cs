@@ -11,8 +11,8 @@
         /// Adds an extension parser to this parser.
         /// </summary>
         /// <param name="customParser">The new parser to add.</param>
-        /// <param name="settings">Settings related to how to build the parser. Can be used to extend the custom parser.</param>
-        void AddExtension<U>(ICustomParser<U> customParser, ParserBuilderSettings settings = default) where U : T;
+        /// <param name="keyword">The keyword that invokes the custom parser.</param>
+        void AddExtension<U>(ICustomParser<U> customParser, string keyword) where U : T;
 
         /// <summary>
         /// Get an extension registered in this parser by full name.
