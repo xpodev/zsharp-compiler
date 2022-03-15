@@ -1,6 +1,4 @@
-﻿using System.Linq;
-
-namespace ZSharp.Parser
+﻿namespace ZSharp.Parser
 {
     public class CodeBlockParser
     {
