@@ -2,7 +2,7 @@
 
 namespace ZSharp.Core
 {
-    public interface IDocumentObjectProcessor
+    public interface INodeProcessor
     {
         void PreProcess();
 

@@ -63,16 +63,16 @@ namespace ZSharp.Compiler
 
             target.Capacity = source.Count;
 
-            //foreach (Core.IDocumentObjectProcessor processor in Engine)
-            //{
-            //    processor.PreProcess();
+            foreach (Core.IDocumentObjectProcessor processor in Engine)
+            {
+                processor.PreProcess();
 
-            //    target.AddRange(processor.Process(source));
+                target.AddRange(processor.Process(source));
 
-            //    processor.PostProcess();
+                processor.PostProcess();
 
-            //    (source, target) = (target, source);
-            //}
+                (source, target) = (target, source);
+            }
 
             source.ForEach(LogErrors);
         }
