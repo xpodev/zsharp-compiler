@@ -1,7 +1,7 @@
 ﻿namespace ZSharp.Parser.Extensibility
 {
     public abstract class CustomParser<T> : ICustomParser<T>
-        where T : DocumentObject
+        where T : Node
     {
         private Parser<char, T> _parser;
 
@@ -15,13 +15,13 @@
             set
             {
                 _parser = value;
-                ObjectParser = _parser.Cast<DocumentObject>();
+                ObjectParser = _parser.Cast<Node>();
             }
         }
 
-        public Parser<char, DocumentObject> ObjectParser { get; private set; }
+        public Parser<char, Node> ObjectParser { get; private set; }
 
-        Parser<char, DocumentObject> ICustomParser.Parser
+        Parser<char, Node> ICustomParser.Parser
         {
             get => ObjectParser;
             set => ObjectParser = value;

@@ -4,6 +4,6 @@ namespace ZSharp.Core
 {
     public interface IParser
     {
-        IEnumerable<ObjectInfo> ParseFile(string filePath);
+        IEnumerable<NodeInfo> ParseFile(string filePath);
     }
 }

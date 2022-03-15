@@ -66,69 +66,69 @@ namespace ZSharp.Parser
 
         #region Integer Decimal Parsers
 
-        public Parser<char, ObjectInfo<Literal<sbyte>>> SInt8 { get; }
-        public Parser<char, ObjectInfo<Literal<byte>>> UInt8 { get; }
-        public Parser<char, ObjectInfo<Literal<short>>> SInt16 { get; }
-        public Parser<char, ObjectInfo<Literal<ushort>>> UInt16 { get; }
-        public Parser<char, ObjectInfo<Literal<int>>> SInt32 { get; }
-        public Parser<char, ObjectInfo<Literal<uint>>> UInt32 { get; }
-        public Parser<char, ObjectInfo<Literal<long>>> SInt64 { get; }
-        public Parser<char, ObjectInfo<Literal<ulong>>> UInt64 { get; }
-        public Parser<char, ObjectInfo<Literal<nint>>> SIntN { get; }
-        public Parser<char, ObjectInfo<Literal<nuint>>> UIntN { get; }
+        public Parser<char, NodeInfo<Literal<sbyte>>> SInt8 { get; }
+        public Parser<char, NodeInfo<Literal<byte>>> UInt8 { get; }
+        public Parser<char, NodeInfo<Literal<short>>> SInt16 { get; }
+        public Parser<char, NodeInfo<Literal<ushort>>> UInt16 { get; }
+        public Parser<char, NodeInfo<Literal<int>>> SInt32 { get; }
+        public Parser<char, NodeInfo<Literal<uint>>> UInt32 { get; }
+        public Parser<char, NodeInfo<Literal<long>>> SInt64 { get; }
+        public Parser<char, NodeInfo<Literal<ulong>>> UInt64 { get; }
+        public Parser<char, NodeInfo<Literal<nint>>> SIntN { get; }
+        public Parser<char, NodeInfo<Literal<nuint>>> UIntN { get; }
 
         #endregion
 
         #region Integer HexaDecimal Parsers
 
-        public Parser<char, ObjectInfo<Literal<sbyte>>> SInt8Hex { get; }
-        public Parser<char, ObjectInfo<Literal<byte>>> UInt8Hex { get; }
-        public Parser<char, ObjectInfo<Literal<short>>> SInt16Hex { get; }
-        public Parser<char, ObjectInfo<Literal<ushort>>> UInt16Hex { get; }
-        public Parser<char, ObjectInfo<Literal<int>>> SInt32Hex { get; }
-        public Parser<char, ObjectInfo<Literal<uint>>> UInt32Hex { get; }
-        public Parser<char, ObjectInfo<Literal<long>>> SInt64Hex { get; }
-        public Parser<char, ObjectInfo<Literal<ulong>>> UInt64Hex { get; }
-        public Parser<char, ObjectInfo<Literal<nint>>> SIntNHex { get; }
-        public Parser<char, ObjectInfo<Literal<nuint>>> UIntNHex { get; }
+        public Parser<char, NodeInfo<Literal<sbyte>>> SInt8Hex { get; }
+        public Parser<char, NodeInfo<Literal<byte>>> UInt8Hex { get; }
+        public Parser<char, NodeInfo<Literal<short>>> SInt16Hex { get; }
+        public Parser<char, NodeInfo<Literal<ushort>>> UInt16Hex { get; }
+        public Parser<char, NodeInfo<Literal<int>>> SInt32Hex { get; }
+        public Parser<char, NodeInfo<Literal<uint>>> UInt32Hex { get; }
+        public Parser<char, NodeInfo<Literal<long>>> SInt64Hex { get; }
+        public Parser<char, NodeInfo<Literal<ulong>>> UInt64Hex { get; }
+        public Parser<char, NodeInfo<Literal<nint>>> SIntNHex { get; }
+        public Parser<char, NodeInfo<Literal<nuint>>> UIntNHex { get; }
 
         #endregion
 
         #region Integer Octal Parsers
 
-        public Parser<char, ObjectInfo<Literal<sbyte>>> SInt8Octal { get; }
-        public Parser<char, ObjectInfo<Literal<byte>>> UInt8Octal { get; }
-        public Parser<char, ObjectInfo<Literal<short>>> SInt16Octal { get; }
-        public Parser<char, ObjectInfo<Literal<ushort>>> UInt16Octal { get; }
-        public Parser<char, ObjectInfo<Literal<int>>> SInt32Octal { get; }
-        public Parser<char, ObjectInfo<Literal<uint>>> UInt32Octal { get; }
-        public Parser<char, ObjectInfo<Literal<long>>> SInt64Octal { get; }
-        public Parser<char, ObjectInfo<Literal<ulong>>> UInt64Octal { get; }
-        public Parser<char, ObjectInfo<Literal<nint>>> SIntNOctal { get; }
-        public Parser<char, ObjectInfo<Literal<nuint>>> UIntNOctal { get; }
+        public Parser<char, NodeInfo<Literal<sbyte>>> SInt8Octal { get; }
+        public Parser<char, NodeInfo<Literal<byte>>> UInt8Octal { get; }
+        public Parser<char, NodeInfo<Literal<short>>> SInt16Octal { get; }
+        public Parser<char, NodeInfo<Literal<ushort>>> UInt16Octal { get; }
+        public Parser<char, NodeInfo<Literal<int>>> SInt32Octal { get; }
+        public Parser<char, NodeInfo<Literal<uint>>> UInt32Octal { get; }
+        public Parser<char, NodeInfo<Literal<long>>> SInt64Octal { get; }
+        public Parser<char, NodeInfo<Literal<ulong>>> UInt64Octal { get; }
+        public Parser<char, NodeInfo<Literal<nint>>> SIntNOctal { get; }
+        public Parser<char, NodeInfo<Literal<nuint>>> UIntNOctal { get; }
 
         #endregion
 
         #region Integer Parsers
 
-        public Parser<char, ObjectInfo<Literal>> IntegerDecimal { get; }
-        public Parser<char, ObjectInfo<Literal>> IntegerHex { get; }
-        public Parser<char, ObjectInfo<Literal>> IntegerOctal { get; }
+        public Parser<char, NodeInfo<Literal>> IntegerDecimal { get; }
+        public Parser<char, NodeInfo<Literal>> IntegerHex { get; }
+        public Parser<char, NodeInfo<Literal>> IntegerOctal { get; }
 
         #endregion
 
         #region Real Parsers
 
-        public Parser<char, ObjectInfo<Literal<float>>> Float32 { get; }
-        public Parser<char, ObjectInfo<Literal<double>>> Float64 { get; }
+        public Parser<char, NodeInfo<Literal<float>>> Float32 { get; }
+        public Parser<char, NodeInfo<Literal<double>>> Float64 { get; }
 
         #endregion
 
-        public Parser<char, ObjectInfo<Literal>> Integer { get; }
+        public Parser<char, NodeInfo<Literal>> Integer { get; }
 
-        public Parser<char, ObjectInfo<Literal>> Real { get; }
+        public Parser<char, NodeInfo<Literal>> Real { get; }
 
-        public Parser<char, ObjectInfo<Literal>> Parser { get; }
+        public Parser<char, NodeInfo<Literal>> Parser { get; }
 
         private static Parser<char, Literal<T>> CreateIntegerParser<T>(
             Parser<char, string> parser, 

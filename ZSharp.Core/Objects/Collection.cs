@@ -6,37 +6,37 @@ namespace ZSharp.Core
 {
     public class Collection
         : Expression
-        , IEnumerable<ObjectInfo>
+        , IEnumerable<NodeInfo>
     {
-        public List<ObjectInfo> Items { get; set; }
+        public List<NodeInfo> Items { get; set; }
 
         public static readonly Collection Empty = new();
 
         public int Count => Items.Count;
 
-        public Collection(params ObjectInfo[] expressions) : this((IEnumerable<ObjectInfo>)expressions)
+        public Collection(params NodeInfo[] expressions) : this((IEnumerable<NodeInfo>)expressions)
         {
 
         }
 
-        public Collection(IEnumerable<ObjectInfo> expressions)
+        public Collection(IEnumerable<NodeInfo> expressions)
         {
             Items = expressions is null ? new() : new(expressions);
         }
 
-        public Collection(Collection original, params ObjectInfo[] items)
-            : this((IEnumerable<ObjectInfo>)original)
+        public Collection(Collection original, params NodeInfo[] items)
+            : this((IEnumerable<NodeInfo>)original)
         {
             Items.AddRange(items);
         }
 
-        public void Add(ObjectInfo expression) => Items.Add(expression);
+        public void Add(NodeInfo expression) => Items.Add(expression);
 
-        public void AddRange(IEnumerable<ObjectInfo> source) => Items.AddRange(source);
+        public void AddRange(IEnumerable<NodeInfo> source) => Items.AddRange(source);
 
         public void Clear() => Items.Clear();
 
-        public IEnumerator<ObjectInfo> GetEnumerator()
+        public IEnumerator<NodeInfo> GetEnumerator()
         {
             return Items.GetEnumerator();
         }
@@ -51,40 +51,40 @@ namespace ZSharp.Core
             return $"[{string.Join(", ", Items)}]";
         }
 
-        public static ObjectInfo Create(IEnumerable<ObjectInfo> objects) =>
+        public static NodeInfo Create(IEnumerable<NodeInfo> objects) =>
             objects.Any() ? new(objects.Select(o => o.FileInfo).Aggregate(FileInfo.Combine), new Collection(objects)) : new(new(), Empty);
     }
 
     public class Collection<T>
         : Expression
-        , IEnumerable<ObjectInfo<T>>
-        where T : DocumentObject
+        , IEnumerable<NodeInfo<T>>
+        where T : Node
     {
-        public List<ObjectInfo<T>> Items { get; set; }
+        public List<NodeInfo<T>> Items { get; set; }
 
         public static readonly Collection<T> Empty = new();
 
-        public Collection(params ObjectInfo<T>[] expressions) : this((IEnumerable<ObjectInfo<T>>)expressions)
+        public Collection(params NodeInfo<T>[] expressions) : this((IEnumerable<NodeInfo<T>>)expressions)
         {
 
         }
 
-        public Collection(IEnumerable<ObjectInfo<T>> expressions)
+        public Collection(IEnumerable<NodeInfo<T>> expressions)
         {
             Items = expressions is null ? new() : new(expressions);
         }
 
-        public Collection(Collection<T> original, params ObjectInfo<T>[] items)
-            : this((IEnumerable<ObjectInfo<T>>)original)
+        public Collection(Collection<T> original, params NodeInfo<T>[] items)
+            : this((IEnumerable<NodeInfo<T>>)original)
         {
             Items.AddRange(items);
         }
 
-        public void Add(ObjectInfo<T> expression) => Items.Add(expression);
+        public void Add(NodeInfo<T> expression) => Items.Add(expression);
 
-        public void AddRange(IEnumerable<ObjectInfo<T>> source) => Items.AddRange(source);
+        public void AddRange(IEnumerable<NodeInfo<T>> source) => Items.AddRange(source);
 
-        public IEnumerator<ObjectInfo<T>> GetEnumerator()
+        public IEnumerator<NodeInfo<T>> GetEnumerator()
         {
             return Items.GetEnumerator();
         }
@@ -96,7 +96,7 @@ namespace ZSharp.Core
             return $"[{string.Join(", ", Items)}]";
         }
 
-        public static ObjectInfo<Collection<T>> Create(IEnumerable<ObjectInfo<T>> objects) =>
+        public static NodeInfo<Collection<T>> Create(IEnumerable<NodeInfo<T>> objects) =>
             objects.Any() ? new(objects.Select(o => o.FileInfo).Aggregate(FileInfo.Combine), new Collection<T>(objects)) : new(new(), Empty);
     }
 }

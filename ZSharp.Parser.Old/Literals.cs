@@ -22,7 +22,7 @@ namespace ZSharp.Parser
                 Map((dot, f) => dot + f, Char('.'), IntegralNumber)
                 );
 
-        public static readonly Parser<char, ObjectInfo> StringParser =
+        public static readonly Parser<char, NodeInfo> StringParser =
             CreateFileInfo(
                 AnyCharExcept('"').ManyString()
                 .Between(Symbols.DoubleQuotes, Symbols.DoubleQuotes)
@@ -30,7 +30,7 @@ namespace ZSharp.Parser
                 .Select<OldCore.Expression>(s => new Literal(s))
                 );
 
-        public static readonly Parser<char, ObjectInfo> CharacterParser =
+        public static readonly Parser<char, NodeInfo> CharacterParser =
             CreateFileInfo(
                 Parser<char>.Any
                 .Between(Symbols.SingleQuote, Symbols.SingleQuote)
@@ -38,7 +38,7 @@ namespace ZSharp.Parser
                 .Select<OldCore.Expression>(c => new Literal(c))
                 );
 
-        public static readonly Parser<char, ObjectInfo> IntegerParser =
+        public static readonly Parser<char, NodeInfo> IntegerParser =
             CreateFileInfo(
                 Map<char, string, string, object>((string num, string fmt) => fmt switch
                 {
@@ -71,7 +71,7 @@ namespace ZSharp.Parser
                 .Select<OldCore.Expression>(o => new Literal(o))
                 );
 
-        public static readonly Parser<char, ObjectInfo> RealParser =
+        public static readonly Parser<char, NodeInfo> RealParser =
             CreateFileInfo(
                 Map<char, string, string, object>((num, fmt) => fmt switch
                 {
@@ -87,7 +87,7 @@ namespace ZSharp.Parser
                 .Select<OldCore.Expression>(o => new Literal(o))
                 );
 
-        public static readonly Parser<char, ObjectInfo> Parser =
+        public static readonly Parser<char, NodeInfo> Parser =
             OneOf(
                 StringParser,
                 CharacterParser,

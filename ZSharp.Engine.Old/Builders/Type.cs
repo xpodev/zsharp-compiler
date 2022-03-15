@@ -136,7 +136,7 @@ namespace ZSharp.Engine
             }
             else
             {
-                BuildResult<ErrorType, ObjectInfo[]> basesResult = BuildResultUtils.CombineResults(bases.Select(ctx.Evaluate));
+                BuildResult<ErrorType, NodeInfo[]> basesResult = BuildResultUtils.CombineResults(bases.Select(ctx.Evaluate));
                 List<IType> types = new(basesResult.Value.Cast<IType>());
 
                 if (types.Count == 0)

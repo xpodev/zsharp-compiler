@@ -1,9 +1,9 @@
 ﻿namespace ZSharp.Language
 {
-    internal class FunctionBody : DocumentObject/*, IILCompilable*/
+    internal class FunctionBody : Node/*, IILCompilable*/
     {
         public Function DeclaringFunction { get; internal set; }
 
-        public DocumentObject Code { get; internal set; } 
+        public Node Code { get; internal set; } 
     }
 }

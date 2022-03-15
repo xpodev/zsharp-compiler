@@ -10,9 +10,9 @@ namespace ZSharp.Parser
 {
     internal static class Utils
     {
-        public static Parser<char, ObjectInfo> CreateObjectInfo(DocumentInfo document, Parser<char, OldCore.Expression> parser) =>
+        public static Parser<char, NodeInfo> CreateObjectInfo(DocumentInfo document, Parser<char, OldCore.Expression> parser) =>
             Map(
-                (start, expr, end) => new ObjectInfo(new(document, start.Line, start.Col, end.Line, end.Col), expr), 
+                (start, expr, end) => new NodeInfo(new(document, start.Line, start.Col, end.Line, end.Col), expr), 
                 CurrentPos, 
                 parser, 
                 CurrentPos

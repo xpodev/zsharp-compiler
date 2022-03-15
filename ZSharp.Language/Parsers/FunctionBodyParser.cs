@@ -7,13 +7,13 @@ using ZSharp.Parser;
 
 namespace ZSharp.Language
 {
-    internal class FunctionBodyParser : ExtensibleParser<FunctionBody, DocumentObject>
+    internal class FunctionBodyParser : ExtensibleParser<FunctionBody, Node>
     {
         public FunctionBodyParser() : base("FunctionBody", "<ZSharp>") { }
 
         internal void Build(Parser.Parser parser)
         {
-            //Parser<char, IEnumerable<DocumentObject>> itemParser = Pidgin.Parser.OneOf(_ex)
+            //Parser<char, IEnumerable<Node>> itemParser = Pidgin.Parser.OneOf(_ex)
 
             Parser =
                 from expr in Pidgin.Parser.OneOf(

@@ -2,7 +2,7 @@
 {
     public class TermParser
     {
-        internal Parser<char, ObjectInfo<Expression>> Parser { get; }
+        internal Parser<char, NodeInfo<Expression>> Parser { get; }
 
         internal TermParser(DocumentParser doc)
         {

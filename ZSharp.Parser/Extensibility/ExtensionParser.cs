@@ -6,13 +6,13 @@
 
         public string Name => Original.Name;
 
-        Parser<char, DocumentObject> ICustomParser.Parser
+        Parser<char, Node> ICustomParser.Parser
         {
             get => Original.Parser;
             set => Original.Parser = value;
         }
 
-        public Parser<char, ObjectInfo> Parser { get; internal set; }
+        public Parser<char, NodeInfo> Parser { get; internal set; }
 
         public ExtensionParser(ICustomParser original)
         {

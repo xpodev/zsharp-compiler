@@ -6,7 +6,7 @@ namespace ZSharp.Engine
 {
     internal static class BuildResultUtils
     {
-        public static BuildResult<ErrorType, Expression?> Bind<T>(BuildResult<ErrorType, ObjectInfo> input, Func<T, BuildResult<string, Expression?>> func)
+        public static BuildResult<ErrorType, Expression?> Bind<T>(BuildResult<ErrorType, NodeInfo> input, Func<T, BuildResult<string, Expression?>> func)
         {
             BuildResult<ErrorType, Expression?> result = new(input.Value);
             var output = func(
@@ -18,7 +18,7 @@ namespace ZSharp.Engine
             return result;
         }
 
-        public static BuildResult<ErrorType, Expression?> Bind<T>(ObjectInfo info, Func<T, BuildResult<ErrorType, Expression?>> func)
+        public static BuildResult<ErrorType, Expression?> Bind<T>(NodeInfo info, Func<T, BuildResult<ErrorType, Expression?>> func)
         {
             BuildResult<ErrorType, Expression?> output = func(
                 info.Expression is T expr 
@@ -78,7 +78,7 @@ namespace ZSharp.Engine
         public static BuildResult<ErrorType, Expression?> Error(this BuildResult<ErrorType, Expression?> result, string errorMessage) =>
             result.Error(new(errorMessage));
 
-        //public static BuildResult<ErrorType, Expression?> Error(this BuildResult<ErrorType, Expression?> result, string errorMessage, ObjectInfo info) =>
+        //public static BuildResult<ErrorType, Expression?> Error(this BuildResult<ErrorType, Expression?> result, string errorMessage, NodeInfo info) =>
         //    result.Error(new(errorMessage, info));
     }
 }

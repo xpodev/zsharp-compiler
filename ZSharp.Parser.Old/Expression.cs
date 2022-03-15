@@ -14,15 +14,15 @@ namespace ZSharp.Parser
     {
         private static bool _isExpressionParserBuilt = false, _isTermParserBuilt = false;
 
-        private static Parser<char, ObjectInfo> _single, _many, _termParser;
+        private static Parser<char, NodeInfo> _single, _many, _termParser;
 
-        private static readonly SortedDictionary<int, OperatorTableRow<char, ObjectInfo>> _operatorTable = new()
+        private static readonly SortedDictionary<int, OperatorTableRow<char, NodeInfo>> _operatorTable = new()
         {
             //{ 10, Operator.Postfix(FunctionCall.TupleCall(Rec(() => Parser))) },
             //{ 60, Operator.Postfix(FunctionCall.InitializerCall(Rec(() => Parser))) },
         };
 
-        private static readonly List<Parser<char, ObjectInfo>> _terms = new()
+        private static readonly List<Parser<char, NodeInfo>> _terms = new()
         {
             Try(Rec(() => Single).Between(Symbols.LCurvyBracket, Symbols.RCurvyBracket)),
             Try(Literals.Parser),
@@ -31,7 +31,7 @@ namespace ZSharp.Parser
 
         private static readonly List<string> _keywords = new();
 
-        private static void AddOperator(OperatorTableRow<char, ObjectInfo> row, int precedence)
+        private static void AddOperator(OperatorTableRow<char, NodeInfo> row, int precedence)
         {
             _isExpressionParserBuilt = false;
             if (!_operatorTable.ContainsKey(precedence))
@@ -44,7 +44,7 @@ namespace ZSharp.Parser
             }
         }
 
-        private static Parser<char, ObjectInfo> CreateTermParser()
+        private static Parser<char, NodeInfo> CreateTermParser()
         {
             if (!_isTermParserBuilt)
             {
@@ -60,7 +60,7 @@ namespace ZSharp.Parser
             {
                 _isExpressionParserBuilt = true;
                 _single = ExpressionParser.Build(CreateTermParser(), _operatorTable.Values);
-                _many = _single.Many().Select<ObjectInfo>(exprs =>
+                _many = _single.Many().Select<NodeInfo>(exprs =>
                     new(FileInfo.Combine(exprs.First().FileInfo, exprs.Last().FileInfo), new Collection(exprs))
                     );
             }
@@ -74,11 +74,11 @@ namespace ZSharp.Parser
             Associativity associativity = Associativity.None
             )
         {
-            OperatorTableRow<char, ObjectInfo> row = fixity switch
+            OperatorTableRow<char, NodeInfo> row = fixity switch
             {
                 OperatorFixity.Prefix =>
                     Operator.PrefixChainable(
-                        parser.WithResult<Func<ObjectInfo, ObjectInfo>>(
+                        parser.WithResult<Func<NodeInfo, NodeInfo>>(
                             operand => new(
                                 operand.FileInfo,
                                 new UnaryExpression(
@@ -92,7 +92,7 @@ namespace ZSharp.Parser
                 OperatorFixity.Infix =>
                     Operator.Binary(
                         (BinaryOperatorType)associativity,
-                        parser.WithResult<Func<ObjectInfo, ObjectInfo, ObjectInfo>>(
+                        parser.WithResult<Func<NodeInfo, NodeInfo, NodeInfo>>(
                             (left, right) => new(
                                 FileInfo.Combine(left.FileInfo, right.FileInfo),
                                 new BinaryExpression(
@@ -105,7 +105,7 @@ namespace ZSharp.Parser
                         ),
                 OperatorFixity.Postfix =>
                         Operator.PostfixChainable(
-                            parser.WithResult<Func<ObjectInfo, ObjectInfo>>(
+                            parser.WithResult<Func<NodeInfo, NodeInfo>>(
                                 operand => new(
                                     operand.FileInfo,
                                     new UnaryExpression(
@@ -162,14 +162,14 @@ namespace ZSharp.Parser
         {
             string name = left + '_' + right;
             name = isPrefix ? name + '_' : '_' + name;
-            Parser<char, Func<ObjectInfo, ObjectInfo>> parser =
+            Parser<char, Func<NodeInfo, NodeInfo>> parser =
                 Try(CreateFileInfo(Rec(() => Return<OldCore.Expression>(Collection.Empty)))
                 .Between(Syntax.String(left), Syntax.String(right)))
                 .Or(
                     Rec(() => allowMultiple ? Many : Single)
                     .Between(Syntax.String(left), Syntax.String(right))
                     )
-                .Select<Func<ObjectInfo, ObjectInfo>>
+                .Select<Func<NodeInfo, NodeInfo>>
                 (args => method => new(
                     FileInfo.Combine(method.FileInfo, args.FileInfo),
                     new FunctionCall(method, args)
@@ -179,12 +179,12 @@ namespace ZSharp.Parser
                     })
                 );
 
-            OperatorTableRow<char, ObjectInfo> row =
+            OperatorTableRow<char, NodeInfo> row =
                 isPrefix ? Operator.PrefixChainable(parser) : Operator.PostfixChainable(parser);
             AddOperator(row, precedence);
         }
 
-        public static Parser<char, ObjectInfo> Many
+        public static Parser<char, NodeInfo> Many
         {
             get
             {
@@ -193,7 +193,7 @@ namespace ZSharp.Parser
             }
         }
 
-        public static Parser<char, ObjectInfo> Single
+        public static Parser<char, NodeInfo> Single
         {
             get
             {

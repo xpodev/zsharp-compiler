@@ -4,19 +4,19 @@
     {
         public string Message { get; }
 
-        public ObjectInfo Object { get; }
+        public NodeInfo Object { get; }
 
         public FileInfo FileInfo => Object.FileInfo;
 
         public Error(string message) : this(message, null) { }
 
-        public Error(string message, ObjectInfo info)
+        public Error(string message, NodeInfo info)
         {
             Message = message;
             Object = info;
         }
 
-        public Error With(ObjectInfo info) => new(Message, info);
+        public Error With(NodeInfo info) => new(Message, info);
 
         public override string ToString()
         {

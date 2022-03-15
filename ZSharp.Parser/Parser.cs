@@ -16,9 +16,9 @@ namespace ZSharp.Parser
 
         public void SetDocument(DocumentInfo document) => _parser.SetDocument(document);
 
-        public IEnumerable<ObjectInfo> Parse(TextReader input) => _parser.Parse(input);
+        public IEnumerable<NodeInfo> Parse(TextReader input) => _parser.Parse(input);
 
-        public IEnumerable<ObjectInfo> ParseFile(string filePath)
+        public IEnumerable<NodeInfo> ParseFile(string filePath)
         {
             using TextReader stream = File.OpenText(filePath);
             return Parse(stream);

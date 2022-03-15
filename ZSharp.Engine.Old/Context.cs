@@ -253,7 +253,7 @@ namespace ZSharp.Engine
             return CurrentProcessor = _processors[_currentPass++];
         }
 
-        public OldCore.BuildResult<ErrorType, OldCore.ObjectInfo> Evaluate(OldCore.ObjectInfo @object) =>
+        public OldCore.BuildResult<ErrorType, OldCore.NodeInfo> Evaluate(OldCore.NodeInfo @object) =>
             _evaluator.Evaluate(@object);
 
         public OldCore.BuildResult<ErrorType, OldCore.Expression?> Evaluate(OldCore.Expression expression) =>

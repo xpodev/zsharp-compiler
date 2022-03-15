@@ -4,14 +4,14 @@
     {
         string Name { get; }
 
-        Parser<char, DocumentObject> Parser { get; set; }
+        Parser<char, Node> Parser { get; set; }
     }
 
     public interface ICustomParser<out T> : ICustomParser
-        where T : DocumentObject
+        where T : Node
     {
         //new Parser<char, T> Parser { get; set; }
 
-        Parser<char, DocumentObject> ObjectParser { get; }
+        Parser<char, Node> ObjectParser { get; }
     }
 }

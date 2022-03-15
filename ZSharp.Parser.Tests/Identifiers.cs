@@ -25,7 +25,7 @@ namespace ZSharp.Parser.Tests
         [InlineData("_0'0'0")]
         public void ExpectIdentifier(string source)
         {
-            Core.ObjectInfo<Core.Identifier> result = parser.Parser.ParseOrThrow(source);
+            Core.NodeInfo<Core.Identifier> result = parser.Parser.ParseOrThrow(source);
 
             Assert.Equal(source, result.Object.Name);
         }
@@ -48,7 +48,7 @@ namespace ZSharp.Parser.Tests
         [InlineData("_0'0'0")]
         public void ExpectIdentifierWithWhitespace(string source)
         {
-            Core.ObjectInfo<Core.Identifier> result = parser.Parser.ParseOrThrow(source + "     // asd\n/* \n \n ad */  \n");
+            Core.NodeInfo<Core.Identifier> result = parser.Parser.ParseOrThrow(source + "     // asd\n/* \n \n ad */  \n");
 
             Assert.Equal(source, result.Object.Name);
         }

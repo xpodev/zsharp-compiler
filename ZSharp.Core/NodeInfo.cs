@@ -1,22 +1,22 @@
 ﻿namespace ZSharp.Core
 {
-    public class ObjectInfo
+    public class NodeInfo
     {
         public FileInfo FileInfo { get; }
 
-        public DocumentObject Object { get; }
+        public Node Object { get; }
 
-        public ObjectInfo(FileInfo fileInfo, DocumentObject @object)
+        public NodeInfo(FileInfo fileInfo, Node @object)
         {
             FileInfo = fileInfo;
             Object = @object;
         }
 
-        public static implicit operator DocumentObject(ObjectInfo objectInfo) => objectInfo.Object;
+        public static implicit operator Node(NodeInfo objectInfo) => objectInfo.Object;
 
-        public ObjectInfo With(DocumentObject e) => new(FileInfo, e);
+        public NodeInfo With(Node e) => new(FileInfo, e);
 
-        public T Cast<T>() where T : DocumentObject => (T)Object;
+        public T Cast<T>() where T : Node => (T)Object;
 
         public override bool Equals(object obj)
         {
@@ -24,7 +24,7 @@
             return base.Equals(obj);
         }
 
-        public bool Equals(ObjectInfo other) =>
+        public bool Equals(NodeInfo other) =>
             FileInfo.Equals(other.FileInfo) &&
             Object.Equals(other.Object);
 
@@ -37,20 +37,20 @@
         }
     }
 
-    public class ObjectInfo<T> : ObjectInfo
-        where T : DocumentObject
+    public class NodeInfo<T> : NodeInfo
+        where T : Node
     {
         public new T Object { get; }
 
-        public ObjectInfo(FileInfo fileInfo, T @object) : base(fileInfo, @object)
+        public NodeInfo(FileInfo fileInfo, T @object) : base(fileInfo, @object)
         {
             Object = @object;
         }
 
-        public ObjectInfo<U> With<U>() where U : DocumentObject => new(FileInfo, Cast<U>());
+        public NodeInfo<U> With<U>() where U : Node => new(FileInfo, Cast<U>());
 
-        public ObjectInfo<U> Select<U>(System.Func<T, U> func)
-            where U : DocumentObject => 
+        public NodeInfo<U> Select<U>(System.Func<T, U> func)
+            where U : Node => 
             new(FileInfo, func(Object));
     }
 }

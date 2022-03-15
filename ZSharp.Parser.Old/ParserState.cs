@@ -54,7 +54,7 @@
             return Pidgin.Unit.Value;
         }
 
-        public static Pidgin.Parser<char, OldCore.ObjectInfo> CreateFileInfo(Pidgin.Parser<char, OldCore.Expression> parser) =>
+        public static Pidgin.Parser<char, OldCore.NodeInfo> CreateFileInfo(Pidgin.Parser<char, OldCore.Expression> parser) =>
             Pidgin.Parser.Rec(() => Utils.CreateObjectInfo(_state._document, parser));
     }
 }

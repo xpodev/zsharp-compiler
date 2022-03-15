@@ -6,8 +6,8 @@ namespace ZSharp.Parser.Extensibility
     public abstract class ExtensibleParser<T, U>
         : CustomParser<T>
         , IExtensibleParser<U>
-        where T : DocumentObject
-        where U : DocumentObject
+        where T : Node
+        where U : Node
     {
         private protected readonly Dictionary<string, ExtensionParser> _extensions = new();
 
@@ -27,7 +27,7 @@ namespace ZSharp.Parser.Extensibility
             //            extension.Parser.WithPrefixModifiers().Many().Select(items => Collection.Create(items)).Parenthesized(BracketType.Curly),
             //            extension.Parser
             //            ));
-            //extension.Parser = extension.Parser.WithPrefixModifiers().Cast<ObjectInfo>();
+            //extension.Parser = extension.Parser.WithPrefixModifiers().Cast<NodeInfo>();
         }
 
         public ICustomParser<V> GetExtension<V>(string fqn)

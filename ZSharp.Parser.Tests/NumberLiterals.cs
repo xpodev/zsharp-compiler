@@ -8,9 +8,9 @@ namespace ZSharp.Parser.Tests
     {
         private static readonly NumberLiteral parser = DocumentParser.Instance.Literal.Number;
 
-        private static void ExpectLiteral<T>(Parser<char, Core.ObjectInfo<Core.Literal>> parser, string s, T expected)
+        private static void ExpectLiteral<T>(Parser<char, Core.NodeInfo<Core.Literal>> parser, string s, T expected)
         {
-            Core.ObjectInfo<Core.Literal> result = parser.ParseOrThrow(s);
+            Core.NodeInfo<Core.Literal> result = parser.ParseOrThrow(s);
 
             T actual = Assert.IsType<T>(result.Object.Value);
 

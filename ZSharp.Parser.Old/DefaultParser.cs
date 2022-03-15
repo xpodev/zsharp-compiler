@@ -16,14 +16,14 @@ namespace ZSharp.Parser
 
         }
 
-        //private Parser<char, ObjectInfo> _parser = Expression.Single;
+        //private Parser<char, NodeInfo> _parser = Expression.Single;
 
         private DocumentInfo _document;
 
-        public IEnumerable<ObjectInfo> Parse(TextReader stream) => Syntax.Whitespaces.Then(Expression.Single.Many()).ParseOrThrow(stream);
+        public IEnumerable<NodeInfo> Parse(TextReader stream) => Syntax.Whitespaces.Then(Expression.Single.Many()).ParseOrThrow(stream);
 
         public void SetDocument(DocumentInfo document) => ParserState.Reset(_document = document);
 
-        public Parser<char, ObjectInfo> CreateFileInfo(Parser<char, OldCore.Expression> parser) => Utils.CreateObjectInfo(_document, parser);
+        public Parser<char, NodeInfo> CreateFileInfo(Parser<char, OldCore.Expression> parser) => Utils.CreateObjectInfo(_document, parser);
     }
 }

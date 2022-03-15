@@ -9,7 +9,7 @@ namespace ZSharp.Engine
 
         public override BuildResult<ErrorType, Expression?> Process(Expression expression) => Evaluate(expression);
 
-        public BuildResult<ErrorType, ObjectInfo> Evaluate(ObjectInfo info) => Process(info);
+        public BuildResult<ErrorType, NodeInfo> Evaluate(NodeInfo info) => Process(info);
 
         public BuildResult<ErrorType, Expression?> Evaluate(Expression expression) =>
             expression switch
@@ -39,7 +39,7 @@ namespace ZSharp.Engine
         private BuildResult<ErrorType, Expression?> Evaluate(Collection collection) =>
             BuildResultUtils.CombineResults(collection.Select(Evaluate)).Cast<Expression?>(array => new Collection(array));
 
-        private BuildResult<ErrorType, Expression?> Invoke(Expression expression, string name, params ObjectInfo[] args)
+        private BuildResult<ErrorType, Expression?> Invoke(Expression expression, string name, params NodeInfo[] args)
         {
             BuildResult<ErrorType, Expression[]> argsResult = BuildResultUtils.CombineResults(args.Map(Process).Map(result => result.Return(result.Value.Expression)));
             BuildResult<ErrorType, Expression?> result = new(expression, argsResult.Errors);

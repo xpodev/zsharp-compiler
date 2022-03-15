@@ -22,25 +22,25 @@ namespace ZSharp.Engine
 
         public virtual void PreProcess() { }
 
-        public virtual List<BuildResult<ErrorType, ObjectInfo>> Process(List<BuildResult<ErrorType, ObjectInfo>> input) => input.Select(Process).ToList();
+        public virtual List<BuildResult<ErrorType, NodeInfo>> Process(List<BuildResult<ErrorType, NodeInfo>> input) => input.Select(Process).ToList();
 
-        public BuildResult<ErrorType, ObjectInfo> Process(BuildResult<ErrorType, ObjectInfo> input)
+        public BuildResult<ErrorType, NodeInfo> Process(BuildResult<ErrorType, NodeInfo> input)
         {
             if (input.Value.Expression is null) return input;
             if (input.HasErrors) return input;
 
             BuildContext = input.Cast(o => o.Expression);
 
-            BuildResult<ErrorType, ObjectInfo> result = Process(input.Value);
+            BuildResult<ErrorType, NodeInfo> result = Process(input.Value);
 
             BuildContext = null;
 
             return result;
         }
 
-        public virtual BuildResult<ErrorType, ObjectInfo> Process(ObjectInfo info)
+        public virtual BuildResult<ErrorType, NodeInfo> Process(NodeInfo info)
         {
-            BuildResult<ErrorType, ObjectInfo> result = 
+            BuildResult<ErrorType, NodeInfo> result = 
                 BuildResultUtils.Bind<Expression>(info, Process)
                 .Cast(info.With);
 

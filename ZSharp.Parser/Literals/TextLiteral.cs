@@ -2,11 +2,11 @@
 {
     public class TextLiteral
     {
-        public Parser<char, ObjectInfo<Literal<string>>> String { get; }
+        public Parser<char, NodeInfo<Literal<string>>> String { get; }
 
-        public Parser<char, ObjectInfo<Literal<char>>> Char { get; }
+        public Parser<char, NodeInfo<Literal<char>>> Char { get; }
 
-        internal Parser<char, ObjectInfo<Literal>> Parser { get; }
+        internal Parser<char, NodeInfo<Literal>> Parser { get; }
 
         internal TextLiteral(DocumentParser doc)
         {
@@ -34,7 +34,7 @@
                 character.Or(AnyCharExcept('\"')).ManyString().Between(doubleQuotes).Select(s => new Literal<string>(s))
                 );
 
-            Parser = OneOf(Char.Cast<ObjectInfo<Literal>>(), String.Cast<ObjectInfo<Literal>>());
+            Parser = OneOf(Char.Cast<NodeInfo<Literal>>(), String.Cast<NodeInfo<Literal>>());
         }
     }
 }

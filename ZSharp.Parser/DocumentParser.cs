@@ -5,7 +5,7 @@ using ZSharp.Parser.Extensibility;
 
 namespace ZSharp.Parser
 {
-    public class DocumentParser : ExtensibleParser<Collection, DocumentObject>
+    public class DocumentParser : ExtensibleParser<Collection, Node>
     {
 #if DEBUG
         public static DocumentParser Instance { get; } = new();
@@ -25,6 +25,8 @@ namespace ZSharp.Parser
         public TermParser Term { get; }
 
         public ExpressionParser Expression { get; }
+
+        public CodeBlockParser CodeBlock { get; }
 
         public override Parser<char, Collection> Parser => _documentParser;
 
@@ -46,17 +48,18 @@ namespace ZSharp.Parser
             Literal = new(this);
             Term = new(this);
             Expression = new(this);
+            CodeBlock = new(this);
 
             Expression.Build(Term.Parser);
         }
 
         internal void SetDocument(DocumentInfo document) => _document = document;
 
-        public Parser<char, ObjectInfo<T>> CreateParser<T>(Parser<char, T> parser)
-            where T : DocumentObject 
+        public Parser<char, NodeInfo<T>> CreateParser<T>(Parser<char, T> parser)
+            where T : Node 
             => WithAnyWhitespace(
                 Map((start, expr, end) => 
-                    new ObjectInfo<T>(new(_document, start.Line, start.Col, end.Line, end.Col), expr),
+                    new NodeInfo<T>(new(_document, start.Line, start.Col, end.Line, end.Col), expr),
                     CurrentPos,
                     parser,
                     CurrentPos

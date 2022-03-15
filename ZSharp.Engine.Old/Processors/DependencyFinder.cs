@@ -13,7 +13,7 @@ namespace ZSharp.Engine
         private readonly GenericProcessor<ISRFResolvable> _resolver;
         private readonly GenericProcessor<ISRFCompilable> _compiler;
 
-        private readonly Dictionary<SRFObject, ObjectInfo> _objects = new();
+        private readonly Dictionary<SRFObject, NodeInfo> _objects = new();
 
         internal DependencyGraph<SRFObject> DependencyGraph { get; } = new();
 
@@ -23,14 +23,14 @@ namespace ZSharp.Engine
             _compiler = new(ctx);
         }
 
-        public override List<BuildResult<ErrorType, ObjectInfo>> Process(List<BuildResult<ErrorType, ObjectInfo>> input)
+        public override List<BuildResult<ErrorType, NodeInfo>> Process(List<BuildResult<ErrorType, NodeInfo>> input)
         {
             input = base.Process(input);
 
             IEnumerable<IEnumerable<SRFObject>> buildOrder = DependencyGraph.GetDependencyOrder();
 
-            Dictionary<SRFObject, BuildResult<ErrorType, ObjectInfo>> map = new();
-            foreach (BuildResult<ErrorType, ObjectInfo> item in 
+            Dictionary<SRFObject, BuildResult<ErrorType, NodeInfo>> map = new();
+            foreach (BuildResult<ErrorType, NodeInfo> item in 
                 buildOrder.SelectMany(
                     items =>
                     items
@@ -52,7 +52,7 @@ namespace ZSharp.Engine
                 .ToList();
         }
 
-        public override BuildResult<ErrorType, ObjectInfo> Process(ObjectInfo @object)
+        public override BuildResult<ErrorType, NodeInfo> Process(NodeInfo @object)
         {
             if (@object.Expression is SRFObject srf)
             {

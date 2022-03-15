@@ -28,7 +28,7 @@ namespace ZSharp.Engine
         private BuildResult<ErrorType, Expression?> Process(Keyword keyword) =>
             Invoke(keyword, keyword.Name);
 
-        private BuildResult<ErrorType, Expression?> Invoke(Expression expression, string name, params ObjectInfo[] args)
+        private BuildResult<ErrorType, Expression?> Invoke(Expression expression, string name, params NodeInfo[] args)
         {
             BuildResult<ErrorType, Expression[]> argsResult = BuildResultUtils.CombineResults(args.Map(Process).Map(result => result.Return(result.Value.Expression)));
             BuildResult<ErrorType, Expression?> result = new(expression, argsResult.Errors);

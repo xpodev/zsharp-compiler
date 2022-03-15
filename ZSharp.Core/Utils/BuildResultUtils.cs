@@ -5,9 +5,9 @@ namespace ZSharp.Core
 {
     internal static class BuildResultUtils
     {
-        public static BuildResult<ErrorType, DocumentObject> Bind<T>(
-            BuildResult<ErrorType, ObjectInfo> input, 
-            Func<T, BuildResult<string, DocumentObject>> func
+        public static BuildResult<ErrorType, Node> Bind<T>(
+            BuildResult<ErrorType, NodeInfo> input, 
+            Func<T, BuildResult<string, Node>> func
             )
         {
             DocumentObjectBuildResult result = new(input.Value);
@@ -21,7 +21,7 @@ namespace ZSharp.Core
         }
 
         public static DocumentObjectBuildResult Bind<T>(
-            ObjectInfo info, 
+            NodeInfo info, 
             Func<T, DocumentObjectBuildResult> func)
         {
             DocumentObjectBuildResult output = func(
@@ -82,7 +82,7 @@ namespace ZSharp.Core
         public static DocumentObjectBuildResult Error(this DocumentObjectBuildResult result, string errorMessage) =>
             result.Error(new(errorMessage));
 
-        public static DocumentObjectBuildResult Error(this DocumentObjectBuildResult result, string errorMessage, ObjectInfo info) =>
+        public static DocumentObjectBuildResult Error(this DocumentObjectBuildResult result, string errorMessage, NodeInfo info) =>
             result.Error(new(errorMessage, info));
     }
 }

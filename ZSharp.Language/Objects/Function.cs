@@ -2,17 +2,17 @@
 
 namespace ZSharp.Language
 {
-    internal class Function : DocumentObject
+    internal class Function : Node
     {
-        public ObjectInfo<Identifier> Name { get; set; }
+        public NodeInfo<Identifier> Name { get; set; }
 
-        public List<ObjectInfo<Identifier>> GenericParameters { get; set; }
+        public List<NodeInfo<Identifier>> GenericParameters { get; set; }
 
-        public List<ObjectInfo<Identifier>> Parameters { get; set; }
+        public List<NodeInfo<Identifier>> Parameters { get; set; }
 
-        public ObjectInfo<Expression> Type { get; set; }
+        public NodeInfo<Expression> Type { get; set; }
 
-        public ObjectInfo<FunctionBody> Body { get; set; }
+        public NodeInfo<FunctionBody> Body { get; set; }
 
         internal Function Create()
         {

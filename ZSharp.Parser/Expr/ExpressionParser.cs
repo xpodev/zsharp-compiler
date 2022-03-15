@@ -5,7 +5,7 @@ using ZSharp.Parser.Extensibility;
 
 namespace ZSharp.Parser
 {
-    using ExpressionInfo = ObjectInfo<Expression>;
+    using ExpressionInfo = NodeInfo<Expression>;
 
     public class ExpressionParser
     {

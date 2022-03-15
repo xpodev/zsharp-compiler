@@ -5,7 +5,7 @@
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public interface IExtensibleParser<T>
-        where T : DocumentObject
+        where T : Node
     {
         /// <summary>
         /// Adds an extension parser to this parser.

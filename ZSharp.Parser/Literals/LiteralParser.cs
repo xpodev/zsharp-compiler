@@ -8,7 +8,7 @@
 
         public KeywordLiteral Keyword { get; }
 
-        internal Parser<char, ObjectInfo<Literal>> Parser { get; }
+        internal Parser<char, NodeInfo<Literal>> Parser { get; }
 
         internal LiteralParser(DocumentParser doc)
         {

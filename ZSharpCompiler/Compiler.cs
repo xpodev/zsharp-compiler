@@ -58,7 +58,7 @@ namespace ZSharp.Compiler
 
             foreach (string file in files)
             {
-                source.AddRange(parser.ParseFile(file).Select(o => new Core.BuildResult<ErrorType, Core.ObjectInfo>(o)));
+                source.AddRange(parser.ParseFile(file).Select(o => new Core.BuildResult<ErrorType, Core.NodeInfo>(o)));
             }
 
             target.Capacity = source.Count;
@@ -82,9 +82,9 @@ namespace ZSharp.Compiler
             Engine.FinishCompilation(Options.OutputPath);
         }
 
-        private static void LogErrors(Core.BuildResult<ErrorType, Core.ObjectInfo> result)
+        private static void LogErrors(Core.BuildResult<ErrorType, Core.NodeInfo> result)
         {
-            Core.ObjectInfo value = result.Value;
+            Core.NodeInfo value = result.Value;
 
             result.Errors.ForEach(error => 
                 Console.WriteLine(

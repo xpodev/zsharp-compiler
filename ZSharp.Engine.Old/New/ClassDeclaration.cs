@@ -8,16 +8,16 @@ namespace ZSharp.Engine
         : NamedItem
         , IObjectDescriptor
     {
-        public ObjectInfo? MetaClass { get; private set; }
+        public NodeInfo? MetaClass { get; private set; }
 
-        public ObjectInfo? Base { get; private set; }
+        public NodeInfo? Base { get; private set; }
 
         public Collection? Items { get; private set; }
 
         public ClassDeclaration(
             string name,
-            ObjectInfo? meta = null,
-            ObjectInfo? @base = null
+            NodeInfo? meta = null,
+            NodeInfo? @base = null
             )
             : base(name)
         {
@@ -64,7 +64,7 @@ namespace ZSharp.Engine
         //}
 
         [OperatorOverload(":")]
-        public static ClassDeclaration DefineBases(ClassDeclaration @class, ObjectInfo @base)
+        public static ClassDeclaration DefineBases(ClassDeclaration @class, NodeInfo @base)
         {
             if (@class.Base is not null)
                 throw new System.InvalidOperationException();
@@ -75,7 +75,7 @@ namespace ZSharp.Engine
         }
 
         [SurroundingOperatorOverload("(", ")")]
-        public static ClassDeclaration SetMetaClass(ClassDeclaration @class, ObjectInfo meta)
+        public static ClassDeclaration SetMetaClass(ClassDeclaration @class, NodeInfo meta)
         {
             if (@class.MetaClass is not null)
                 throw new System.InvalidOperationException();

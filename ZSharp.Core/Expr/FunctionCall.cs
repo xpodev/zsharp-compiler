@@ -2,15 +2,15 @@
 {
     public class FunctionCall : Expression
     {
-        public ObjectInfo Callable { get; set; }
+        public NodeInfo Callable { get; set; }
 
-        public ObjectInfo Argument { get; set; }
+        public NodeInfo Argument { get; set; }
 
         public bool IsPrefix { get; set; }
 
         public string Name { get; set; }
 
-        public FunctionCall(ObjectInfo callable, ObjectInfo argument)
+        public FunctionCall(NodeInfo callable, NodeInfo argument)
         {
             Callable = callable;
             Argument = argument;

@@ -4,7 +4,7 @@
     {
         public Parser<char, Identifier> Identifier { get; }
 
-        public Parser<char, ObjectInfo<Identifier>> Parser { get; }
+        public Parser<char, NodeInfo<Identifier>> Parser { get; }
 
         internal IdentifierParser(DocumentParser doc)
         {

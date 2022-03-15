@@ -1,4 +1,4 @@
 ﻿namespace ZSharp.Core
 {
-    public abstract class Expression : DocumentObject { }
+    public abstract class Expression : Node { }
 }

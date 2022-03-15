@@ -12,15 +12,15 @@
 
         public static Literal<bool> False { get; } = new(false);
 
-        public Parser<char, ObjectInfo<Literal<object>>> NullParser { get; }
+        public Parser<char, NodeInfo<Literal<object>>> NullParser { get; }
 
-        public Parser<char, ObjectInfo<Literal<bool>>> TrueParser { get; }
+        public Parser<char, NodeInfo<Literal<bool>>> TrueParser { get; }
 
-        public Parser<char, ObjectInfo<Literal<bool>>> FalseParser { get; }
+        public Parser<char, NodeInfo<Literal<bool>>> FalseParser { get; }
 
-        public Parser<char, ObjectInfo<Literal<bool>>> Boolean { get; }
+        public Parser<char, NodeInfo<Literal<bool>>> Boolean { get; }
 
-        public Parser<char, ObjectInfo<Literal>> Parser { get; }
+        public Parser<char, NodeInfo<Literal>> Parser { get; }
 
         internal KeywordLiteral(DocumentParser doc)
         {
