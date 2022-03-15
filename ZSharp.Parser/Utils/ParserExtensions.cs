@@ -11,17 +11,9 @@
 
         public static Parser<char, NodeInfo> BuildWith(this Parser<char, NodeInfo> parser, ParserBuilderSettings settings)
         {
-            Parser<char, Unit> keyword = Parser.Identifier.Identifier.Assert(s => s.Name == settings.Keyword).BeforeWhitespace().IgnoreResult();
+            Parser<char, Unit> keyword = parser.WithPrefixKeyword(settings.Keyword).BeforeWhitespace().IgnoreResult();
             Parser<char, NodeInfo> many = settings.IsModifiable ? parser.WithPrefixModifiers().ManyCollection().WithObjectInfo().UpCast() : parser;
             if (settings.Keyword is null) _ = parser;
-            else if (settings.AllowDefault && settings.AllowBlockDefinition)
-                parser = keyword.Then(OneOf(
-                    Symbols.Colon.Then(many),
-                    many.Parenthesized(settings.BlockBracketType),
-                    parser
-                    ));
-            else if (settings.AllowDefault)
-                parser = keyword.Then(Symbols.Colon.Then(many).Or(parser));
             else if (settings.AllowBlockDefinition)
                 parser = keyword.Then(many.Parenthesized(settings.BlockBracketType).Or(parser));
             else 
@@ -29,13 +21,13 @@
             return settings.IsModifiable ? parser.WithPrefixModifiers().UpCast() : parser;
         }
 
-        public static Parser<char, ObjectInfo> BuildWith<T>(this Parser<char, ObjectInfo<T>> parser, ParserBuilderSettings settings)
         public static Parser<char, NodeInfo> BuildWith<T>(this Parser<char, NodeInfo<T>> parser, ParserBuilderSettings settings)
             where T : Node =>
             parser.UpCast().BuildWith(settings);
 
-            parser.WithObjectInfo().UpCast().BuildWith(settings);
+        public static Parser<char, T> BuildWith<T>(this Parser<char, T> parser, ParserBuilderSettings settings)
             where T : Node =>
+            parser.WithObjectInfo().BuildWith(settings).Select(o => o.Cast<T>());
 
         public static Parser<char, Collection> ManyCollection(this Parser<char, NodeInfo> parser) =>
             parser.Many().Select(items => new Collection(items));
@@ -82,6 +74,15 @@
         public static Parser<char, NodeInfo<T>> WithObjectInfo<T>(this Parser<char, T> parser) where T : Node =>
             Parser.CreateParser(parser);
 
+        public static Parser<char, T> WithPrefixKeyword<T>(this Parser<char, T> parser, string keyword)
+        {
+            if (keyword is null)
+                throw new System.ArgumentNullException(nameof(keyword));
+            Result<char, Identifier> parseResult = Parser.Identifier.Identifier.Parse(keyword);
+            if (!parseResult.Success) 
+                throw new System.ArgumentException("Must be a valid Z# identifier", nameof(keyword));
+            return Parser.Identifier.Identifier.Assert(id => id.Name == keyword).Then(parser);
+        }
 
         public static Parser<char, NodeInfo<ModifiedObject>> WithPrefixModifiers(this Parser<char, NodeInfo> parser)
         {

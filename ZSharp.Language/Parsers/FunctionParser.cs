@@ -15,7 +15,7 @@ namespace ZSharp.Language
         {
             Body.Build(parser);
 
-            Parser = 
+            Parser = (
                 from name in parser.Document.Identifier.Parser
                 from generic in parser.Document.Identifier.Parser.Separated(parser.Document.Symbols.Comma).Parenthesized(BracketType.Angle).BeforeWhitespace().Optional()
                 from parameters in parser.Document.Identifier.Parser.Separated(parser.Document.Symbols.Comma).Parenthesized().BeforeWhitespace().Optional()
@@ -28,7 +28,14 @@ namespace ZSharp.Language
                     Parameters = parameters.HasValue ? new(parameters.Value) : new(),
                     Type = type.HasValue ? type.Value : new(new(), AutoType.Infer),
                     Body = body
-                }.Create();
+                }.Create())
+                .BuildWith(new()
+                {
+                    AllowBlockDefinition = true,
+                    BlockBracketType = BracketType.Curly,
+                    Keyword = "func",
+                    IsModifiable = true
+                });
         }
     }
 }
