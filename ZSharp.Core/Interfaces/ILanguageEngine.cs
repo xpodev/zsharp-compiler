@@ -1,4 +1,6 @@
-﻿namespace ZSharp.Core
+﻿using System.Collections.Generic;
+
+namespace ZSharp.Core
 {
     public interface ILanguageEngine //: System.Collections.Generic.IEnumerable<IExpressionProcessor>
     {
@@ -11,5 +13,7 @@
         void FinishCompilation(string path);
 
         IParser GetParser();
+
+        IEnumerable<INodeProcessor> GetProcessors();
     }
 }

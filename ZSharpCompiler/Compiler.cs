@@ -63,7 +63,7 @@ namespace ZSharp.Compiler
 
             target.Capacity = source.Count;
 
-            foreach (Core.IDocumentObjectProcessor processor in Engine)
+            foreach (Core.INodeProcessor processor in Engine.GetProcessors())
             {
                 processor.PreProcess();
 
