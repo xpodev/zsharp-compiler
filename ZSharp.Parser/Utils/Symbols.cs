@@ -6,6 +6,7 @@
     {
         public Symbol Comma { get; }
         public Symbol Colon { get; }
+        public Symbol Dot { get; }
 
         public Symbol LParen { get; }
 
@@ -28,6 +29,7 @@
         {
             Comma = Char(',');
             Colon = Char(':');
+            Dot = Char('.');
 
             LParen = Char('(');
             RParen = Char(')');
