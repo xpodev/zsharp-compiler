@@ -2,7 +2,7 @@
 
 namespace ZSharp.Language
 {
-    internal class FunctionParser : CustomParser<Function>
+    internal class FunctionParser : CustomParser<ModifiedObject<Function>>
     {
         public FunctionBodyParser Body { get; } = new();
 
@@ -29,13 +29,8 @@ namespace ZSharp.Language
                     Type = type.HasValue ? type.Value : new(new(), AutoType.Infer),
                     Body = body
                 }.Create())
-                .BuildWith(new()
-                {
-                    AllowBlockDefinition = true,
-                    BlockBracketType = BracketType.Curly,
-                    Keyword = "func",
-                    IsModifiable = true
-                });
+                .WithPrefixKeyword("func")
+                .WithPrefixModifiers();
         }
     }
 }
