@@ -7,7 +7,7 @@
         public void Initialize(Parser.Parser parser)
         {
             functionParser.Build(parser);
-            parser.Document.AddExtension(functionParser, "func");
+            parser.Document.AddExtension(functionParser);
         }
     }
 }
