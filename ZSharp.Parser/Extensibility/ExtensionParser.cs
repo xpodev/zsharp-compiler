@@ -9,7 +9,7 @@
         Parser<char, Node> ICustomParser.Parser
         {
             get => Original.Parser;
-            set => Original.Parser = value;
+            //set => Original.Parser = value;
         }
 
         public Parser<char, NodeInfo> Parser { get; internal set; }

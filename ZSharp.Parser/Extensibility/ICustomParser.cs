@@ -4,7 +4,7 @@
     {
         string Name { get; }
 
-        Parser<char, Node> Parser { get; set; }
+        Parser<char, Node> Parser { get; }
     }
 
     public interface ICustomParser<out T> : ICustomParser

@@ -11,8 +11,7 @@
         /// Adds an extension parser to this parser.
         /// </summary>
         /// <param name="customParser">The new parser to add.</param>
-        /// <param name="keyword">The keyword that invokes the custom parser.</param>
-        void AddExtension<U>(ICustomParser<U> customParser, string keyword) where U : T;
+        void AddExtension<U>(ICustomParser<U> customParser) where U : T;
 
         /// <summary>
         /// Get an extension registered in this parser by full name.

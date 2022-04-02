@@ -13,23 +13,12 @@ namespace ZSharp.Parser.Extensibility
 
         public ExtensibleParser(string name, string @namespace) : base(name, @namespace) { }
 
-        public void AddExtension<V>(ICustomParser<V> extensionParser, string keyword)
+        public void AddExtension<V>(ICustomParser<V> extensionParser)
             where V : U
         {
-            if (keyword is null)
-                throw new ArgumentNullException(nameof(keyword));
             ExtensionParser extension = new(extensionParser);
             if (!_extensions.TryAdd(extension.Name, extension))
                 throw new InvalidOperationException($"Parser \'{Name}\' already contains an extension parser with name \'{extension.Name}\'");
-            extension.Parser = extension.Parser.WithPrefixKeyword(keyword);
-            //if (extension.Keyword is not null)
-            //    extension.Parser = 
-            //        parser.Document.Identifier.Parser.Assert(s => s.Object.Name == extension.Keyword)
-            //        .Then(OneOf(
-            //            extension.Parser.WithPrefixModifiers().Many().Select(items => Collection.Create(items)).Parenthesized(BracketType.Curly),
-            //            extension.Parser
-            //            ));
-            //extension.Parser = extension.Parser.WithPrefixModifiers().Cast<NodeInfo>();
         }
 
         public ICustomParser<V> GetExtension<V>(string fqn)

@@ -24,7 +24,7 @@
         Parser<char, Node> ICustomParser.Parser
         {
             get => ObjectParser;
-            set => ObjectParser = value;
+            //set => ObjectParser = value;
         }
 
         protected CustomParser(string name, string @namespace)
