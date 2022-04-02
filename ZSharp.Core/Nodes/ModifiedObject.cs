@@ -99,5 +99,10 @@
             Modifiers.Add(modifier);
             return this;
         }
+
+        public override string ToString()
+        {
+            return Modifiers.Count == 0 ? Object.ToString() : $"{string.Join(' ', Modifiers)} {Object}";
+        }
     }
 }
