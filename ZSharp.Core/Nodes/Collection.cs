@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace ZSharp.Core
 {
-    public class Collection
+    public record class Collection
         : Expression
         , IEnumerable<NodeInfo>
     {
@@ -53,9 +53,14 @@ namespace ZSharp.Core
 
         public static NodeInfo Create(IEnumerable<NodeInfo> objects) =>
             objects.Any() ? new(objects.Select(o => o.FileInfo).Aggregate(FileInfo.Combine), new Collection(objects)) : new(new(), Empty);
+
+        public override Object GetCompilerObject()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 
-    public class Collection<T>
+    public record class Collection<T>
         : Expression
         , IEnumerable<NodeInfo<T>>
         where T : Node
@@ -98,5 +103,10 @@ namespace ZSharp.Core
 
         public static NodeInfo<Collection<T>> Create(IEnumerable<NodeInfo<T>> objects) =>
             objects.Any() ? new(objects.Select(o => o.FileInfo).Aggregate(FileInfo.Combine), new Collection<T>(objects)) : new(new(), Empty);
+
+        public override Object GetCompilerObject()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

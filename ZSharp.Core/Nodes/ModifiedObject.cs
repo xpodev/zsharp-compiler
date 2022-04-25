@@ -7,7 +7,7 @@
     /// Describes a document object with modifiers.
     /// </summary>
     /// <typeparam name="T">The type of the object.</typeparam>
-    public class ModifiedObject : Node
+    public record class ModifiedObject : Node
     {
         /// <summary>
         /// The object that is modified.
@@ -55,19 +55,33 @@
         {
             return Modifiers.Count == 0 ? Object.ToString() : $"{string.Join(' ', Modifiers)} {Object}";
         }
+
+        public override Object GetCompilerObject()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 
     /// <summary>
     /// Describes a document object with modifiers.
     /// </summary>
     /// <typeparam name="T">The type of the object.</typeparam>
-    public class ModifiedObject<T> : ModifiedObject
+    public record class ModifiedObject<T> : ModifiedObject
         where T : Node
     {
         /// <summary>
         /// The object that is modified.
         /// </summary>
         public new NodeInfo<T> Object { get; set; }
+
+        /// <summary>
+        /// Creates a new modified object.
+        /// </summary>
+        /// <param name="object">The object to be modified.</param>
+        public ModifiedObject(NodeInfo<T> @object)
+        {
+            base.Object = Object = @object;
+        }
 
         /// <summary>
         /// Inserts a modifier in the given position.

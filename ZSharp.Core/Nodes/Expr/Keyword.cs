@@ -1,17 +1,10 @@
 ﻿namespace ZSharp.Core
 {
-    public class Keyword : Expression
+    public record class Keyword(string Name) : Expression
     {
-        public string Name { get; set; }
-
-        public Keyword(string name)
+        public override Object GetCompilerObject()
         {
-            Name = name;
-        }
-
-        public bool Equals(Keyword obj)
-        {
-            return Name == obj.Name;
+            throw new System.NotImplementedException();
         }
 
         public override string ToString()

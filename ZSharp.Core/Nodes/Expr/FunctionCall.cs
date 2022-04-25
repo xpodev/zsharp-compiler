@@ -1,19 +1,14 @@
 ﻿namespace ZSharp.Core
 {
-    public class FunctionCall : Expression
+    public record class FunctionCall(NodeInfo Callable, NodeInfo Argument) : Expression
     {
-        public NodeInfo Callable { get; set; }
-
-        public NodeInfo Argument { get; set; }
-
         public bool IsPrefix { get; set; }
 
         public string Name { get; set; }
 
-        public FunctionCall(NodeInfo callable, NodeInfo argument)
+        public override Object GetCompilerObject()
         {
-            Callable = callable;
-            Argument = argument;
+            throw new System.NotImplementedException();
         }
     }
 }

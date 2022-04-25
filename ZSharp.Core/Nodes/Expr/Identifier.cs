@@ -1,12 +1,10 @@
 ﻿namespace ZSharp.Core
 {
-    public class Identifier : Expression
+    public record class Identifier(string Name) : Expression
     {
-        public string Name { get; set; }
-
-        public Identifier(string name)
+        public override Object GetCompilerObject()
         {
-            Name = name;
+            throw new System.NotImplementedException();
         }
 
         public override string ToString()

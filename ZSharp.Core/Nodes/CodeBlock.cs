@@ -1,12 +1,10 @@
 ﻿namespace ZSharp.Core
 {
-    public class CodeBlock : Node
+    public record class CodeBlock(string Source) : Node
     {
-        public string Source { get; }
-
-        public CodeBlock(string source)
+        public override Object GetCompilerObject()
         {
-            Source = source;
+            throw new System.NotImplementedException();
         }
     }
 }

@@ -1,16 +1,14 @@
 ﻿namespace ZSharp.Core
 {
-    public class Literal : Expression
+    public record class Literal(object Value) : Expression
     {
-        public object Value { get; set; }
-
-        public Literal(object value)
+        public override Object GetCompilerObject()
         {
-            Value = value;
+            throw new System.NotImplementedException();
         }
     }
 
-    public class Literal<T> : Literal
+    public record class Literal<T> : Literal
     {
         public new T Value { get; set; }
 

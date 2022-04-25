@@ -1,18 +1,20 @@
 ﻿namespace ZSharp.Core
 {
-    public class UnaryExpression : Expression
+    public record class UnaryExpression(NodeInfo<Expression> Operand, string Operator) : Expression
     {
-        public string Operator { get; set; }
-
-        public NodeInfo Operand { get; set; }
-
         public bool IsPrefix { get; set; }
 
-        public UnaryExpression(NodeInfo operand, string @operator, bool isPrefix = true)
+        public UnaryExpression(NodeInfo<Expression> operand, string @operator, bool isPrefix = true)
+            : this(operand, @operator)
         {
             Operand = operand;
             Operator = @operator;
             IsPrefix = isPrefix;
+        }
+
+        public override Object GetCompilerObject()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

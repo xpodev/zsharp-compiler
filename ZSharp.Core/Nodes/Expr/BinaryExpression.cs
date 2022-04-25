@@ -1,18 +1,14 @@
 ﻿namespace ZSharp.Core
 {
-    public class BinaryExpression : Expression
+    public record class BinaryExpression(
+        NodeInfo<Expression> Left, 
+        NodeInfo<Expression> Right, 
+        string Operator
+        ) : Expression
     {
-        public NodeInfo<Expression> Left { get; set; }
-
-        public NodeInfo<Expression> Right { get; set; }
-
-        public string Operator { get; set; }
-
-        public BinaryExpression(NodeInfo<Expression> left, NodeInfo<Expression> right, string @operator)
+        public override Object GetCompilerObject()
         {
-            Left = left;
-            Right = right;
-            Operator = @operator;
+            throw new System.NotImplementedException();
         }
     }
 }
