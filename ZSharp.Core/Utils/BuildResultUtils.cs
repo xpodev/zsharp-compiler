@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace ZSharp.Core
 {
-    internal static class BuildResultUtils
+    public static class BuildResultUtils
     {
         public static BuildResult<ErrorType, Node> Bind<T>(
             BuildResult<ErrorType, NodeInfo> input, 

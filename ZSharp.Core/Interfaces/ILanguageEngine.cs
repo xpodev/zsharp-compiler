@@ -2,11 +2,13 @@
 
 namespace ZSharp.Core
 {
-    public interface ILanguageEngine //: System.Collections.Generic.IEnumerable<IExpressionProcessor>
+    public interface ILanguageEngine
     {
         void AddAssemblyReference(string path);
 
         void AddAssemblyReference(System.Reflection.Assembly assembly);
+
+        void AddDocument(DocumentInfo document);
 
         void Setup();
 
@@ -14,6 +16,8 @@ namespace ZSharp.Core
 
         IParser GetParser();
 
-        IEnumerable<INodeProcessor> GetProcessors();
+        IEnumerable<INodeProcessor> GetNodeProcessors();
+        
+        IEnumerable<IObjectProcessor> GetObjectProcessors();
     }
 }

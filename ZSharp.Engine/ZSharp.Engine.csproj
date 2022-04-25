@@ -10,9 +10,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\ZSharp.CodeGeneration\ZSharp.CodeGeneration.csproj" />
 		<ProjectReference Include="..\ZSharp.Core\ZSharp.Core.csproj" />
-		<ProjectReference Include="..\ZSharp.Language\ZSharp.Language.csproj" />
 		<ProjectReference Include="..\ZSharp.Parser\ZSharp.Parser.csproj" />
+		<ProjectReference Include="..\ZSharp.StaticReflection\ZSharp.StaticReflection.csproj" />
 	</ItemGroup>
 
 </Project>

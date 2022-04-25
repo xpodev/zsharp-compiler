@@ -14,6 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ZSharp.Core\ZSharp.Core.csproj" />
     <ProjectReference Include="..\ZSharp.Engine\ZSharp.Engine.csproj" />
+    <ProjectReference Include="..\ZSharp.Language\ZSharp.Language.csproj" />
   </ItemGroup>
 
     <ItemGroup>

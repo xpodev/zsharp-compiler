@@ -1,13 +1,7 @@
-﻿using System.Collections.Generic;
-
-namespace ZSharp.Core
+﻿namespace ZSharp.Core
 {
-    public interface INodeProcessor
+    public interface INodeProcessor : IProcessor<NodeInfo>
     {
-        void PreProcess();
-
-        List<ObjectBuildResult> Process(List<ObjectBuildResult> expression);
-
-        void PostProcess();
+        
     }
 }

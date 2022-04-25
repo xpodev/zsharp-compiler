@@ -54,41 +54,68 @@ namespace ZSharp.Compiler
         {
             Core.IParser parser = Engine.GetParser();
 
-            List<ObjectBuildResult> source = new(), target = new();
+            foreach (string file in files) Engine.AddDocument(new Core.DocumentInfo(file));
+
+            List<ObjectBuildResult> nodes = new(), target = new();
 
             foreach (string file in files)
             {
-                source.AddRange(parser.ParseFile(file).Select(o => new Core.BuildResult<ErrorType, Core.NodeInfo>(o)));
+                nodes.AddRange(parser.ParseFile(file).Select(o => new Core.BuildResult<ErrorType, Core.NodeInfo>(o)));
             }
 
-            target.Capacity = source.Count;
+            target.Capacity = nodes.Count;
 
-            foreach (Core.INodeProcessor processor in Engine.GetProcessors())
+            foreach (Core.INodeProcessor processor in Engine.GetNodeProcessors())
             {
                 processor.PreProcess();
 
-                target.AddRange(processor.Process(source));
+                target.AddRange(processor.Process(nodes));
+
+                processor.PostProcess();
+                
+                (nodes, target) = (target, nodes);
+
+                target.Clear();
+            }
+
+            // convert nodes to objects
+            List<Core.BuildResult<ErrorType, Core.Object>> source =
+                (
+                from item in 
+                    from node in nodes
+                    select node.Cast(
+                        info => info.Object.GetCompilerObject()
+                        )
+                where item.HasValue
+                select item).ToList()
+                , result = new();
+            
+            foreach (Core.IObjectProcessor processor in Engine.GetObjectProcessors())
+            {
+                processor.PreProcess();
+
+                result.AddRange(processor.Process(source));
 
                 processor.PostProcess();
 
-                (source, target) = (target, source);
+                (source, result) = (result, source);
+                
+                result.Clear();
             }
 
-            source.ForEach(LogErrors);
+            result.ForEach(LogErrors);
         }
 
         public void FinishCompilation()
         {
             Engine.FinishCompilation(Options.OutputPath);
         }
-
-        private static void LogErrors(Core.BuildResult<ErrorType, Core.NodeInfo> result)
+        
+        private static void LogErrors(Core.BuildResult<ErrorType, Core.Object> result)
         {
-            Core.NodeInfo value = result.Value;
-
             result.Errors.ForEach(error => 
                 Console.WriteLine(
-                    $"{Path.GetFullPath(value.FileInfo.Document.Path)}" +
+                    $"{Path.GetFullPath(result.Value.Node.FileInfo.Document.Path)}" +
                     $"{error}"
                     )
                 );

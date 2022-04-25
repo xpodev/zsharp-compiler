@@ -68,9 +68,14 @@ namespace ZSharp.Parser
 
         internal Parser<char, T> WithAnyWhitespace<T>(Parser<char, T> parser) => parser.Before(_anyWhitespace);
 
-        public void Build(Parser parser)
+        public void Build(Parser _)
         {
-            _documentParser = _anyWhitespace.Then(OneOf(_extensions.Values.Select(extension => Try(extension.Parser))).BeforeWhitespace().ManyCollection());
+            _documentParser = 
+                _anyWhitespace.Then(
+                    OneOf(_extensions.Values.Select(extension => Try(extension.Parser)))
+                    .BeforeWhitespace()
+                    .ManyCollection()
+                    ).Before(End);
         }
     }
 }

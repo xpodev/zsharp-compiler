@@ -6,10 +6,9 @@
 
         public Node Object { get; }
 
-        public NodeInfo(FileInfo fileInfo, Node @object)
+        public NodeInfo(FileInfo fileInfo, Node node)
         {
-            FileInfo = fileInfo;
-            Object = @object;
+            (Object = node).FileInfo = FileInfo = fileInfo;
         }
 
         public static implicit operator Node(NodeInfo objectInfo) => objectInfo.Object;

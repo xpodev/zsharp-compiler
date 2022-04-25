@@ -11,13 +11,10 @@
 
         public static Parser<char, NodeInfo> BuildWith(this Parser<char, NodeInfo> parser, ParserBuilderSettings settings)
         {
-            Parser<char, Unit> keyword = parser.WithPrefixKeyword(settings.Keyword).BeforeWhitespace().IgnoreResult();
             Parser<char, NodeInfo> many = settings.IsModifiable ? parser.WithPrefixModifiers().ManyCollection().WithObjectInfo().UpCast() : parser;
-            if (settings.Keyword is null) _ = parser;
-            else if (settings.AllowBlockDefinition)
-                parser = keyword.Then(many.Parenthesized(settings.BlockBracketType).Or(parser));
-            else 
-                parser = keyword.Then(parser);
+            if (settings.AllowBlockDefinition)
+                parser = many.Parenthesized(settings.BlockBracketType).Or(parser);
+            if (settings.Keyword is not null) parser = parser.WithPrefixKeyword(settings.Keyword).BeforeWhitespace();
             return settings.IsModifiable ? parser.WithPrefixModifiers().UpCast() : parser;
         }
 
@@ -81,7 +78,7 @@
             Result<char, Identifier> parseResult = Parser.Identifier.Identifier.Parse(keyword);
             if (!parseResult.Success) 
                 throw new System.ArgumentException("Must be a valid Z# identifier", nameof(keyword));
-            return Parser.Identifier.Identifier.Assert(id => id.Name == keyword).Then(parser);
+            return Parser.Identifier.Identifier.Assert(id => id.Name == keyword).BeforeWhitespace().Then(parser);
         }
 
         public static Parser<char, NodeInfo<ModifiedObject>> WithPrefixModifiers(this Parser<char, NodeInfo> parser)
@@ -105,10 +102,8 @@
             {
             Parser<char, NodeInfo<ModifiedObject<T>>> modified = Parser.CreateParser(
                 from @object in Try(parser)
-                select new ModifiedObject<T>()
-                {
-                    Object = @object
-                });
+                select new ModifiedObject<T>(@object)
+                );
             modified = modified.Or(Try(
                 from modifier in Parser.Identifier.Parser
                 from @object in Rec(() => modified)
@@ -122,10 +117,7 @@
         {
             Parser<char, ModifiedObject<T>> modified = 
                 from @object in Parser.CreateParser(Try(parser))
-                select new ModifiedObject<T>()
-                {
-                    Object = @object
-                };
+                select new ModifiedObject<T>(@object);
             modified = modified.Or(Try(
                 from modifier in Parser.Identifier.Parser
                 from @object in Rec(() => modified)
