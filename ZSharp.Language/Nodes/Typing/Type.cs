@@ -8,9 +8,9 @@
 
         public abstract TypeName AsTypeName();
 
-        public override Object GetCompilerObject()
+        public override Object GetCompilerObject(IContext ctx)
         {
-            return AsTypeName().GetCompilerObject();
+            return AsTypeName().GetCompilerObject(TODO);
         }
     }
 }

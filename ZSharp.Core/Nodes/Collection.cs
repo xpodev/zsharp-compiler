@@ -54,7 +54,7 @@ namespace ZSharp.Core
         public static NodeInfo Create(IEnumerable<NodeInfo> objects) =>
             objects.Any() ? new(objects.Select(o => o.FileInfo).Aggregate(FileInfo.Combine), new Collection(objects)) : new(new(), Empty);
 
-        public override Object GetCompilerObject()
+        public override Object GetCompilerObject(IContext ctx)
         {
             throw new System.NotImplementedException();
         }
@@ -104,7 +104,7 @@ namespace ZSharp.Core
         public static NodeInfo<Collection<T>> Create(IEnumerable<NodeInfo<T>> objects) =>
             objects.Any() ? new(objects.Select(o => o.FileInfo).Aggregate(FileInfo.Combine), new Collection<T>(objects)) : new(new(), Empty);
 
-        public override Object GetCompilerObject()
+        public override Object GetCompilerObject(IContext ctx)
         {
             throw new System.NotImplementedException();
         }

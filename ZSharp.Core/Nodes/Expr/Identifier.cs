@@ -2,7 +2,7 @@
 {
     public record class Identifier(string Name) : Expression
     {
-        public override Object GetCompilerObject()
+        public override Object GetCompilerObject(IContext ctx)
         {
             throw new System.NotImplementedException();
         }

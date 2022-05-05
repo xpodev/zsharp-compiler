@@ -56,7 +56,7 @@
             return Modifiers.Count == 0 ? Object.ToString() : $"{string.Join(' ', Modifiers)} {Object}";
         }
 
-        public override Object GetCompilerObject()
+        public override Object GetCompilerObject(IContext ctx)
         {
             throw new System.NotImplementedException();
         }

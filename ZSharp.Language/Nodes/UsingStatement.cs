@@ -6,6 +6,6 @@ namespace ZSharp.Language
     {
         public abstract BuildResult<Error, Node> Process(DelegateProcessor<IContextPreparationItem> proc);
 
-        public override Object GetCompilerObject() => null;
+        public override Object GetCompilerObject(IContext ctx) => null;
     }
 }

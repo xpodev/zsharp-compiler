@@ -14,6 +14,6 @@
         /// Constructs and returns the object this node represents.
         /// </summary>
         /// <returns>A compiler object this node represents.</returns>
-        public abstract Object GetCompilerObject();
+        public abstract Object GetCompilerObject(IContext ctx);
     }
 }
