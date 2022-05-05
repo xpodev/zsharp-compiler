@@ -1,4 +1,6 @@
-﻿namespace ZSharp
+﻿using System.Collections.Generic;
+
+namespace ZSharp
 {
     /// <summary>
     /// Defines a type that builds a function and can be used as one.
@@ -16,6 +18,16 @@
         /// <inheritdoc/>
         /// </summary>
         IParameter IFunction.ReturnParameter => ReturnParameter;
+
+        /// <summary>
+        /// The parameter builders.
+        /// </summary>
+        new IReadOnlyList<IParameterBuilder> Parameters { get; }
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        IReadOnlyList<IParameter> IFunction.Parameters => Parameters;
 
         /// <summary>
         /// Defines a parameter for the function. The parameter is placed last.

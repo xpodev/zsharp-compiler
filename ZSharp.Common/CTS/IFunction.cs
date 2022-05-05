@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace ZSharp
 {
@@ -15,9 +16,14 @@ namespace ZSharp
         IParameter ReturnParameter { get; }
 
         /// <summary>
+        /// The parameters this function has.
+        /// </summary>
+        IReadOnlyList<IParameter> Parameters { get; }
+
+        /// <summary>
         /// Input parameters types.
         /// </summary>
-        IEnumerable<IType> Input { get; }
+        IReadOnlyList<IType> Input => Parameters.Select(p => p.Type).ToArray();
 
         /// <summary>
         /// Return type of the function.
