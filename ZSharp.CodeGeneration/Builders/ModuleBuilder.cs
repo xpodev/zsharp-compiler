@@ -33,7 +33,7 @@ namespace ZSharp.CG
             _globalScope.DefineFunction(name, returnType);
 
         public TypeReference GetTypeReference(System.Type type) => 
-            type is null ? null : new(_def.ImportReference(type), GetTypeReference(type.DeclaringType));
+            type is null ? null : new(_def.ImportReference(type));
 
         public void Write(string path) => _def.Write(path);
     }

@@ -15,7 +15,9 @@ namespace ZSharp.CG
 
         public ReturnParameter ReturnParameter { get; }
 
-        IEnumerable<IType> IFunction.Input => Input;
+        IReadOnlyList<IType> IFunction.Input => Input;
+
+        IReadOnlyList<IParameter> IFunction.Parameters => Parameters;
 
         IParameter IFunction.ReturnParameter => ReturnParameter;
 

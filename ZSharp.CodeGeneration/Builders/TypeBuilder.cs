@@ -2,7 +2,7 @@
 
 namespace ZSharp.CG
 {
-    public class TypeBuilder 
+    public class TypeBuilder
         : TypeReference
         , ITypeBuilder
     {
@@ -14,7 +14,27 @@ namespace ZSharp.CG
 
         public new TypeBuilder DeclaringType { get; }
 
-        public TypeBuilder(string name, TypeBuilder owner) 
+        public new IReadOnlyList<FieldBuilder> Fields { get; } = new List<FieldBuilder>();
+
+        public new IReadOnlyList<TypeReference> Interfaces { get; } = new List<TypeReference>();
+
+        public new IReadOnlyList<MethodBuilder> Methods { get; } = new List<MethodBuilder>();
+
+        public new IReadOnlyList<PropertyBuilder> Properties { get; } = new List<PropertyBuilder>();
+
+        public new IReadOnlyList<TypeBuilder> NestedTypes { get; } = new List<TypeBuilder>();
+
+        IReadOnlyList<IFieldBuilder> ITypeBuilder.Fields => Fields;
+
+        IReadOnlyList<IType> IType.Interfaces => Interfaces;
+
+        IReadOnlyList<IMethodBuilder> ITypeBuilder.Methods => Methods;
+
+        IReadOnlyList<IPropertyBuilder> ITypeBuilder.Properties => Properties;
+
+        IReadOnlyList<ITypeBuilder> ITypeBuilder.NestedTypes => NestedTypes;
+
+        public TypeBuilder(string name, TypeBuilder owner)
             : this(new TypeDefinition(null, name, TypeAttributes.Class), owner)
         {
 
@@ -23,6 +43,7 @@ namespace ZSharp.CG
         internal TypeBuilder(TypeDefinition def, TypeBuilder owner) : base(def, owner)
         {
             _def = def;
+
             DeclaringType = owner;
         }
 
@@ -37,6 +58,19 @@ namespace ZSharp.CG
             // todo: check result;
             AddMember(builder);
             _def.Fields.Add(builder._def);
+
+            return builder;
+        }
+
+        public PropertyBuilder DefineProperty(string name) => DefineProperty(name, EmptyType);
+
+        public PropertyBuilder DefineProperty(string name, TypeReference propertyType)
+        {
+            PropertyBuilder builder = new(name, this, propertyType);
+
+            // todo: check result.
+            AddMember(builder);
+            _def.Properties.Add(builder._def);
 
             return builder;
         }
@@ -77,6 +111,8 @@ namespace ZSharp.CG
         IFieldBuilder ITypeBuilder.DefineField(string name) => DefineField(name);
 
         IMethodBuilder ITypeBuilder.DefineMethod(string name) => DefineMethod(name);
+
+        IPropertyBuilder ITypeBuilder.DefineProperty(string name) => DefineProperty(name);
 
         ITypeBuilder ITypeBuilder.DefineType(string name) => DefineType(name);
 

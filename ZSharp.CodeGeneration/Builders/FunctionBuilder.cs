@@ -17,6 +17,8 @@ namespace ZSharp.CG
 
         public IEnumerable<IType> Input => _parameters.Select(p => p.Type);
 
+        public IReadOnlyList<ParameterBuilder> Parameters => _parameters;
+
         public ReturnParameterBuilder ReturnParameter => _returnParameter;
 
         public TypeReference ReturnType
@@ -26,6 +28,8 @@ namespace ZSharp.CG
         }
 
         IType ITypedItem.Type => null;
+
+        IReadOnlyList<IParameterBuilder> IFunctionBuilder.Parameters => Parameters;
 
         IParameterBuilder IFunctionBuilder.ReturnParameter => _returnParameter;
 
