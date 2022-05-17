@@ -5,7 +5,7 @@ namespace ZSharp.Language
 {
     internal class UsingStatementParser : CustomParser<UsingStatement>
     {
-        public UsingStatementParser() : base("UsingStatement", "<ZSharp>")
+        public UsingStatementParser() : base("UsingStatement")
         {
 
         }

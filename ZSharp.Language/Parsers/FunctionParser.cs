@@ -4,7 +4,7 @@ namespace ZSharp.Language
 {
     internal class FunctionParser : CustomParser<ModifiedObject<FunctionNode>>
     {
-        public FunctionParser() : base("Function", "<ZSharp>")
+        public FunctionParser() : base("Function")
         {
             
         }

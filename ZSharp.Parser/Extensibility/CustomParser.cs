@@ -7,8 +7,6 @@
 
         public string Name { get; }
 
-        public string Namespace { get; }
-
         public virtual Parser<char, T> Parser
         {
             get => _parser;
@@ -27,10 +25,9 @@
             //set => ObjectParser = value;
         }
 
-        protected CustomParser(string name, string @namespace)
+        protected CustomParser(string name)
         {
             Name = name;
-            Namespace = @namespace;
         }
 
         public T Parse(string input) => Parser.ParseOrThrow(input);

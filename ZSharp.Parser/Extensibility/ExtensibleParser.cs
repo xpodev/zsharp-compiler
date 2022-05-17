@@ -11,7 +11,7 @@ namespace ZSharp.Parser.Extensibility
     {
         private protected readonly Dictionary<string, ExtensionParser> _extensions = new();
 
-        public ExtensibleParser(string name, string @namespace) : base(name, @namespace) { }
+        public ExtensibleParser(string name) : base(name) { }
 
         public void AddExtension<V>(ICustomParser<V> extensionParser)
             where V : U

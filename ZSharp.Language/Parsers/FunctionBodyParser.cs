@@ -4,7 +4,7 @@ namespace ZSharp.Language
 {
     internal class FunctionBodyParser : ExtensibleParser<FunctionBodyNode, Node>
     {
-        public FunctionBodyParser() : base("FunctionBody", "<ZSharp>") { }
+        public FunctionBodyParser() : base("FunctionBody") { }
 
         internal FunctionBodyParser Build(Parser.Parser parser)
         {

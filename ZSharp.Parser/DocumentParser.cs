@@ -30,7 +30,7 @@ namespace ZSharp.Parser
 
         public override Parser<char, Collection> Parser => _documentParser;
 
-        internal DocumentParser() : base("Core.Document", "<ZSharp>")
+        internal DocumentParser() : base("Core.Document")
         {
             Parser<char, Unit> comments, whitespace;
 

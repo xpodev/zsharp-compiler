@@ -22,7 +22,7 @@ namespace ZSharp.Language
 
         public Parser<char, ModifiedObject<TypeNode>> AutoType => _autoType;
 
-        public TypeParser() : base("Type", "<ZSharp>")
+        public TypeParser() : base("Type")
         {
         }
 
