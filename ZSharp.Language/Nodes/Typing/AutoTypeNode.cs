@@ -1,20 +1,20 @@
 ﻿namespace ZSharp.Language
 {
-    public record class FunctionType(NodeInfo<Type> Input, NodeInfo<Type> Output) : Type
+    public record class AutoTypeNode : TypeNode
     {
-        public override TypeName AsTypeName()
+        public override Type GetCompilerObject(IContext ctx)
         {
             throw new System.NotImplementedException();
         }
 
-        public override Object GetCompilerObject(IContext ctx)
+        public override TypeNameNode AsTypeName()
         {
             throw new System.NotImplementedException();
         }
 
         public override string ToString()
         {
-            return $"{Input} -> {Output}";
+            return "auto";
         }
     }
 }

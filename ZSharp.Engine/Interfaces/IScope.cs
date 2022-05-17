@@ -1,6 +1,6 @@
 ﻿namespace ZSharp.Engine
 {
-    public interface IContext
+    public interface IScope
     {
         /// <summary>
         /// Find and returns an object by its name from this context.

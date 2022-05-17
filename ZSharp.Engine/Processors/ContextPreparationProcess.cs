@@ -5,7 +5,7 @@ using ZSharp.Core;
 
 namespace ZSharp.Engine.Processors
 {
-    internal class ContextPreparationProcess : DelegateProcessor<IContextPreparationItem>
+    internal class ContextPreparationProcess : Processor<IContextPreparationItem>
     {
         public ContextPreparationProcess(Engine engine) : base(engine)
         {

@@ -10,13 +10,16 @@ namespace ZSharp.Language
 
         }
 
-        public void Build(Parser.Parser parser)
+        public UsingStatementParser Build(Parser.Parser parser)
         {
             // todo: make resursive
             Parser = OneOf(
                 from fqn in parser.Document.Identifier.Parser.Separated(parser.Document.Symbols.Dot)
                 select new UsingNamespaceStatement(new FullyQualifiedName(fqn)) as UsingStatement
                 ).WithPrefixKeyword("using").Before(parser.Document.Symbols.Semicolon);
+
+            parser.Document.AddExtension(this);
+            return this;
         }
     }
 }

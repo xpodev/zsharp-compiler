@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace ZSharp.Language
 {
-    public record class TupleType(IEnumerable<NodeInfo<Type>> Types) : Type
+    public record class TupleType(IEnumerable<NodeInfo<TypeNode>> Types) : TypeNode
     {
-        public override TypeName AsTypeName()
+        public override TypeNameNode AsTypeName()
         {
             throw new NotImplementedException();
         }

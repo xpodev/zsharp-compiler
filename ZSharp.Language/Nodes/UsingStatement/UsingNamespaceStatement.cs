@@ -5,13 +5,13 @@ namespace ZSharp.Language
 {
     internal record class UsingNamespaceStatement(FullyQualifiedName FQN) : UsingStatement
     {
-        public override BuildResult<Error, Node> Process(DelegateProcessor<IContextPreparationItem> proc)
+        public override BuildResult<Error, Node> Process(Processor<IContextPreparationItem> proc)
         {
             BuildResult<Error, Node> result = new(this);
 
             ProjectScope pctx = proc.Engine.Context;
             DocumentScope ctx = pctx.Document;
-            IContext @namespace = pctx;
+            IScope @namespace = pctx;
 
             foreach (NodeInfo<Identifier> part in FQN.Parts)
             {

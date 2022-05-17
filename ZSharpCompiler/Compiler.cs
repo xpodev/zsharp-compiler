@@ -84,7 +84,7 @@ namespace ZSharp.Compiler
                 from item in 
                     from node in nodes
                     select node.Cast(
-                        info => info.Object.GetCompilerObject()
+                        info => info.Object.GetCompilerObject(null)
                         )
                 where item.HasValue
                 select item).ToList()

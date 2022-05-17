@@ -2,13 +2,13 @@
 
 namespace ZSharp.Language
 {
-    public record class UnitType : TupleType
+    public record class UnitTypeNode : TupleType
     {
-        public UnitType() : base(Array.Empty<NodeInfo<Type>>())
+        public UnitTypeNode() : base(Array.Empty<NodeInfo<TypeNode>>())
         {
         }
 
-        public override TypeName AsTypeName()
+        public override TypeNameNode AsTypeName()
         {
             throw new NotImplementedException();
         }

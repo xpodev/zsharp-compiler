@@ -2,6 +2,6 @@
 {
     public interface ILanguageExtension
     {
-        void Initialize(Parser parser);
+        void Initialize(Parser parser, ExtensionContext ctx);
     }
 }

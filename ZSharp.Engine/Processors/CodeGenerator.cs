@@ -1,6 +1,6 @@
 ﻿namespace ZSharp.Engine
 {
-    internal class CodeGenerator : DelegateProcessor<ICompilable>
+    internal class CodeGenerator : Processor<ICompilable>
     {
         public CodeGenerator(Engine engine) : base(engine)
         {

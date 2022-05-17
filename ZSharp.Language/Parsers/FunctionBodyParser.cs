@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ZSharp.Parser;
+﻿using ZSharp.Parser;
 
 namespace ZSharp.Language
 {
-    internal class FunctionBodyParser : ExtensibleParser<FunctionBody, Node>
+    internal class FunctionBodyParser : ExtensibleParser<FunctionBodyNode, Node>
     {
         public FunctionBodyParser() : base("FunctionBody", "<ZSharp>") { }
 
-        internal void Build(Parser.Parser parser)
+        internal FunctionBodyParser Build(Parser.Parser parser)
         {
             //Parser<char, IEnumerable<Node>> itemParser = Pidgin.Parser.OneOf(_ex)
 
@@ -20,10 +15,12 @@ namespace ZSharp.Language
                     parser.Document.Symbols.Symbol("=>").Then(parser.Document.Expression.Parser).UpCast(),
                     parser.Document.Expression.Parser.ManyInside(BracketType.Curly).UpCast()
                     )
-                select new FunctionBody()
+                select new FunctionBodyNode()
                 {
                     Code = expr
                 };
+
+            return this;
         }
     }
 }

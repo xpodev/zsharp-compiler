@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using ZSharp.Core;
 using ZSharp.Parser.Extensibility;
@@ -11,8 +12,10 @@ namespace ZSharp.Engine
     public class Engine : ILanguageEngine
     {
         private readonly List<ILanguageExtension> _extensions = new();
-
+        private readonly ExtensionContext _extensionContext = new();
         private readonly Parser.Parser _parser = new();
+
+        private readonly List<Assembly> _assemblyReferences = new();
 
         public ProjectScope Context { get; } = new();
 
@@ -30,9 +33,14 @@ namespace ZSharp.Engine
 
         public void AddAssemblyReference(Assembly assembly)
         {
+            _assemblyReferences.Add(assembly);
+        }
+
+        public void ImportAssembly(Assembly assembly)
+        {
             foreach (Type type in assembly.DefinedTypes)
             {
-                if (type.IsAssignableTo(typeof(ILanguageExtension)))
+                if (type.IsAssignableTo(typeof(ILanguageExtension)) && !type.IsInterface)
                 {
                     if (type.GetConstructor(Type.EmptyTypes).Invoke(Array.Empty<object>()) is not ILanguageExtension extension)
                         throw new Exception();
@@ -40,15 +48,14 @@ namespace ZSharp.Engine
                 }
 
                 string @namespace = type.Namespace;
-                IContext ns = Context;
+                IScope ns = Context;
                 if (@namespace is not null)
                 {
                     foreach (string part in @namespace.Split('.'))
                     {
-                        IContext nested = ns.GetObject(part) as IContext;
-                        if (nested is null)
+                        if (ns.GetObject(part) is not IScope nested)
                         {
-                            Namespace newNS = new Namespace(part);
+                            Namespace newNS = new(part);
                             ns.TryAddObject(newNS);
                             ns = newNS;
                         }
@@ -69,15 +76,14 @@ namespace ZSharp.Engine
                 }
 
                 string @namespace = type.Namespace;
-                IContext ns = Context;
+                IScope ns = Context;
                 if (@namespace is not null)
                 {
                     foreach (string part in @namespace.Split('.'))
                     {
-                        IContext nested = ns.GetObject(part) as IContext;
-                        if (nested is null)
+                        if (ns.GetObject(part) is not IScope nested)
                         {
-                            Namespace newNS = new Namespace(part);
+                            Namespace newNS = new(part);
                             ns.TryAddObject(newNS);
                             ns = newNS;
                         }
@@ -109,7 +115,7 @@ namespace ZSharp.Engine
 
         public IEnumerable<INodeProcessor> GetNodeProcessors()
         {
-            yield return new DelegateProcessor<IContextPreparationItem>(this);
+            yield return new Processor<IContextPreparationItem>(this);
             yield return new ModifierProcessor(this);
             yield return new CodeGenerator(this);
             yield break;
@@ -117,9 +123,30 @@ namespace ZSharp.Engine
 
         public void Setup()
         {
+            DependencyGraph<string> graph = new();
+
+            foreach (Assembly assembly in _assemblyReferences)
+            {
+                graph.AddDependencies(assembly.FullName, assembly.GetReferencedAssemblies().Select(a =>
+                {
+                    if (!graph.Contains(a.FullName))
+                        graph.AddDependencies(a.FullName);
+                    return a.FullName;
+                }));
+            }
+
+            foreach (IEnumerable<string> names in graph.GetDependencyOrder())
+            {
+                foreach (string name in names)
+                {
+                    Assembly assembly = Assembly.Load(name);
+                    ImportAssembly(assembly);
+                }
+            }
+            
             foreach (ILanguageExtension extension in _extensions)
             {
-                extension.Initialize(_parser);
+                extension.Initialize(_parser, _extensionContext);
             }
 
             _parser.Build();

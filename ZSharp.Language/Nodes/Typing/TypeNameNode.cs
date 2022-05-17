@@ -3,12 +3,12 @@ using System.Linq;
 
 namespace ZSharp.Language
 {
-    public record class TypeName(
+    public record class TypeNameNode(
         FullyQualifiedName FullName,
-        IEnumerable<NodeInfo<Type>> TypeArguments
-        ) : Type
+        IEnumerable<NodeInfo<TypeNode>> TypeArguments
+        ) : TypeNode
     {
-        public override TypeName AsTypeName()
+        public override TypeNameNode AsTypeName()
         {
             return this;
         }
@@ -26,7 +26,7 @@ namespace ZSharp.Language
             return sb.ToString();
         }
 
-        public override Object GetCompilerObject(IContext ctx)
+        public override Type GetCompilerObject(IContext ctx)
         {
             throw new System.NotImplementedException();
         }

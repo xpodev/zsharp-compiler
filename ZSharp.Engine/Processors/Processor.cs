@@ -2,11 +2,11 @@
 
 namespace ZSharp.Engine
 {
-    public class DelegateProcessor<T> 
+    public class Processor<T> 
         : BaseProcessor
         where T : IDelegatedProcessor<T>
     {
-        public DelegateProcessor(Engine engine) : base(engine) { }
+        public Processor(Engine engine) : base(engine) { }
 
         public override BuildResult<ErrorType, Node> Process(Node node)
         {

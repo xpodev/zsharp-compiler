@@ -2,7 +2,7 @@
 
 namespace ZSharp.Engine
 {
-    public class ScopeBase : IContext
+    public class ScopeBase : IScope
     {
         private readonly Dictionary<string, INamedObject> _items = new();
 
@@ -17,7 +17,7 @@ namespace ZSharp.Engine
 
         public T GetObject<T>(string name) 
             where T : class, INamedObject
-            => (this as IContext).GetObject<T>(name);
+            => (this as IScope).GetObject<T>(name);
 
         public bool TryAddObject(INamedObject @object, string alias = null)
         {

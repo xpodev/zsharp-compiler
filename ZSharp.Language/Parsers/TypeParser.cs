@@ -5,48 +5,56 @@ using static Pidgin.Parser;
 
 namespace ZSharp.Language
 {
-    internal class TypeParser : CustomParser<Type>
+    public class TypeParser : CustomParser<TypeNode>
     {
-        private Parser<char, FunctionType> _functionType;
+        private Parser<char, FunctionTypeNode> _functionType;
         private Parser<char, TupleType> _tupleType;
-        private Parser<char, TypeName> _typeName;
-        private Parser<char, AutoType> _autoType;
+        private Parser<char, TypeNameNode> _typeName;
+        private Parser<char, AutoTypeNode> _autoType;
 
-        public Parser<char, Type> Type => Rec(() => Parser);
+        public Parser<char, TypeNode> Type => Rec(() => Parser);
 
-        public Parser<char, FunctionType> FunctionType => _functionType;
+        public Parser<char, FunctionTypeNode> FunctionType => _functionType;
+
+        public Parser<char, TupleType> TupleType => _tupleType;
+
+        public Parser<char, TypeNameNode> TypeName => _typeName;
+
+        public Parser<char, AutoTypeNode> AutoType => _autoType;
 
         public TypeParser() : base("Type", "<ZSharp>")
         {
         }
 
-        public void Build(Parser.Parser parser)
+        public TypeParser Build(Parser.Parser parser)
         {
-            Parser<char, NodeInfo<Type>> type = Type.WithObjectInfo();
+            Parser<char, NodeInfo<TypeNode>> type = Type.WithObjectInfo();
 
-            _autoType = Parser<char>.Return(Language.Type.Infer).WithPrefixKeyword("auto");
+            _autoType = Parser<char>.Return(TypeNode.Infer).WithPrefixKeyword("auto");
 
             _tupleType =
                 from types in type.Separated(parser.Document.Symbols.Comma).Parenthesized()
-                select types.Any() ? new TupleType(types) : Language.Type.Unit;
+                select types.Any() ? new TupleType(types) : TypeNode.Unit;
 
             _typeName =
                 from parts in parser.Document.Identifier.Parser.Separated(parser.Document.Symbols.Dot)
                 from typeArguments in type.Separated(parser.Document.Symbols.Comma).Parenthesized(BracketType.Angle).Optional()
-                select new TypeName(new(parts), typeArguments.GetValueOrDefault(System.Array.Empty<NodeInfo<Type>>()));
+                select new TypeNameNode(new(parts), typeArguments.GetValueOrDefault(System.Array.Empty<NodeInfo<TypeNode>>()));
 
             _functionType =
-                from input in _tupleType.Cast<Type>().WithObjectInfo()
+                from input in _tupleType.Cast<TypeNode>().WithObjectInfo()
                 from _ in parser.Document.Symbols.Symbol("->")
                 from output in type
-                select new FunctionType(input, output);
+                select new FunctionTypeNode(input, output);
 
             Parser = OneOf(
-                Try(_functionType.Cast<Type>()),
-                _tupleType.Cast<Type>(),
-                Try(_autoType.Cast<Type>()),
-                _typeName.Cast<Type>()
+                Try(_functionType.Cast<TypeNode>()),
+                _tupleType.Cast<TypeNode>(),
+                Try(_autoType.Cast<TypeNode>()),
+                _typeName.Cast<TypeNode>()
                 );
+
+            return this;
         }
     }
 }
