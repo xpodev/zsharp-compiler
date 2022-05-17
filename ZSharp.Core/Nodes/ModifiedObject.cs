@@ -51,6 +51,37 @@
             return this;
         }
 
+        /// <summary>
+        /// Inserts many modifiers at the given position.
+        /// </summary>
+        /// <param name="index">The position at which to insert the modifiers.</param>
+        /// <param name="modifiers">The modifiers to insert.</param>
+        /// <returns>A modified object with the new modifiers.</returns>
+        public ModifiedObject WithInsertModifiersAt(int index, IEnumerable<NodeInfo<ModifierType>> modifiers)
+        {
+            Modifiers.InsertRange(index, modifiers);
+            return this;
+        }
+
+        /// <summary>
+        /// Inserts many modifiers at the beginning.
+        /// </summary>
+        /// <param name="modifiers">The modifiers to insert.</param>
+        /// <returns>A modified object with the new modifiers.</returns>
+        public ModifiedObject WithInsertModifiers(IEnumerable<NodeInfo<ModifierType>> modifiers)
+            => WithInsertModifiersAt(0, modifiers);
+
+        /// <summary>
+        /// Inserts many modifiers at the end.
+        /// </summary>
+        /// <param name="modifiers">The modifiers to append.</param>
+        /// <returns>A modified object with the new modifiers.</returns>
+        public ModifiedObject WithAppendModifiers(IEnumerable<NodeInfo<ModifierType>> modifiers)
+        {
+            Modifiers.AddRange(modifiers);
+            return this;
+        }
+
         public override string ToString()
         {
             return Modifiers.Count == 0 ? Object.ToString() : $"{string.Join(' ', Modifiers)} {Object}";
@@ -58,6 +89,8 @@
 
         public override Object GetCompilerObject(IContext ctx)
         {
+            if (Modifiers.Count == 0) return Object.Object.GetCompilerObject(ctx);
+
             throw new System.NotImplementedException();
         }
     }
@@ -111,6 +144,37 @@
         public new ModifiedObject<T> WithAppendModifier(NodeInfo<ModifierType> modifier)
         {
             Modifiers.Add(modifier);
+            return this;
+        }
+
+        /// <summary>
+        /// Inserts many modifiers at the given position.
+        /// </summary>
+        /// <param name="index">The position at which to insert the modifiers.</param>
+        /// <param name="modifiers">The modifiers to insert.</param>
+        /// <returns>A modified object with the new modifiers.</returns>
+        public new ModifiedObject<T> WithInsertModifiersAt(int index, IEnumerable<NodeInfo<ModifierType>> modifiers)
+        {
+            Modifiers.InsertRange(index, modifiers);
+            return this;
+        }
+
+        /// <summary>
+        /// Inserts many modifiers at the beginning.
+        /// </summary>
+        /// <param name="modifiers">The modifiers to insert.</param>
+        /// <returns>A modified object with the new modifiers.</returns>
+        public new ModifiedObject<T> WithInsertModifiers(IEnumerable<NodeInfo<ModifierType>> modifiers)
+            => WithInsertModifiersAt(0, modifiers);
+
+        /// <summary>
+        /// Inserts many modifiers at the end.
+        /// </summary>
+        /// <param name="modifiers">The modifiers to append.</param>
+        /// <returns>A modified object with the new modifiers.</returns>
+        public new ModifiedObject<T> WithAppendModifiers(IEnumerable<NodeInfo<ModifierType>> modifiers)
+        {
+            Modifiers.AddRange(modifiers);
             return this;
         }
 
