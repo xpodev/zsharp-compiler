@@ -5,7 +5,7 @@ namespace ZSharp.Language
 {
     public record class TypeNameNode(
         FullyQualifiedName FullName,
-        IEnumerable<NodeInfo<TypeNode>> TypeArguments
+        IEnumerable<NodeInfo<ModifiedObject<TypeNode>>> TypeArguments
         ) : TypeNode
     {
         public override TypeNameNode AsTypeName()

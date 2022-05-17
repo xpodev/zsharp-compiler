@@ -2,21 +2,17 @@
 
 namespace ZSharp.Language
 {
-    public record class FunctionNode : Node
-    {       
-        public NodeInfo<Identifier> Name { get; set; }
-
-        public List<NodeInfo<Identifier>> TypeParameters { get; set; }
-
-        public List<NodeInfo<TypedItemNode>> Parameters { get; set; }
-        
-        public NodeInfo<TypeNode> ReturnType { get; set; }
-
-        public NodeInfo<FunctionBodyNode> Body { get; set; }
-
-        internal FunctionNode Create()
+    public record class FunctionNode(
+        NodeInfo<Identifier> Name, 
+        NodeInfo<ModifiedObject<TypeNode>> Type,
+        List<NodeInfo<Identifier>> TypeParameters,
+        List<NodeInfo<ModifiedObject<TypedItemNode>>> Parameters,
+        NodeInfo<FunctionBodyNode> Body
+        ) : TypedItemNode(Name, Type)
+    {
+        public NodeInfo<ModifiedObject<TypeNode>> ReturnType
         {
-            return Body.Object.DeclaringFunction = this;
+            get => Type;
         }
 
         public override string ToString()
@@ -30,10 +26,15 @@ namespace ZSharp.Language
         {
             Function function = new(this);
 
+            foreach (var typeParameter in TypeParameters)
+            {
+                throw new System.NotImplementedException();
+                //function.AddTypeParameter(typeParameter.GetCompilerObject(ctx));
+            }
+
             foreach (var parameter in Parameters)
             {
-                TypedItemNode node = parameter.Object;
-                function.AddParameter(new(node, node.Type.Object.GetCompilerObject(ctx) as IType, function.Parameters.Count));
+                function.AddParameter(new(parameter.Object.Object.Object));
             }
 
             return function;

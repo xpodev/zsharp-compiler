@@ -1,6 +1,6 @@
 ﻿namespace ZSharp.Language
 {
-    public record class FunctionTypeNode(NodeInfo<TypeNode> Input, NodeInfo<TypeNode> Output) : TypeNode
+    public record class FunctionTypeNode(NodeInfo<ModifiedObject<TypeNode>> Input, NodeInfo<ModifiedObject<TypeNode>> Output) : TypeNode
     {
         public override TypeNameNode AsTypeName()
         {

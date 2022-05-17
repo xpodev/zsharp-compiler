@@ -112,17 +112,28 @@
                 return modified;
             }
 
-        public static Parser<char, ModifiedObject<T>> WithPrefixModifiers<T>(this Parser<char, T> parser)
+        public static Parser<char, ModifiedObject<T>> WithPrefixModifiers<T>(this Parser<char, T> parser, string keyword = null)
             where T : Node
         {
-            Parser<char, ModifiedObject<T>> modified = 
-                from @object in Parser.CreateParser(Try(parser))
-                select new ModifiedObject<T>(@object);
-            modified = modified.Or(Try(
-                from modifier in Parser.Identifier.Parser
-                from @object in Rec(() => modified)
-                select @object.WithInsertModifier(modifier)
-                ));
+            Parser<char, ModifiedObject<T>> modified;
+            if (keyword is not null)
+            {
+                modified = (
+                    from modifiers in Parser.Identifier.Parser.Until(String(keyword).BeforeWhitespace())
+                    from @object in parser.WithObjectInfo()
+                    select new ModifiedObject<T>(@object).WithInsertModifiers(modifiers)
+                    );
+            } else
+            {
+                modified =
+                    from @object in Parser.CreateParser(Try(parser))
+                    select new ModifiedObject<T>(@object);
+                modified = Try(
+                    from modifier in Parser.Identifier.Parser
+                    from @object in Rec(() => modified)
+                    select @object.WithInsertModifier(modifier)
+                    ).Or(modified);
+            }
             return modified;
         }
     }

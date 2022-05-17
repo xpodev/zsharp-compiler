@@ -4,7 +4,7 @@ namespace ZSharp.Language
 {
     public record class UnitTypeNode : TupleType
     {
-        public UnitTypeNode() : base(Array.Empty<NodeInfo<TypeNode>>())
+        public UnitTypeNode() : base(Array.Empty<NodeInfo<ModifiedObject<TypeNode>>>())
         {
         }
 

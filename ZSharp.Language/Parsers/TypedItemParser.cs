@@ -11,7 +11,7 @@ namespace ZSharp.Language
             Parser =
                 from name in parser.Document.Identifier.Parser
                 from type in parser.Document.Symbols.Colon.Then(ctx.GetSingleton<TypeParser>().Parser).Optional()
-                select new TypedItemNode(name, new(new(), type.GetValueOrDefault(TypeNode.Infer)));
+                select new TypedItemNode(name, new(new(), type.GetValueOrDefault(new ModifiedObject<TypeNode>(new(new(), TypeNode.Infer)))));
 
             return this;
         }
